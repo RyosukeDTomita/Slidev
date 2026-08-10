@@ -1,0 +1,317 @@
+/*
+ * slidev-theme-tomogashima
+ *
+ * Solarized Dark の色相はそのままに、投影しても潰れないよう明度差を広げた配色。
+ * - 背景は Solarized の base03 (#002b36) より少し沈めて「深い海」に寄せる
+ * - 本文は base0 (#839496) ではなく base1〜base3 寄りにして本文コントラストを稼ぐ
+ * - アクセントは Solarized のアクセント色を彩度/明度ともに一段持ち上げたもの
+ */
+
+:root {
+  /* 海: 背景系 */
+  --tg-abyss: #001019;
+  --tg-deep: #002b36; /* solarized base03 */
+  --tg-shallow: #073642; /* solarized base02 */
+  --tg-line: #0e4a58;
+
+  /* 砂浜と光: 前景系 */
+  --tg-text: #dbe8e6;
+  --tg-bright: #fdf6e3; /* solarized base3 */
+  --tg-muted: #93a8ab;
+
+  /* アクセント (Solarized 由来 + 明度アップ) */
+  --tg-cyan: #3fd0c4; /* base: #2aa198 */
+  --tg-blue: #4fb0ee; /* base: #268bd2 */
+  --tg-green: #a9c93c; /* base: #859900 */
+  --tg-yellow: #e6b436; /* base: #b58900 */
+  --tg-orange: #f4763c; /* base: #cb4b16 */
+  --tg-red: #f4574f; /* base: #dc322f */
+  --tg-magenta: #ef6fb0; /* base: #d33682 */
+  --tg-violet: #8b8fe8; /* base: #6c71c4 */
+
+  /* デスティニー: 光の翼のゴールドと、機体のレッド/ブルー */
+  --tg-gold: #f5c542;
+  --tg-wing: #fff3cf;
+  --tg-destiny-red: #e03a3a;
+  --tg-destiny-blue: #2f6fd0;
+
+  /* Slidev 側の変数を上書き */
+  --slidev-theme-primary: var(--tg-gold);
+  --slidev-code-background: #04222c;
+  --slidev-code-radius: 6px;
+  --slidev-code-font-size: 0.92em;
+  --slidev-code-line-height: 1.55;
+  --slidev-controls-foreground: var(--tg-muted);
+}
+
+html,
+body,
+#slide-content {
+  background: var(--tg-abyss);
+  color: var(--tg-text);
+}
+
+/* ---------------------------------------------------------------- base */
+
+.slidev-layout {
+  /* 装飾を absolute で重ねるので、スライド全体を基準ボックスにする */
+  position: relative;
+  width: 100%;
+  height: 100%;
+  /* 上から下へ「浅瀬 -> 深海」。単色より奥行きが出て、白飛びも防げる */
+  background:
+    radial-gradient(120% 80% at 80% -10%, rgba(63, 208, 196, 0.1), transparent 60%),
+    linear-gradient(170deg, #063240 0%, var(--tg-deep) 45%, var(--tg-abyss) 100%);
+  color: var(--tg-text);
+  font-size: 1.08rem;
+  line-height: 1.75;
+  padding: 2.6rem 3rem 3.2rem;
+}
+
+.slidev-layout::after {
+  /* 水面のきらめき。控えめにして本文の可読性を邪魔しない */
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(219, 232, 230, 0.16) 1px, transparent 1px);
+  background-size: 46px 46px;
+  opacity: 0.35;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent 55%);
+}
+
+.slidev-layout > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ------------------------------------------------------------ headings */
+
+.slidev-layout h1,
+.slidev-layout h2,
+.slidev-layout h3,
+.slidev-layout h4 {
+  color: var(--tg-bright);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.slidev-layout h1 {
+  font-size: 2.6rem;
+  line-height: 1.25;
+  margin-bottom: 0.7rem;
+}
+
+.slidev-layout h2 {
+  font-size: 1.9rem;
+  line-height: 1.35;
+  margin-bottom: 1rem;
+  padding-left: 0.7rem;
+  border-left: 5px solid var(--tg-gold);
+}
+
+.slidev-layout h3 {
+  font-size: 1.3rem;
+  color: var(--tg-cyan);
+  margin: 1.1rem 0 0.4rem;
+}
+
+.slidev-layout h4 {
+  font-size: 1.1rem;
+  color: var(--tg-muted);
+  margin: 0.9rem 0 0.3rem;
+}
+
+/* --------------------------------------------------------------- inline */
+
+.slidev-layout strong,
+.slidev-layout b {
+  color: var(--tg-gold);
+  font-weight: 700;
+}
+
+.slidev-layout em {
+  color: var(--tg-cyan);
+  font-style: normal;
+  border-bottom: 1px dashed currentColor;
+}
+
+.slidev-layout a {
+  color: var(--tg-blue);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(79, 176, 238, 0.5);
+}
+
+.slidev-layout a:hover {
+  color: var(--tg-cyan);
+}
+
+/* ---------------------------------------------------------------- lists */
+
+.slidev-layout ul {
+  list-style: none;
+  padding-left: 0.2rem;
+}
+
+.slidev-layout ul > li {
+  position: relative;
+  padding-left: 1.4rem;
+  margin: 0.42rem 0;
+}
+
+.slidev-layout ul > li::before {
+  /* 波のマーカー */
+  content: '〜';
+  position: absolute;
+  left: 0;
+  top: -0.1em;
+  color: var(--tg-cyan);
+  font-weight: 700;
+}
+
+.slidev-layout ul ul > li::before {
+  content: '・';
+  color: var(--tg-muted);
+}
+
+.slidev-layout ul ul > li,
+.slidev-layout ol ol > li {
+  font-size: 0.94em;
+  color: #c3d4d3;
+}
+
+.slidev-layout ol {
+  padding-left: 1.4rem;
+  margin: 0.3rem 0;
+}
+
+.slidev-layout ol > li {
+  margin: 0.42rem 0;
+}
+
+.slidev-layout ol > li::marker {
+  color: var(--tg-gold);
+  font-weight: 700;
+}
+
+/* ----------------------------------------------------------------- code */
+
+.slidev-layout :not(pre) > code {
+  background: rgba(7, 54, 66, 0.9);
+  color: var(--tg-yellow);
+  border: 1px solid rgba(14, 74, 88, 0.9);
+  border-radius: 4px;
+  padding: 0.08em 0.36em;
+  font-size: 0.92em;
+}
+
+.slidev-layout pre.slidev-code,
+.slidev-layout .slidev-code-wrapper pre {
+  border: 1px solid var(--tg-line);
+  border-left: 4px solid var(--tg-cyan);
+  border-radius: var(--slidev-code-radius);
+  padding: 0.9rem 1.1rem;
+  box-shadow: 0 8px 24px rgba(0, 8, 14, 0.45);
+}
+
+/* Shiki の solarized-dark は背景が明るめなので、テーマの深海側に寄せる */
+.slidev-layout .shiki,
+.slidev-layout .shiki span {
+  background-color: transparent !important;
+}
+
+.slidev-layout .slidev-code-wrapper,
+.slidev-layout pre.slidev-code {
+  background: var(--slidev-code-background);
+}
+
+/*
+ * solarized-dark のコメント色 base01 (#586e75) / base00 (#657b83) は
+ * プロジェクタだと背景に沈むので、インラインスタイルを狙って一段明るくする。
+ */
+.slidev-layout .shiki span[style*='#586e75' i] {
+  color: #8ba6a8 !important;
+}
+
+.slidev-layout .shiki span[style*='#657b83' i] {
+  color: #9ab3b5 !important;
+}
+
+/* --------------------------------------------------------- quote/table */
+
+.slidev-layout blockquote {
+  border-left: 4px solid var(--tg-gold);
+  background: rgba(7, 54, 66, 0.55);
+  color: var(--tg-bright);
+  padding: 0.6rem 1rem;
+  border-radius: 0 6px 6px 0;
+  font-style: normal;
+}
+
+.slidev-layout blockquote p {
+  margin: 0.2rem 0;
+}
+
+.slidev-layout table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95em;
+}
+
+.slidev-layout th {
+  background: var(--tg-shallow);
+  color: var(--tg-bright);
+  text-align: left;
+}
+
+.slidev-layout th,
+.slidev-layout td {
+  border: 1px solid var(--tg-line);
+  padding: 0.4rem 0.7rem;
+}
+
+.slidev-layout hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(to right, var(--tg-gold), var(--tg-cyan), transparent);
+  margin: 1.2rem 0;
+}
+
+/* ------------------------------------------------------------- utility */
+
+/* 本文中で色を振りたいとき用。<span class="tg-gold"> のように使う */
+.tg-gold { color: var(--tg-gold); }
+.tg-cyan { color: var(--tg-cyan); }
+.tg-red { color: var(--tg-red); }
+.tg-green { color: var(--tg-green); }
+.tg-muted { color: var(--tg-muted); }
+
+/* 1枚に収まらないときの逃げ道 */
+.tg-dense {
+  font-size: 0.92em;
+  line-height: 1.6;
+}
+
+.tg-dense li {
+  margin: 0.25rem 0;
+}
+
+/* ------------------------------------------------------------- 全体UI */
+
+.slidev-page {
+  color: var(--tg-text);
+}
+
+/* プレゼンター/オーバービュー画面もテーマ色に合わせる */
+.slidev-nav-goto-dialog,
+.slidev-overview {
+  background: var(--tg-abyss);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tg-anim,
+  .tg-anim * {
+    animation: none !important;
+  }
+}

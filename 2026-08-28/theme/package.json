@@ -1,0 +1,28 @@
+{
+  "name": "slidev-theme-tomogashima",
+  "version": "0.1.0",
+  "private": true,
+  "description": "夏の海と島(友ヶ島)をモチーフにした、Solarized 系配色を投影向けに高コントラスト化した Slidev テーマ",
+  "keywords": [
+    "slidev-theme",
+    "slidev"
+  ],
+  "engines": {
+    "node": ">=20",
+    "slidev": ">=52.0.0"
+  },
+  "slidev": {
+    "defaults": {
+      "colorSchema": "dark",
+      "aspectRatio": "16/9",
+      "canvasWidth": 980,
+      "transition": "fade-out",
+      "fonts": {
+        "sans": "Zen Kaku Gothic New",
+        "serif": "Zen Old Mincho",
+        "mono": "JetBrains Mono",
+        "fallbacks": true
+      }
+    }
+  }
+}
