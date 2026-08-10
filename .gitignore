@@ -1,9 +1,12 @@
 node_modules/
 dist/
 .slidev/
+# エクスポート結果 (pdf/png) は追跡しないが、スライドの素材は追跡する
 *.pdf
 *.png
 !templates/**/*.png
+# 各デッキの public/ 配下はビルド成果物にコピーされる素材なので必ず追跡する
+!**/public/**
 
 # nix
 result
