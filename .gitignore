@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.slidev/
+*.pdf
+*.png
+!templates/**/*.png
+
+# nix
+result
+result-*
+.direnv/
