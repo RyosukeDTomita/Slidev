@@ -161,8 +161,7 @@ body,
 }
 
 .slidev-layout ul > li::before {
-  /* 波のマーカー */
-  content: '〜';
+  content: '・';
   position: absolute;
   left: 0;
   top: -0.1em;
@@ -182,6 +181,8 @@ body,
 }
 
 .slidev-layout ol {
+  /* UnoCSSのリセットがlist-styleを消すので明示的に戻す */
+  list-style: decimal;
   padding-left: 1.4rem;
   margin: 0.3rem 0;
 }

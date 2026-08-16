@@ -9,8 +9,9 @@ withDefaults(defineProps<{
   type: 'point',
 })
 
+/** point は主張そのものを読ませたいので、既定の見出しを持たない */
 const DEFAULT_TITLE = {
-  point: 'ここが言いたい',
+  point: undefined,
   info: '補足',
   warn: 'ハマりどころ',
 } as const
@@ -18,7 +19,7 @@ const DEFAULT_TITLE = {
 
 <template>
   <div class="tg-callout" :class="`tg-callout--${type}`">
-    <div class="tg-callout__title">
+    <div v-if="title ?? DEFAULT_TITLE[type]" class="tg-callout__title">
       {{ title ?? DEFAULT_TITLE[type] }}
     </div>
     <div class="tg-callout__body">

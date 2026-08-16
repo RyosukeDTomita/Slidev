@@ -44,7 +44,7 @@ CSS 変数として `styles/index.css` の `:root` に定義してある。
 | `cover` | 表紙。夕日 + 島 + 光の翼 | `icon` / `speaker` / `meta` / `link` |
 | `section` | 章扉。風景を下げてタイトルを大きく出す | `index`: 章番号(`"01"` のように**クォートする**) |
 | `statement` | 一番言いたいことを1行だけ置く | - |
-| `end` | エンディング。夕暮れの海 | `qr` / `qrCaption` |
+| `end` | エンディング。夕暮れの海 | `qr` / `qrCaption` / `qr2` / `qr2Caption` |
 
 上記以外(`default`、`two-cols`、`center` など)は Slidev の組み込みレイアウトがそのまま使える。
 
@@ -72,12 +72,15 @@ link: https://peatix.com/event/5095532
 ### `end`
 
 `qr` を渡すと、夕日と島を避けた左下に QR コードが出る。
+`qr2` を渡すと2枚目がその右隣に並ぶ(発表資料 + Qiita記事、のように使う)。
 
 ```markdown
 ---
 layout: end
 qr: /資料QR.png
 qrCaption: 発表資料
+qr2: /qiitaQR.png
+qr2Caption: Qiita
 ---
 ```
 
@@ -109,7 +112,8 @@ index: "01"
 ### `<Callout>`
 
 主張や補足を囲むボックス。`type` は `point`(既定、金) / `info`(シアン) / `warn`(オレンジ)。
-`title` を省略すると type ごとの既定見出しが入る。
+`title` を省略すると、`info` は「補足」、`warn` は「ハマりどころ」が入る。
+`point` は既定の見出しを持たず、本文だけが出る。
 
 ```markdown
 <Callout type="warn" title="ハマりどころ">

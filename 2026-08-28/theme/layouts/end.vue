@@ -4,6 +4,10 @@ defineProps<{
   qr?: string
   /** QR の説明 */
   qrCaption?: string
+  /** 2枚目の QR 画像。1枚目の右隣に並べる */
+  qr2?: string
+  /** 2枚目の QR の説明 */
+  qr2Caption?: string
 }>()
 </script>
 
@@ -13,8 +17,9 @@ defineProps<{
     <div class="tg-end__inner">
       <slot />
     </div>
-    <div v-if="qr" class="tg-end__qr">
-      <QrCode :src="qr" size="140px" :caption="qrCaption" />
+    <div v-if="qr || qr2" class="tg-end__qr">
+      <QrCode v-if="qr" :src="qr" size="140px" :caption="qrCaption" />
+      <QrCode v-if="qr2" :src="qr2" size="140px" :caption="qr2Caption" />
     </div>
   </div>
 </template>
@@ -65,5 +70,8 @@ defineProps<{
   left: 3rem;
   bottom: 2.2rem;
   z-index: 3;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.6rem;
 }
 </style>
