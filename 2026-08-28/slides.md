@@ -179,7 +179,7 @@ xs = _
 
 ---
 
-## デモ① `head`で先頭だけ要求すると先頭だけ評価される
+### デモ① `head`で先頭だけ要求すると先頭だけ評価される
 
 <div class="grid grid-cols-[1.4fr_1fr] gap-6 items-center">
 <div>
@@ -319,7 +319,7 @@ a_n = a_{n-1} + a_{n-2} \quad (a_0 = 0,\ a_1 = 1)
 $$
 
 <Callout type="warn">
-定義をそのまま書けるが、同じ<code>fib</code>が何度も計算されてしまう。
+漸化式をそのまま実装すると、同じ<code>fib</code>が何度も計算されてしまう。
 </Callout>
 
 ```haskell
@@ -333,7 +333,7 @@ fib n
 
 ---
 
-## Python: メモ化を自分で書く
+### Python: メモ化を自分で書く
 
 メモ化: 同じ計算を実行しなくてすむように計算した結果をキャッシュしておき、キャッシュがある場合には再計算しない
 
@@ -355,20 +355,18 @@ fib(4)  # 3
 
 ---
 
-## Haskell: 遅延評価の共有でメモ化を書かずにすむ
+### Haskell: 遅延評価の共有でメモ化を書かずにすむ
 
-
-Haskellの遅延評価により、同じサンクを指す値は共有されるので、メモ化をしなくても同等の効果が得られる。
+- Haskellの遅延評価により、同じサンクを指す値は共有されるので、メモ化をしなくても同等の効果が得られる。
+- 自分自身を1つずらして足し合わせる形で、漸化式ではなく**フィボナッチ数列本体**を定義できる。
 
 ```haskell
--- フィボナッチ数列自体を再帰的に定義できる。
 fibs :: [Integer]
 fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
 
 fibs !! 4 -- 3
 ```
 
-自分自身を1つずらして足し合わせている。
 
 $$
 \begin{array}{r|ccccc}
@@ -477,7 +475,7 @@ def my_sum(xs):
 
 ---
 
-## ①Haskell版の`mySum`はパターンマッチと再帰で書く
+### ①Haskell版の`mySum`はパターンマッチと再帰で書く
 
 <div class="grid grid-cols-[1.3fr_1fr] gap-6 items-center">
 <div>
@@ -539,7 +537,7 @@ mySum <span class="tg-pat">(x : xs)</span><sup class="tg-pat-n">①</sup> = x + 
 
 ---
 
-## ①関数の組み合わせで処理を表現できる例: (2分探索)
+### ①関数の組み合わせで処理を表現できる例: (2分探索)
 
 ```haskell
 binarySearch :: Int -> Int -> (Int -> Bool) -> Int
@@ -557,7 +555,7 @@ main = do
 
 ---
 
-## ①関数の組み合わせで処理を表現できる例: (2分探索)
+### ①関数の組み合わせで処理を表現できる例: (2分探索)
 
 <div class="grid grid-cols-[1.3fr_1fr] gap-6 items-center">
 <div>
@@ -690,6 +688,7 @@ qr2Caption: Qiita
 - [【高校数学でわかる】Haskellで実装するフィボナッチ数列(sigma)](https://qiita.com/sigma_devsecops/items/24e05b6248b717aa4067)
 - [関数型プログラミングを知らない人向けに、「Haskellって何が面白いの?」と聞かれた時の回答(sigma)](https://qiita.com/sigma_devsecops/items/3f2a397e944401fcc6cb)
 - [Beating the Averages(Paul Graham)](https://www.paulgraham.com/avg.html)
+- [lotz(@lotz84_)のポスト](https://x.com/lotz84_/status/2066094796024823833)
 
 ---
 layout: section
