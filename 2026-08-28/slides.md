@@ -14,8 +14,6 @@ mdc: true
 
 # Haskellでプログラミングに対する<br>メンタルモデルを拡張する
 
-## Haskellを学んだら視野が広がった、というn=1の話
-
 ---
 layout: statement
 ---
@@ -28,22 +26,25 @@ layout: statement
 layout: statement
 ---
 
-# Haskellを始めたことで、<br>プログラミングが**一段と楽しくなった**
+# 今日話したいこと
 
-AIがコードを書く時代だからこそ、自分の**観測できる世界を拡張していく**
+## AI時代でも、Haskellを始めたことで、<br>プログラミングが**一段と楽しくなった**
+
+プログラミングに対して新しい捉え方ができたり、自分の観測できる世界が広がった<br>
+**#netadashi** **#Haskellはいいぞ** (良ければツイートしてね🐦)
 
 ---
 layout: section
 index: "01"
 ---
 
-# Haskellを学ぶ前
+# Haskellを触ったきっかけ
 
 なぜ関数型?
 
 ---
 
-## 課題 「思想」が薄い!
+## 個人的課題: 「思想」が薄い!
 
 - AIの書いたコードを振る舞い以外で評価できない
   - SNSでAIの書いたコード批判を目にするも、自分には感じられなかった(2023年頃)
@@ -67,8 +68,8 @@ index: "01"
   - 仕様書を読み間違えるミス
 - 自動テストがあれば楽できるはず...
   - **副作用と状態があちこちに絡んでいてうまくいかない!**
-  - E2Eだらけに(今思うとシステム特性もある)
-- テストが書きやすいシステムとは?どうやって品質を担保すればいいのか?
+  - 統合テストやE2Eだらけに(今思うとシステム特性もある)
+- テストが書きやすいシステムとは?
 
 <Callout>
 <strong>関数型プログラミング</strong>だと単体テストが書きやすいらしい?
@@ -113,7 +114,7 @@ Haskell神の代弁者でしかない自分の自己紹介は割愛。
 
 ## 誓約と制約で力を得た言語
 
-HUNTER×HUNTER方式: 自らに**強い制約**を課すことで、**強力なパワー**を得る
+HUNTER×HUNTERの念能力: 自らに**強い制約**を課すことで、**強力なパワー**を得る
 
 <div class="tg-dense">
 
@@ -126,7 +127,8 @@ HUNTER×HUNTER方式: 自らに**強い制約**を課すことで、**強力な�
 </div>
 
 <Callout title="得たパワー">
-<strong>遅延評価(call-by-need)</strong> — 値が必要になる瞬間まで、計算をサボり続けられる。
+<strong>遅延評価(lazy evaluation)</strong> — 値が必要になる瞬間まで、計算をサボり続けられる。<br>
+(理論上はリソース効率が良い)
 </Callout>
 
 ---
@@ -155,7 +157,7 @@ xs = [1..] :: [Int]
 ```haskell
 -- xsが共有される例
 let xs = map f [1..100]
-	in (sum xs, length xs)
+ in (sum xs, length xs)
 ```
 
 ### -> `ghci`(REPL)と`ghc-vis`(視覚化するツール)を使って遅延評価を観察してみる
@@ -209,10 +211,13 @@ xs = 1 : _
 <div>
 
 <Callout>
-`length`はリストの長さを返す関数なので無限リストに対して使うと停止しない。
+
+`length`はリストの長さを返す関数なので無限リストに対して使うと停止しないので有限のリストを用意する
+
 </Callout>
 
 ```
+-- 1から10のリスト
 -- map (+1)を挟む理由は巻末のおまけ参照
 ghci> let ys = (map (+1) . take 10) [0..] :: [Int]
 ghci> length ys
@@ -244,7 +249,9 @@ ys = [_,_,_,_,_,_,_,_,_,_]
 <div>
 
 ```
+-- 1から10のリスト
 ghci> let ys = (map (+1) . take 10) [0..] :: [Int]
+
 ghci> find (==3) ys
 Just 3
 ghci> :sprint ys
@@ -252,7 +259,7 @@ ys = 1 : 2 : 3 : _
 ```
 
 - `3`を探すために先頭から評価する
-- → `1, 2, 3`まで評価して
+- → `1, 2, 3`まで評価して要素が見つかったので止まる
 - 残りは手つかずのサンク
 
 </div>
@@ -354,12 +361,25 @@ fib(4)  # 3
 Haskellの遅延評価により、同じサンクを指す値は共有されるので、メモ化をしなくても同等の効果が得られる。
 
 ```haskell
--- フィボナッチ数列自体を再帰に定義できる。
+-- フィボナッチ数列自体を再帰的に定義できる。
 fibs :: [Integer]
 fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
 
 fibs !! 4 -- 3
 ```
+
+自分自身を1つずらして足し合わせている。
+
+$$
+\begin{array}{r|ccccc}
+\texttt{fibs}                          & a_0       & a_1       & a_2       & a_3       & \cdots \\
+\texttt{tail\ fibs}                    & a_1       & a_2       & a_3       & a_4       & \cdots \\
+\hline
+\texttt{zipWith\ (+)\ fibs\ (tail\ fibs)} & a_0{+}a_1 & a_1{+}a_2 & a_2{+}a_3 & a_3{+}a_4 & \cdots \\
+                                       & \shortparallel & \shortparallel & \shortparallel & \shortparallel & \\
+                                       & a_2       & a_3       & a_4       & a_5       & \cdots
+\end{array}
+$$
 
 ---
 layout: section
@@ -384,10 +404,12 @@ index: "04"
 - ランダムな値を使う
 - グローバル変数やインスタンス変数の変更
 
-<Callout >
+<Callout>
+
 遅延評価を使うと評価されるタイミングがわかりにくくなる。<br>
-副作用によって実行順を変えたくない e.g. `print`デバックを入れると評価されるタイミングが変わってしまう<br>
+副作用によって実行順を変えたくない e.g. `print`デバッグを入れると評価されるタイミングが変わってしまう<br>
 <strong> -> 純粋関数は遅延評価の前提条件</strong>
+
 </Callout>
 
 ---
@@ -438,9 +460,86 @@ index: "05"
 
 ## ①関数の組み合わせで処理を表現できる
 
-- 条件分岐に使う`if`も関数。
 - パターンマッチを使って関数の引数の構造によって関数を定義できる
-- `for`や`while`は使わず、再帰関数を使う
+- ガードを使ってBool式による条件分岐ができる
+- `for`や`while`は使わず、**再帰関数**を使う
+
+```python
+# 手続き的な書き方: 箱を用意して、ループで書き換えていく
+def my_sum(xs):
+    total = 0       # 状態を持つ変数
+    for x in xs:    # ループ
+        total += x  # 再代入で状態を更新
+    return total
+```
+
+この`total`の**書き換え**と**ループ**が、Haskellでは**パターンマッチ**と**再帰**に置き換わる。
+
+---
+
+## ①Haskell版の`mySum`はパターンマッチと再帰で書く
+
+<div class="grid grid-cols-[1.3fr_1fr] gap-6 items-center">
+<div>
+
+リストは`[]`(空) or `(x : xs)`(先頭と残り)の2つの形がある
+
+その形ごとに定義を書く。
+
+<pre class="slidev-code tg-annotated"><code>mySum :: [Int] -> Int
+mySum <span class="tg-pat">[]</span><sup class="tg-pat-n">①</sup> = 0 -- 再帰の停止条件
+mySum <span class="tg-pat">(x : xs)</span><sup class="tg-pat-n">①</sup> = x + <span class="tg-rec">mySum xs</span><sup class="tg-rec-n">③</sup>
+</code></pre>
+
+(`sum`はPreludeにあるので`mySum`という名前にしている)
+
+</div>
+<div>
+
+<Callout title="① パターンマッチ">
+引数の<strong>構造</strong>そのもので場合分けする。長さを<code>if</code>で調べるのではなく、<strong>値の形ごとに等式を並べる</strong>。上から順に試して、最初に形が合った行が使われる。
+</Callout>
+
+<Callout type="info" title="③ 再帰">
+<code>(x : xs)</code>で取り出した<strong>残り</strong>に対して自分自身を呼ぶ。リストが1つずつ短くなり、いつか<code>[]</code>に到達して止まる。
+</Callout>
+
+</div>
+</div>
+
+<style scoped>
+/* 枠の色は右の Callout のアクセント色に合わせる (① point=ゴールド / ③ info=シアン) */
+.tg-annotated .tg-pat,
+.tg-annotated .tg-rec {
+  outline: 2px solid;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.tg-annotated .tg-pat {
+  outline-color: var(--tg-gold);
+  background: rgba(245, 197, 66, 0.14);
+}
+
+.tg-annotated .tg-rec {
+  outline-color: var(--tg-cyan);
+  background: rgba(63, 208, 196, 0.14);
+}
+
+.tg-annotated .tg-pat-n,
+.tg-annotated .tg-rec-n {
+  font-size: 0.7em;
+  margin-left: 0.35em;
+  vertical-align: super;
+}
+
+.tg-annotated .tg-pat-n { color: var(--tg-gold); }
+.tg-annotated .tg-rec-n { color: var(--tg-cyan); }
+</style>
+
+---
+
+## ①関数の組み合わせで処理を表現できる例: (2分探索)
 
 ```haskell
 binarySearch :: Int -> Int -> (Int -> Bool) -> Int
@@ -455,6 +554,66 @@ main :: IO ()
 main = do
   print $ binarySearch (-1) 100 (\x -> x ^ 2 <= 30) -- 2乗して30以下になる最大のxを2分探索で
 ```
+
+---
+
+## ①関数の組み合わせで処理を表現できる例: (2分探索)
+
+<div class="grid grid-cols-[1.3fr_1fr] gap-6 items-center">
+<div>
+
+<pre class="slidev-code tg-annotated"><code>binarySearch :: Int -> Int -> (Int -> Bool) -> Int
+binarySearch ok ng f
+  <span class="tg-guard">| abs (ok - ng) &lt;= 1</span><sup class="tg-guard-n">②</sup> = ok
+  <span class="tg-guard">| f mid</span><sup class="tg-guard-n">②</sup> = <span class="tg-rec">binarySearch mid ng f</span><sup class="tg-rec-n">③</sup>
+  <span class="tg-guard">| otherwise</span><sup class="tg-guard-n">②</sup> = <span class="tg-rec">binarySearch ok mid f</span><sup class="tg-rec-n">③</sup>
+  where
+    mid = (ok + ng) `div` 2
+</code></pre>
+
+</div>
+<div>
+
+<Callout type="warn" title="② ガード">
+条件ごとに、関数の定義そのものを分けて書ける。<code>if</code>の入れ子ではなく<strong>場合分けを上から順に並べる</strong>形になる。上から試して、最初に<code>True</code>になった行が使われる。
+</Callout>
+
+<Callout type="info" title="③ 再帰">
+<code>for</code>や<code>while</code>は使わず<strong>自分自身を再度呼び出す</strong>。探索範囲を半分に狭めて呼び直すことが、ループの役割を果たしている。
+</Callout>
+
+</div>
+</div>
+
+<style scoped>
+/* 枠の色は右の Callout のアクセント色に合わせる (② warn=オレンジ / ③ info=シアン) */
+.tg-annotated .tg-guard,
+.tg-annotated .tg-rec {
+  outline: 2px solid;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.tg-annotated .tg-guard {
+  outline-color: var(--tg-orange);
+  background: rgba(244, 118, 60, 0.14);
+}
+
+.tg-annotated .tg-rec {
+  outline-color: var(--tg-cyan);
+  background: rgba(63, 208, 196, 0.14);
+}
+
+.tg-annotated .tg-guard-n,
+.tg-annotated .tg-rec-n {
+  font-size: 0.7em;
+  margin-left: 0.35em;
+  vertical-align: super;
+}
+
+.tg-annotated .tg-guard-n { color: var(--tg-orange); }
+.tg-annotated .tg-rec-n { color: var(--tg-cyan); }
+</style>
 
 ---
 
@@ -474,7 +633,7 @@ main = do
   - サンクはヒープにどう積まれる?
   - GCとの関係は?
   - 圏論や集合論
-- Haskellを通して普段業務をしていると目が行かない抽象化されている面白い世界と会うことができた
+- Haskellを通して普段業務をしていると目が行かない抽象化されている面白い世界と出会うことができた
 
 ---
 
@@ -489,10 +648,21 @@ main = do
 
 ## おわりに: 興味を持った人へ
 
+<div class="grid grid-cols-[1.6fr_1fr] gap-6 items-center">
+<div>
+
 - Haskellに興味を持ったら、**競技プログラミング**をHaskellでやるのをおすすめする
-  - アルゴリズム分野に絞ってコミットすると、Haskellの良い/悪いが見えやすい
-- 特に、育休を取る予定がある人・子供が小さい人におすすめ
-  - 土曜日の夜に出かける機会が減るので、ちょうどいい(自分も子供が生まれた20275年10月からちょこちょこやっている)
+  - 特に、育休を取る予定がある人・子供が小さい人におすすめ
+  - 土曜日の夜に出かける機会が減るので、ちょうどいい(自分も子供が生まれた2025年10月からちょこちょこやっている)
+- 最近[SICP](https://www.vocrf.net/docs_ja/jsicp.pdf)を読む会に参加し始めたが(この本はLispの方言の一つSchemeを使う)、Haskellでやったことが役に立っている!
+
+</div>
+<div class="flex justify-center">
+
+<img src="/SICP_cover.jpg" class="max-h-65 object-contain rounded shadow-lg" alt="Structure and Interpretation of Computer Programs (SICP)" />
+
+</div>
+</div>
 
 ---
 layout: end
@@ -504,21 +674,35 @@ qr2Caption: Qiita
 
 # ありがとうございました
 
+## [you can outsource your thinking but you cannot outsource your understanding](https://x.com/yacineMTB/status/2018886083120153046)
+
+---
+
+## Reference
+
+敬称略
+
+- [単体テストの考え方/使い方(Vladimir Khorikov 著 / 須田智之 訳、マイナビ出版)](https://amzn.asia/d/06B9me64)
+- [テスト駆動開発(Kent Beck 著 / 和田卓人 訳、オーム社)](https://amzn.asia/d/0axu2N9u)
+- [Lazy evaluation - HaskellWiki](https://wiki.haskell.org/Lazy_evaluation)
+- [長く活躍できるエンジニアになるためには? 技術者として大切にしたいこと(伊藤直也)](https://speakerdeck.com/naoya/20230227-engineer-type-talk)
+- [アルゴリズムは何を圧縮しているのか ─ Haskell から育った「圧縮代数」というメンタルモデル(伊藤直也)](https://speakerdeck.com/naoya/compressed-algebra-with-haskell)
+- [【高校数学でわかる】Haskellで実装するフィボナッチ数列(sigma)](https://qiita.com/sigma_devsecops/items/24e05b6248b717aa4067)
+- [関数型プログラミングを知らない人向けに、「Haskellって何が面白いの?」と聞かれた時の回答(sigma)](https://qiita.com/sigma_devsecops/items/3f2a397e944401fcc6cb)
+- [Beating the Averages(Paul Graham)](https://www.paulgraham.com/avg.html)
+
 ---
 layout: section
 index: "Appendix"
 ---
 
-# おまけ
+---
 
-デモ②の`ys`の作り方について
+# デモ②の`ys`の作り方について
 
 ---
 
-## なぜ`take 10 [0..]`ではなく`map (+1)`を挟むのか
-
-<div class="grid grid-cols-[1.15fr_1fr] gap-6 items-start">
-<div>
+## 問題: `take 10 [0..]`だとサンクが観察できない
 
 - デモ②で観察したかったのは「**要素がサンクのまま**の状態」
 - しかし`take 10 [0..] :: [Int]`だと、要素位置に**サンクが積まれない**
@@ -535,16 +719,9 @@ as = [0,1,2,3,4,5,6,7,8,9]  -- サンクがない!
 - そこで作られるコンズセルには、**評価済みの値**が直接入る
   - `length`しか呼んでいないのに中身まで見えてしまう
 
-</div>
-<div>
+---
 
-<Callout type="info" title="そこで一枚挟む">
-
-- `map (+1)`を通すと、要素位置が「あとで`(+1)`を適用する」という**サンク**になる
-- `length`は背骨だけを辿るので、そのサンクは潰れない
-- → 狙いどおり`ys = [_,_,_,_,_,_,_,_,_,_]`が観察できる
-
-</Callout>
+## 解決: `map (+1)`を一枚挟む
 
 ```
 ghci> let ys = (map (+1) . take 10) [0..] :: [Int]
@@ -554,11 +731,12 @@ ghci> :sprint ys
 ys = [_,_,_,_,_,_,_,_,_,_]
 ```
 
+- `map (+1)`を通すと、要素位置が「あとで`(+1)`を適用する」という**サンク**になる
+- `length`は構造だけを辿るので、そのサンクは潰れない
+- → 狙いどおり`ys = [_,_,_,_,_,_,_,_,_,_]`が観察できる
+
 <Callout type="warn">
 
 `take 10`のほうは、`length`を有限で止めるために必要(`[0..]`のままだと停止しない)。
 
 </Callout>
-
-</div>
-</div>

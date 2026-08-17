@@ -2,6 +2,7 @@
 /**
  * 全スライド共通のフッター。
  * 表紙・章の主張・エンディングなど「見せ場」のレイアウトでは邪魔なので出さない。
+ * 現在地の大項目は global-top.vue 側で見出しの上に出している。
  */
 const BARE_LAYOUTS = ['cover', 'end', 'statement']
 </script>
