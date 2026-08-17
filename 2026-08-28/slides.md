@@ -4,6 +4,7 @@ title: Haskellでプログラミングに対するメンタルモデルを拡張
 info: "Haskellでプログラミングに対するメンタルモデルを拡張する - Netadashi Meetup #17"
 author: sigma (Ryosuke Tomita)
 layout: cover
+favicon: /favicon.png
 icon: /icon.png
 speaker: sigma (Ryosuke Tomita)
 meta: "Netadashi Meetup #17 / 2026-08-28"
