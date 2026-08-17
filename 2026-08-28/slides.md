@@ -96,6 +96,8 @@ index: "02"
 
 遅延評価のための言語
 
+<img src="/haskell-logo-purple.png" class="mt-6 w-40 object-contain" alt="Haskellのロゴ (Thompson-Wheeler logo)" />
+
 ---
 
 ## 誓約と制約で力を得た言語
@@ -115,6 +117,63 @@ HUNTER×HUNTERの念能力: 自らに**強い制約**を課すことで、**強�
 <Callout title="得たパワー">
 <strong>遅延評価(lazy evaluation)</strong> — 値が必要になる瞬間まで、計算をサボり続けられる。<br>
 (理論上はリソース効率が良い)
+</Callout>
+
+---
+
+## 誓約① 純粋関数
+
+- **参照透過性**: 同じ入力なら、いつ何度呼んでも同じ出力
+- **副作用を持たない**
+
+**純粋でない**ものの例:
+
+- IO処理(ファイル、ネットワーク、画面出力)
+- 例外を投げる
+- ランダムな値を使う
+- グローバル変数やインスタンス変数の変更
+
+<Callout>
+
+遅延評価を使うと評価されるタイミングがわかりにくくなる。<br>
+副作用によって実行順を変えたくない e.g. `print`デバッグを入れると評価されるタイミングが変わってしまう<br>
+<strong> -> 純粋関数は遅延評価の前提条件</strong>
+
+</Callout>
+
+---
+
+## 誓約② 束縛(不変性)
+
+- 変数への代入ではなく、値と名前を結びつける**束縛(binding)**という言葉を使う。
+- 再代入はコンパイルエラーになる
+
+```haskell
+x :: Int
+x = 1
+
+x = 2  -- error: Multiple declarations of 'x'
+```
+
+- 値が変わらないので、状態管理が不要になって嬉しい。
+<!-- - パフォーマンスなどの事情で再代入が必要な場合には`ST`モナド等を使って範囲を絞って許可できる。 -->
+
+---
+
+## 誓約③ 強い型
+
+- 副作用や例外も型として管理する。
+
+```haskell
+readFile :: FilePath -> IO String              -- IOがあると型に書いてある
+lookup   :: Eq k => k -> [(k, v)] -> Maybe v   -- 失敗するかもと型に書いてある
+```
+
+- `IO`が型に現れる → **シグネチャを見るだけ**で副作用の有無が分かる
+- `Maybe`/`Either` → 例外を投げずに「失敗」を**値として**返す
+
+<Callout>
+型は単なるバグ避けではなく、<strong>関数の性質を表明するドキュメント</strong>になる。
 </Callout>
 
 ---
@@ -157,14 +216,8 @@ ghci> :sprint xs -- 状態確認
 <span class="tg-focus">xs = _</span>
 </code></pre>
 
-- `_`は**未評価**の印。まだ何も計算されていない
-- ヒープ上には「リストを作る予約」だけが置かれている
-
-<img src="/demo-xs-thunk.png" class="mt-4 max-h-45 w-full object-contain" alt="未評価の無限リストのヒープ表現" />
-
-<div class="tg-figcaption">
-(参考)ghc-visで見たヒープの様子。<span class="tg-gold">AP</span>が未評価のサンクで、BCOはGHCiがそれを評価するためのバイトコード
-</div>
+- `_`は**未評価**の印
+- ヒープ上には「リストを作る予約」として**サンク**だけが置かれている
 
 ---
 
@@ -214,13 +267,13 @@ ghci> :sprint ys
 <span class="tg-focus">ys = [_,_,_,_,_,_,_,_,_,_]</span>
 </code></pre>
 
-- 長さを数えるのにリストの**構造**は必要
-- しかし**要素の中身**は不要 → <span class="tg-gold">枠の中</span>のとおり10個ともサンクのまま
+長さを数えるのにリストの**構造**は必要だが、要素の中身を評価する必要はない<br>
+→サンクが10個のリスト
 
 </div>
 <div>
 
-<img src="/demo-ys-length.png" class="max-h-70 mx-auto object-contain" alt="背骨だけ評価され要素はサンクのままのリスト" />
+<img src="/demo-ys-length-marked.png" class="max-h-80 mx-auto object-contain" alt="構造だけ評価され要素はサンクのままのリスト" />
 
 </div>
 </div>
@@ -248,11 +301,12 @@ ghci> :sprint ys
 - `3`を探すために先頭から評価する
 - → `1, 2, 3`まで評価して要素が見つかったので止まる
 - 残りは手つかずのサンク
+- 図の<span class="tg-red">赤枠</span>が`1 : 2 : 3 : _`に対応する4つ
 
 </div>
 <div>
 
-<img src="/demo-ys-find.png" class="max-h-70 mx-auto object-contain" alt="3が見つかるまで評価されたリスト" />
+<img src="/demo-ys-find-marked.png" class="max-h-70 mx-auto object-contain" alt="3が見つかるまで評価されたリスト" />
 
 </div>
 </div>
@@ -295,6 +349,126 @@ minimum' xs = (head . sort) xs
 - しかし`head`は**先頭の1要素しか要求しない**
   - 遅延評価により、ソートは先頭を確定させる分までしか進まない
   - 計算量は、おおよそ$O(n)$に
+
+---
+
+## (参考)$O(n)$と$O(n \log n)$はどれくらい違うのか
+
+<div class="grid grid-cols-[1.65fr_1fr] gap-6 items-center">
+<div>
+
+<svg class="tg-chart" viewBox="0 0 720 340" role="img" aria-label="要素数nに対する演算回数の増え方。O(n)は直線的、O(n log n)はより急に増える">
+  <g class="tg-chart__grid">
+    <line x1="78" y1="300.0" x2="640" y2="300.0" />
+    <line x1="78" y1="226.9" x2="640" y2="226.9" />
+    <line x1="78" y1="153.7" x2="640" y2="153.7" />
+    <line x1="78" y1="80.6" x2="640" y2="80.6" />
+  </g>
+  <g class="tg-chart__tick" text-anchor="end">
+    <text x="68" y="304">0</text>
+    <text x="68" y="231">200</text>
+    <text x="68" y="158">400</text>
+    <text x="68" y="85">600</text>
+  </g>
+  <g class="tg-chart__tick" text-anchor="middle">
+    <text x="78" y="320">0</text>
+    <text x="218.5" y="320">25</text>
+    <text x="359" y="320">50</text>
+    <text x="499.5" y="320">75</text>
+    <text x="640" y="320">100</text>
+  </g>
+
+  <polyline class="tg-chart__line tg-chart__line--nlogn tg-draw" v-click points="78.0,300.0 89.2,299.3 100.5,297.1 111.7,294.3 123.0,291.2 134.2,287.9 145.4,284.3 156.7,280.5 167.9,276.6 179.2,272.5 190.4,268.4 201.6,264.1 212.9,259.8 224.1,255.3 235.4,250.8 246.6,246.2 257.8,241.5 269.1,236.7 280.3,231.9 291.6,227.1 302.8,222.1 314.0,217.2 325.3,212.1 336.5,207.1 347.8,202.0 359.0,196.8 370.2,191.6 381.5,186.3 392.7,181.1 404.0,175.7 415.2,170.4 426.4,165.0 437.7,159.6 448.9,154.1 460.2,148.6 471.4,143.1 482.6,137.5 493.9,132.0 505.1,126.3 516.4,120.7 527.6,115.0 538.8,109.3 550.1,103.6 561.3,97.9 572.6,92.1 583.8,86.3 595.0,80.5 606.3,74.7 617.5,68.8 628.8,62.9 640.0,57.0" />
+  <polyline class="tg-chart__line tg-chart__line--n tg-draw" points="78.0,300.0 89.2,299.3 100.5,298.5 111.7,297.8 123.0,297.1 134.2,296.3 145.4,295.6 156.7,294.9 167.9,294.1 179.2,293.4 190.4,292.7 201.6,292.0 212.9,291.2 224.1,290.5 235.4,289.8 246.6,289.0 257.8,288.3 269.1,287.6 280.3,286.8 291.6,286.1 302.8,285.4 314.0,284.6 325.3,283.9 336.5,283.2 347.8,282.4 359.0,281.7 370.2,281.0 381.5,280.3 392.7,279.5 404.0,278.8 415.2,278.1 426.4,277.3 437.7,276.6 448.9,275.9 460.2,275.1 471.4,274.4 482.6,273.7 493.9,272.9 505.1,272.2 516.4,271.5 527.6,270.7 538.8,270.0 550.1,269.3 561.3,268.5 572.6,267.8 583.8,267.1 595.0,266.4 606.3,265.6 617.5,264.9 628.8,264.2 640.0,263.4" />
+
+  <g v-click>
+    <line class="tg-chart__gap" x1="640" y1="57" x2="640" y2="263.4" />
+    <text class="tg-chart__label" x="632" y="165" text-anchor="end">約6.6倍</text>
+  </g>
+
+  <g class="tg-chart__legend">
+    <line x1="648" y1="57" x2="662" y2="57" class="tg-chart__line--nlogn" />
+    <text x="668" y="61">n log n</text>
+    <line x1="648" y1="263.4" x2="662" y2="263.4" class="tg-chart__line--n" />
+    <text x="668" y="267">n</text>
+  </g>
+
+  <text class="tg-chart__axis" x="78" y="26">演算回数(相対)</text>
+  <text class="tg-chart__axis" x="640" y="338" text-anchor="end">n(要素数)</text>
+</svg>
+
+</div>
+<div>
+
+- `n = 100`で**約6.6倍**、`n = 10000`なら**約13倍**
+- `head . sort`は、遅延評価のおかげで<span class="tg-cyan">下側の線</span>で済んでいる
+- ⚠ (Haskellの公式ライブラリはこんなネタ実装をしていない)
+
+
+</div>
+</div>
+
+<style scoped>
+.tg-chart {
+  width: 100%;
+  height: auto;
+  font-family: var(--slidev-font-sans, sans-serif);
+}
+
+.tg-chart__grid line {
+  stroke: var(--tg-line);
+  stroke-width: 1;
+}
+
+.tg-chart__tick,
+.tg-chart__axis {
+  fill: var(--tg-muted);
+  font-size: 12px;
+}
+
+.tg-chart__line {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+/* 系列色は dataviz の検証スクリプトで暗色面に対して通したもの */
+.tg-chart__line--n { stroke: #2aa198; }
+.tg-chart__line--nlogn { stroke: #e0662b; }
+
+/* クリックで線が伸びていく。dasharray は線長より少し長く取る */
+.tg-draw {
+  stroke-dasharray: 700;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 900ms ease-out;
+}
+
+.tg-draw.slidev-vclick-hidden {
+  stroke-dashoffset: 700;
+}
+
+.tg-chart__gap {
+  stroke: var(--tg-muted);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+}
+
+.tg-chart__label {
+  fill: var(--tg-bright);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tg-chart__legend line {
+  stroke-width: 2.5;
+}
+
+.tg-chart__legend text {
+  fill: var(--tg-text);
+  font-size: 13px;
+}
+</style>
 
 ---
 
@@ -368,72 +542,6 @@ $$
 ---
 layout: section
 index: "04"
----
-
-# Haskellを支える3つの誓約
-
-純粋関数・束縛・強い型
-
----
-
-## 誓約① 純粋関数
-
-- **参照透過性**: 同じ入力なら、いつ何度呼んでも同じ出力
-- **副作用を持たない**
-
-**純粋でない**ものの例:
-
-- IO処理(ファイル、ネットワーク、画面出力)
-- 例外を投げる
-- ランダムな値を使う
-- グローバル変数やインスタンス変数の変更
-
-<Callout>
-
-遅延評価を使うと評価されるタイミングがわかりにくくなる。<br>
-副作用によって実行順を変えたくない e.g. `print`デバッグを入れると評価されるタイミングが変わってしまう<br>
-<strong> -> 純粋関数は遅延評価の前提条件</strong>
-
-</Callout>
-
----
-
-## 誓約② 束縛(不変性)
-
-- 変数への代入ではなく、値と名前を結びつける**束縛(binding)**という言葉を使う。
-- 再代入はコンパイルエラーになる
-
-```haskell
-x :: Int
-x = 1
-
-x = 2  -- error: Multiple declarations of 'x'
-```
-
-- 値が変わらないので、状態管理が不要になって嬉しい。
-<!-- - パフォーマンスなどの事情で再代入が必要な場合には`ST`モナド等を使って範囲を絞って許可できる。 -->
-
----
-
-## 誓約③ 強い型
-
-- 副作用や例外も型として管理する。
-
-```haskell
-readFile :: FilePath -> IO String              -- IOがあると型に書いてある
-lookup   :: Eq k => k -> [(k, v)] -> Maybe v   -- 失敗するかもと型に書いてある
-```
-
-- `IO`が型に現れる → **シグネチャを見るだけ**で副作用の有無が分かる
-- `Maybe`/`Either` → 例外を投げずに「失敗」を**値として**返す
-
-<Callout>
-型は単なるバグ避けではなく、<strong>関数の性質を表明するドキュメント</strong>になる。
-</Callout>
-
----
-layout: section
-index: "05"
 ---
 
 # Haskellで見えるようになった世界
