@@ -298,6 +298,23 @@ body,
   margin: 0.25rem 0;
 }
 
+/* 図のキャプション。図が主役ではないことを明示して、視線をコードに戻す */
+.tg-figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.7rem;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--tg-muted);
+}
+
+/* ghci の出力などで「ここを見る」と示したい箇所を囲む枠 */
+.tg-annotated .tg-focus {
+  outline: 2px solid var(--tg-gold);
+  outline-offset: 3px;
+  border-radius: 3px;
+  background: rgba(245, 197, 66, 0.14);
+}
+
 /* ------------------------------------------------------------- 全体UI */
 
 .slidev-page {

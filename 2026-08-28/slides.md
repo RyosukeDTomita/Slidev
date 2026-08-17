@@ -44,20 +44,6 @@ index: "01"
 
 ---
 
-## 個人的課題: 「思想」が薄い!
-
-- AIの書いたコードを振る舞い以外で評価できない
-  - SNSでAIの書いたコード批判を目にするも、自分には感じられなかった(2023年頃)
-- ドメイン知識やアイデアで勝負できないかと考えるも、これもうまくいかず
-
-<Callout>
-結局、コードに対する思想がないとAIにダメ出しができない。
-</Callout>
-
-- (Qiitaを100記事以上書いたり、LTをしたりしてキャラ売りを試みるも、速度と量以外で価値を出せず)
-
----
-
 ## テストの書きやすいコードという指針 -> 関数型?
 
 <div class="grid grid-cols-[1.5fr_1fr] gap-6 items-center">
@@ -108,7 +94,7 @@ index: "02"
 
 # Haskellの自己紹介
 
-Haskell神の代弁者でしかない自分の自己紹介は割愛。
+遅延評価のための言語
 
 ---
 
@@ -138,7 +124,7 @@ index: "03"
 
 # 遅延評価とは?
 
-簡単な例
+簡単な例を通して紹介
 
 ---
 
@@ -160,22 +146,25 @@ let xs = map f [1..100]
  in (sum xs, length xs)
 ```
 
-### -> `ghci`(REPL)と`ghc-vis`(視覚化するツール)を使って遅延評価を観察してみる
+### -> 対話型実行環境と`ghc-vis`(視覚化するツール)を使って遅延評価を観察してみる
 
 ---
 
 ## デモ① 無限リストを宣言するとサンクが作られる
 
-```
-ghci> let xs = [1..] :: [Int]
+<pre class="slidev-code tg-annotated"><code>ghci> let xs = [1..] :: [Int]
 ghci> :sprint xs -- 状態確認
-xs = _
-```
+<span class="tg-focus">xs = _</span>
+</code></pre>
 
 - `_`は**未評価**の印。まだ何も計算されていない
 - ヒープ上には「リストを作る予約」だけが置かれている
 
 <img src="/demo-xs-thunk.png" class="mt-4 max-h-45 w-full object-contain" alt="未評価の無限リストのヒープ表現" />
+
+<div class="tg-figcaption">
+(参考)ghc-visで見たヒープの様子。<span class="tg-gold">AP</span>が未評価のサンクで、BCOはGHCiがそれを評価するためのバイトコード
+</div>
 
 ---
 
@@ -184,12 +173,11 @@ xs = _
 <div class="grid grid-cols-[1.4fr_1fr] gap-6 items-center">
 <div>
 
-```
-ghci> head xs
+<pre class="slidev-code tg-annotated"><code>ghci> head xs
 1
 ghci> :sprint xs
-xs = 1 : _
-```
+<span class="tg-focus">xs = 1 : _</span>
+</code></pre>
 
 - 先頭の`1`**だけ**が評価された
 - 残り(無限のしっぽ)は**Thunkのまま**
@@ -198,7 +186,8 @@ xs = 1 : _
 </div>
 <div>
 
-<img src="/demo-xs-head.png" class="max-h-80 mx-auto object-contain" alt="先頭だけ評価されたリスト" />
+<img src="/demo-xs-head.png" class="max-h-70 mx-auto object-contain" alt="先頭だけ評価されたリスト" />
+
 
 </div>
 </div>
@@ -207,7 +196,7 @@ xs = 1 : _
 
 ## デモ② `length`は「構造」だけを評価する
 
-<div class="grid grid-cols-[1.1fr_1fr] gap-6 items-center">
+<div class="grid grid-cols-[1.45fr_1fr] gap-6 items-center">
 <div>
 
 <Callout>
@@ -216,23 +205,22 @@ xs = 1 : _
 
 </Callout>
 
-```
--- 1から10のリスト
+<pre class="slidev-code tg-annotated"><code>-- 1から10のリスト
 -- map (+1)を挟む理由は巻末のおまけ参照
 ghci> let ys = (map (+1) . take 10) [0..] :: [Int]
 ghci> length ys
 10
 ghci> :sprint ys
-ys = [_,_,_,_,_,_,_,_,_,_]
-```
+<span class="tg-focus">ys = [_,_,_,_,_,_,_,_,_,_]</span>
+</code></pre>
 
 - 長さを数えるのにリストの**構造**は必要
-- しかし**要素の中身**は不要 → 10個のサンクになっている
+- しかし**要素の中身**は不要 → <span class="tg-gold">枠の中</span>のとおり10個ともサンクのまま
 
 </div>
 <div>
 
-<img src="/demo-ys-length.png" class="max-h-95 mx-auto object-contain" alt="背骨だけ評価され要素はサンクのままのリスト" />
+<img src="/demo-ys-length.png" class="max-h-70 mx-auto object-contain" alt="背骨だけ評価され要素はサンクのままのリスト" />
 
 </div>
 </div>
@@ -248,15 +236,14 @@ ys = [_,_,_,_,_,_,_,_,_,_]
 <div class="grid grid-cols-[1.1fr_1fr] gap-6 items-center">
 <div>
 
-```
--- 1から10のリスト
+<pre class="slidev-code tg-annotated"><code>-- 1から10のリスト
 ghci> let ys = (map (+1) . take 10) [0..] :: [Int]
 
 ghci> find (==3) ys
 Just 3
 ghci> :sprint ys
-ys = 1 : 2 : 3 : _
-```
+<span class="tg-focus">ys = 1 : 2 : 3 : _</span>
+</code></pre>
 
 - `3`を探すために先頭から評価する
 - → `1, 2, 3`まで評価して要素が見つかったので止まる
@@ -265,7 +252,7 @@ ys = 1 : 2 : 3 : _
 </div>
 <div>
 
-<img src="/demo-ys-find.png" class="max-h-95 mx-auto object-contain" alt="3が見つかるまで評価されたリスト" />
+<img src="/demo-ys-find.png" class="max-h-70 mx-auto object-contain" alt="3が見つかるまで評価されたリスト" />
 
 </div>
 </div>
@@ -277,21 +264,20 @@ ys = 1 : 2 : 3 : _
 <div class="grid grid-cols-[1.1fr_1fr] gap-6 items-center">
 <div>
 
-```
-ghci> let ys = (map (+1) . take 10) [0..] :: [Int]
+<pre class="slidev-code tg-annotated"><code>ghci> let ys = (map (+1) . take 10) [0..] :: [Int]
 ghci> show ys
 "[1,2,3,4,5,6,7,8,9,10]"
 ghci> :sprint ys
-ys = [1,2,3,4,5,6,7,8,9,10]
-```
+<span class="tg-focus">ys = [1,2,3,4,5,6,7,8,9,10]</span>
+</code></pre>
 
-- `print`は全要素の値が必要 → 全サンクが評価される
+- `show`は全要素の値が必要 → 全サンクが評価される
 - ここでようやく、素直なリストの形になった
 
 </div>
 <div>
 
-<img src="/demo-ys-full.png" class="max-h-95 mx-auto object-contain" alt="全要素が評価されたリスト" />
+<img src="/demo-ys-full.png" class="max-h-70 mx-auto object-contain" alt="全要素が評価されたリスト" />
 
 </div>
 </div>
@@ -463,7 +449,7 @@ index: "05"
 - `for`や`while`は使わず、**再帰関数**を使う
 
 ```python
-# 手続き的な書き方: 箱を用意して、ループで書き換えていく
+# 手続き的な書き方(Python3): 箱を用意して、ループで書き換えていく
 def my_sum(xs):
     total = 0       # 状態を持つ変数
     for x in xs:    # ループ
