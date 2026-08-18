@@ -27,70 +27,17 @@ layout: statement
 layout: statement
 ---
 
-# 今日話したいこと
+## 今日話したいこと
 
-## AI時代でも、Haskellを始めたことで、<br>プログラミングが**一段と楽しくなった**
+- Haskellは美しい言語である
+- 自分はとてもプログラミングが楽しくなった
+- 遅延評価と関数型プログラミングに絞って話す
 
-プログラミングに対して新しい捉え方ができたり、自分の観測できる世界が広がった<br>
 **#netadashi** **#Haskellはいいぞ** (良ければツイートしてね🐦)
 
 ---
 layout: section
 index: "01"
----
-
-# Haskellを触ったきっかけ
-
-なぜ関数型?
-
----
-
-## テストの書きやすいコードという指針 -> 関数型?
-
-<div class="grid grid-cols-[1.5fr_1fr] gap-6 items-center">
-<div>
-
-- 自動テストがないシステムに対して、保守/開発を行った
-  - リリース単位で手動でテストを再実施するのが辛い
-  - 仕様書を読み間違えるミス
-- 自動テストがあれば楽できるはず...
-  - **副作用と状態があちこちに絡んでいてうまくいかない!**
-  - 統合テストやE2Eだらけに(今思うとシステム特性もある)
-- テストが書きやすいシステムとは?
-
-<Callout>
-<strong>関数型プログラミング</strong>だと単体テストが書きやすいらしい?
-</Callout>
-
-</div>
-<div class="flex gap-3 justify-center">
-
-<img src="/book-tdd.jpg" class="max-h-65 object-contain rounded shadow-lg" alt="テスト駆動開発" />
-<img src="/book-unit-testing.jpg" class="max-h-65 object-contain rounded shadow-lg" alt="単体テストの考え方/使い方" />
-
-</div>
-</div>
-
----
-
-## でも、関数型ってよくわからない -> やらないと判断できない
-
-<Callout type="warn" title="Blub Paradox (ポール・グレアム『Beating the Averages』)">
-
-- 慣れ親しんだ言語(仮想言語Blub)より弱い言語は「あの機能がない」と分かる。
-- しかしBlubより強い言語を見ても、何が凄いのか分からない。
-- **Blubで考えている**から。
-- Blubの良さを正しく理解するためには**Blubを使ってみる必要がある**
-
-</Callout>
-
-### -> (ちょうど子供も産まれるし)純粋関数型のHaskellに全部賭けるか!
-
-([一休CTO naoyaさんの発表資料](https://speakerdeck.com/naoya/20230227-engineer-type-talk)の影響も受けている)
-
----
-layout: section
-index: "02"
 ---
 
 # Haskellの自己紹介
@@ -116,8 +63,8 @@ HUNTER×HUNTERの念能力: 自らに**強い制約**を課すことで、**強�
 </div>
 
 <Callout title="得たパワー">
-<strong>遅延評価(lazy evaluation)</strong> — 値が必要になる瞬間まで、計算をサボり続けられる。<br>
-(理論上はリソース効率が良い)
+<strong>遅延評価(lazy evaluation)</strong>: 値が必要になる瞬間まで計算をサボれる。<br>
+その結果、<strong>無限リスト</strong>が扱えるなど、プログラムの表現力が拡張された。
 </Callout>
 
 ---
@@ -179,7 +126,7 @@ lookup   :: Eq k => k -> [(k, v)] -> Maybe v   -- 失敗するかもと型に書
 
 ---
 layout: section
-index: "03"
+index: "02"
 ---
 
 # 遅延評価とは?
@@ -339,140 +286,6 @@ ghci> :sprint ys
 
 ---
 
-## 遅延評価のおもしろコード① `head . sort`
-
-```haskell
-minimum' :: Ord a => [a] -> a
-minimum' xs = (head . sort) xs
-```
-
-- 見た目は「全部ソートして先頭を取る」= $O(n \log n)$に見える
-- しかし`head`は**先頭の1要素しか要求しない**
-  - 遅延評価により、ソートは先頭を確定させる分までしか進まない
-  - 計算量は、おおよそ$O(n)$に
-
----
-
-## (参考)$O(n)$と$O(n \log n)$はどれくらい違うのか
-
-<div class="grid grid-cols-[1.65fr_1fr] gap-6 items-center">
-<div>
-
-<svg class="tg-chart" viewBox="0 0 720 340" role="img" aria-label="要素数nに対する演算回数の増え方。O(n)は直線的、O(n log n)はより急に増える">
-  <g class="tg-chart__grid">
-    <line x1="78" y1="300.0" x2="640" y2="300.0" />
-    <line x1="78" y1="226.9" x2="640" y2="226.9" />
-    <line x1="78" y1="153.7" x2="640" y2="153.7" />
-    <line x1="78" y1="80.6" x2="640" y2="80.6" />
-  </g>
-  <g class="tg-chart__tick" text-anchor="end">
-    <text x="68" y="304">0</text>
-    <text x="68" y="231">200</text>
-    <text x="68" y="158">400</text>
-    <text x="68" y="85">600</text>
-  </g>
-  <g class="tg-chart__tick" text-anchor="middle">
-    <text x="78" y="320">0</text>
-    <text x="218.5" y="320">25</text>
-    <text x="359" y="320">50</text>
-    <text x="499.5" y="320">75</text>
-    <text x="640" y="320">100</text>
-  </g>
-
-  <polyline class="tg-chart__line tg-chart__line--nlogn tg-draw" v-click points="78.0,300.0 89.2,299.3 100.5,297.1 111.7,294.3 123.0,291.2 134.2,287.9 145.4,284.3 156.7,280.5 167.9,276.6 179.2,272.5 190.4,268.4 201.6,264.1 212.9,259.8 224.1,255.3 235.4,250.8 246.6,246.2 257.8,241.5 269.1,236.7 280.3,231.9 291.6,227.1 302.8,222.1 314.0,217.2 325.3,212.1 336.5,207.1 347.8,202.0 359.0,196.8 370.2,191.6 381.5,186.3 392.7,181.1 404.0,175.7 415.2,170.4 426.4,165.0 437.7,159.6 448.9,154.1 460.2,148.6 471.4,143.1 482.6,137.5 493.9,132.0 505.1,126.3 516.4,120.7 527.6,115.0 538.8,109.3 550.1,103.6 561.3,97.9 572.6,92.1 583.8,86.3 595.0,80.5 606.3,74.7 617.5,68.8 628.8,62.9 640.0,57.0" />
-  <polyline class="tg-chart__line tg-chart__line--n tg-draw" points="78.0,300.0 89.2,299.3 100.5,298.5 111.7,297.8 123.0,297.1 134.2,296.3 145.4,295.6 156.7,294.9 167.9,294.1 179.2,293.4 190.4,292.7 201.6,292.0 212.9,291.2 224.1,290.5 235.4,289.8 246.6,289.0 257.8,288.3 269.1,287.6 280.3,286.8 291.6,286.1 302.8,285.4 314.0,284.6 325.3,283.9 336.5,283.2 347.8,282.4 359.0,281.7 370.2,281.0 381.5,280.3 392.7,279.5 404.0,278.8 415.2,278.1 426.4,277.3 437.7,276.6 448.9,275.9 460.2,275.1 471.4,274.4 482.6,273.7 493.9,272.9 505.1,272.2 516.4,271.5 527.6,270.7 538.8,270.0 550.1,269.3 561.3,268.5 572.6,267.8 583.8,267.1 595.0,266.4 606.3,265.6 617.5,264.9 628.8,264.2 640.0,263.4" />
-
-  <g v-click>
-    <line class="tg-chart__gap" x1="640" y1="57" x2="640" y2="263.4" />
-    <text class="tg-chart__label" x="632" y="165" text-anchor="end">約6.6倍</text>
-  </g>
-
-  <g class="tg-chart__legend">
-    <line x1="648" y1="57" x2="662" y2="57" class="tg-chart__line--nlogn" />
-    <text x="668" y="61">n log n</text>
-    <line x1="648" y1="263.4" x2="662" y2="263.4" class="tg-chart__line--n" />
-    <text x="668" y="267">n</text>
-  </g>
-
-  <text class="tg-chart__axis" x="78" y="26">演算回数(相対)</text>
-  <text class="tg-chart__axis" x="640" y="338" text-anchor="end">n(要素数)</text>
-</svg>
-
-</div>
-<div>
-
-- `n = 100`で**約6.6倍**、`n = 10000`なら**約13倍**
-- `head . sort`は、遅延評価のおかげで<span class="tg-cyan">下側の線</span>で済んでいる
-- ⚠ (Haskellの公式ライブラリはこんなネタ実装をしていない)
-
-
-</div>
-</div>
-
-<style scoped>
-.tg-chart {
-  width: 100%;
-  height: auto;
-  font-family: var(--slidev-font-sans, sans-serif);
-}
-
-.tg-chart__grid line {
-  stroke: var(--tg-line);
-  stroke-width: 1;
-}
-
-.tg-chart__tick,
-.tg-chart__axis {
-  fill: var(--tg-muted);
-  font-size: 12px;
-}
-
-.tg-chart__line {
-  fill: none;
-  stroke-width: 2.5;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-}
-
-/* 系列色は dataviz の検証スクリプトで暗色面に対して通したもの */
-.tg-chart__line--n { stroke: #2aa198; }
-.tg-chart__line--nlogn { stroke: #e0662b; }
-
-/* クリックで線が伸びていく。dasharray は線長より少し長く取る */
-.tg-draw {
-  stroke-dasharray: 700;
-  stroke-dashoffset: 0;
-  transition: stroke-dashoffset 900ms ease-out;
-}
-
-.tg-draw.slidev-vclick-hidden {
-  stroke-dashoffset: 700;
-}
-
-.tg-chart__gap {
-  stroke: var(--tg-muted);
-  stroke-width: 1.5;
-  stroke-dasharray: 4 4;
-}
-
-.tg-chart__label {
-  fill: var(--tg-bright);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.tg-chart__legend line {
-  stroke-width: 2.5;
-}
-
-.tg-chart__legend text {
-  fill: var(--tg-text);
-  font-size: 13px;
-}
-</style>
-
----
-
 ## 遅延評価のおもしろコード② フィボナッチ数列
 
 $$
@@ -542,23 +355,40 @@ $$
 
 ---
 layout: section
-index: "04"
+index: "03"
 ---
 
-# Haskellで見えるようになった世界
-
-メンタルモデルの更新
+# Haskellと関数型プログラミング
 
 ---
 
-## ①関数の組み合わせで処理を表現できる
+## 関数型プログラミングとは?
 
-- パターンマッチを使って関数の引数の構造によって関数を定義できる
-- ガードを使ってBool式による条件分岐ができる
-- `for`や`while`は使わず、**再帰関数**を使う
+以下は[Wikipedia](https://ja.wikipedia.org/wiki/%E9%96%A2%E6%95%B0%E5%9E%8B%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0)より引用
+
+
+> 関数型プログラミング（かんすうがたプログラミング、英: functional programming）とは、数学的な意味での関数を主に使うプログラミングのスタイルである
+
+> 関数型プログラミング言語とは、関数型プログラミングを推奨しているプログラミング言語である。略して関数型言語ともいう
+
+> 全ての関数が参照透過性を持つようなものを、特に純粋関数型プログラミング言語という
+
+Haskellは、乱立していた非正格・純粋関数型言語を統一する共通言語として設計が始まった。<br>
+遅延評価を選んだ結果、副作用を持てなくなり、純粋関数型言語の代表として知られるようになった
+
+---
+
+
+## 関数型の雰囲気を感じる
+
+リストの合計を求める関数の実装をPythonとHaskellで比較してみる。
+
+---
+
+### 再代入とループで書く(Python)
 
 ```python
-# 手続き的な書き方(Python3): 箱を用意して、ループで書き換えていく
+# 関数型でない例(Python3): 箱を用意して、ループで書き換えていく
 def my_sum(xs):
     total = 0       # 状態を持つ変数
     for x in xs:    # ループ
@@ -570,10 +400,10 @@ def my_sum(xs):
 
 ---
 
-### ①Haskell版の`mySum`はパターンマッチと再帰で書く
-
+### パターンマッチと再帰で書ける(Haskell)
 <div class="grid grid-cols-[1.3fr_1fr] gap-6 items-center">
 <div>
+
 
 リストは`[]`(空) or `(x : xs)`(先頭と残り)の2つの形がある
 
@@ -600,162 +430,225 @@ mySum <span class="tg-pat">(x : xs)</span><sup class="tg-pat-n">①</sup> = x + 
 </div>
 </div>
 
-<style scoped>
-/* 枠の色は右の Callout のアクセント色に合わせる (① point=ゴールド / ③ info=シアン) */
-.tg-annotated .tg-pat,
-.tg-annotated .tg-rec {
-  outline: 2px solid;
-  outline-offset: 3px;
-  border-radius: 3px;
-}
-
-.tg-annotated .tg-pat {
-  outline-color: var(--tg-gold);
-  background: rgba(245, 197, 66, 0.14);
-}
-
-.tg-annotated .tg-rec {
-  outline-color: var(--tg-cyan);
-  background: rgba(63, 208, 196, 0.14);
-}
-
-.tg-annotated .tg-pat-n,
-.tg-annotated .tg-rec-n {
-  font-size: 0.7em;
-  margin-left: 0.35em;
-  vertical-align: super;
-}
-
-.tg-annotated .tg-pat-n { color: var(--tg-gold); }
-.tg-annotated .tg-rec-n { color: var(--tg-cyan); }
-</style>
-
 ---
 
-### ①関数の組み合わせで処理を表現できる例: (2分探索)
+### 再帰はどう進むのか: `mySum [1,2,3]`
 
-```haskell
-binarySearch :: Int -> Int -> (Int -> Bool) -> Int
-binarySearch ok ng f
-  | abs (ok - ng) <= 1 = ok -- これが最大の値
-  | f mid = binarySearch mid ng f
-  | otherwise = binarySearch ok mid f
-  where
-    mid = (ok + ng) `div` 2
-
-main :: IO ()
-main = do
-  print $ binarySearch (-1) 100 (\x -> x ^ 2 <= 30) -- 2乗して30以下になる最大のxを2分探索で
-```
-
----
-
-### ①関数の組み合わせで処理を表現できる例: (2分探索)
-
-<div class="grid grid-cols-[1.3fr_1fr] gap-6 items-center">
-<div>
-
-<pre class="slidev-code tg-annotated"><code>binarySearch :: Int -> Int -> (Int -> Bool) -> Int
-binarySearch ok ng f
-  <span class="tg-guard">| abs (ok - ng) &lt;= 1</span><sup class="tg-guard-n">②</sup> = ok
-  <span class="tg-guard">| f mid</span><sup class="tg-guard-n">②</sup> = <span class="tg-rec">binarySearch mid ng f</span><sup class="tg-rec-n">③</sup>
-  <span class="tg-guard">| otherwise</span><sup class="tg-guard-n">②</sup> = <span class="tg-rec">binarySearch ok mid f</span><sup class="tg-rec-n">③</sup>
-  where
-    mid = (ok + ng) `div` 2
+<pre class="slidev-code tg-annotated"><code>mySum [1,2,3]
+= 1 + <span class="tg-rec">mySum [2,3]</span>              -- (x : xs) にマッチ。x = 1, xs = [2,3]
+= 1 + (2 + <span class="tg-rec">mySum [3]</span>)          -- x = 2, xs = [3]
+= 1 + (2 + (3 + <span class="tg-rec">mySum []</span>))     -- x = 3, xs = []
+= 1 + (2 + (3 + <span class="tg-pat">0</span>))            -- [] にマッチ。ここで再帰が止まる
+= 1 + (2 + 3)
+= 1 + 5
+= 6
 </code></pre>
 
+
+---
+
+## 一般的に関数型プログラミングをするとなにが嬉しい?
+
+(個人的には見通しが良くなるだけで嬉しいが)
+
+副作用を言語レベルで例外的に扱うことで
+
+- コンパイラまかせの最適化が可能
+- 数学の高度な抽象化能力を扱えるようになる
+- 参照透過性があるので並行/並列化がしやすい(簡単とは言ってない)
+
+---
+
+## (参考)関数型言語といっても中身はバラバラ
+
+<div class="tg-dense tg-langtable">
+
+| 名前 | 型付け | 純粋性 | 評価戦略 |
+| --- | --- | --- | --- |
+| **Haskell** | 静的型付け | 純粋 | 遅延評価 |
+| Clean | 静的型付け | 純粋 | 遅延評価 |
+| Elm | 静的型付け | 純粋 | 正格評価 |
+| Lean | 静的型付け | 純粋 | 正格評価 |
+| OCaml | 静的型付け | 非純粋 | 正格評価 |
+| Scala | 静的型付け | 非純粋 | 正格評価 |
+| F# | 静的型付け | 非純粋 | 正格評価 |
+| LISPの各種方言(Scheme / Common Lisp / Clojure) | 動的型付け | 非純粋 | 正格評価 |
+
+</div>
+
+遅延評価は関数型の前提にはなっていない。
+
+[関数型プログラミング - Wikipedia](https://ja.wikipedia.org/wiki/%E9%96%A2%E6%95%B0%E5%9E%8B%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0)より抜粋
+
+<style scoped>
+/* 1行目(Haskell)を強調する。行を入れ替えるときはこのセレクタも直すこと */
+.tg-langtable tbody tr:first-child td {
+  background: rgba(245, 197, 66, 0.14);
+  color: var(--tg-bright);
+}
+
+.tg-langtable tbody tr:first-child td:first-child {
+  box-shadow: inset 3px 0 0 var(--tg-gold);
+}
+</style>
+
+---
+
+## 遅延評価をもつHaskellだからできること
+
+生成器と選択器の分離
+
+おまけで多角形近似とかかな?
+
+---
+
+## 遅延評価のおもしろコード① `head . sort`
+
+```haskell
+minimum' :: Ord a => [a] -> a
+minimum' xs = (head . sort) xs
+```
+
+- 見た目は「全部ソートして先頭を取る」= $O(n \log n)$に見える
+- しかし`head`は**先頭の1要素しか要求しない**
+  - 遅延評価により、ソートは先頭を確定させる分までしか進まない
+  - 計算量は、おおよそ$O(n)$に
+
+---
+
+## (参考)$O(n)$と$O(n \log n)$はどれくらい違うのか
+
+<div class="grid grid-cols-[1.65fr_1fr] gap-6 items-center">
+<div>
+
+<svg class="tg-chart" viewBox="0 0 720 340" role="img" aria-label="要素数nに対する演算回数の増え方。O(n)は直線的、O(n log n)はより急に増える">
+  <g class="tg-chart__grid">
+    <line x1="78" y1="300.0" x2="640" y2="300.0" />
+    <line x1="78" y1="226.9" x2="640" y2="226.9" />
+    <line x1="78" y1="153.7" x2="640" y2="153.7" />
+    <line x1="78" y1="80.6" x2="640" y2="80.6" />
+  </g>
+  <g class="tg-chart__tick" text-anchor="end">
+    <text x="68" y="304">0</text>
+    <text x="68" y="231">200</text>
+    <text x="68" y="158">400</text>
+    <text x="68" y="85">600</text>
+  </g>
+  <g class="tg-chart__tick" text-anchor="middle">
+    <text x="78" y="320">0</text>
+    <text x="218.5" y="320">25</text>
+    <text x="359" y="320">50</text>
+    <text x="499.5" y="320">75</text>
+    <text x="640" y="320">100</text>
+  </g>
+
+  <polyline class="tg-chart__line tg-chart__line--nlogn" points="78.0,300.0 89.2,299.3 100.5,297.1 111.7,294.3 123.0,291.2 134.2,287.9 145.4,284.3 156.7,280.5 167.9,276.6 179.2,272.5 190.4,268.4 201.6,264.1 212.9,259.8 224.1,255.3 235.4,250.8 246.6,246.2 257.8,241.5 269.1,236.7 280.3,231.9 291.6,227.1 302.8,222.1 314.0,217.2 325.3,212.1 336.5,207.1 347.8,202.0 359.0,196.8 370.2,191.6 381.5,186.3 392.7,181.1 404.0,175.7 415.2,170.4 426.4,165.0 437.7,159.6 448.9,154.1 460.2,148.6 471.4,143.1 482.6,137.5 493.9,132.0 505.1,126.3 516.4,120.7 527.6,115.0 538.8,109.3 550.1,103.6 561.3,97.9 572.6,92.1 583.8,86.3 595.0,80.5 606.3,74.7 617.5,68.8 628.8,62.9 640.0,57.0" />
+  <polyline class="tg-chart__line tg-chart__line--n" points="78.0,300.0 89.2,299.3 100.5,298.5 111.7,297.8 123.0,297.1 134.2,296.3 145.4,295.6 156.7,294.9 167.9,294.1 179.2,293.4 190.4,292.7 201.6,292.0 212.9,291.2 224.1,290.5 235.4,289.8 246.6,289.0 257.8,288.3 269.1,287.6 280.3,286.8 291.6,286.1 302.8,285.4 314.0,284.6 325.3,283.9 336.5,283.2 347.8,282.4 359.0,281.7 370.2,281.0 381.5,280.3 392.7,279.5 404.0,278.8 415.2,278.1 426.4,277.3 437.7,276.6 448.9,275.9 460.2,275.1 471.4,274.4 482.6,273.7 493.9,272.9 505.1,272.2 516.4,271.5 527.6,270.7 538.8,270.0 550.1,269.3 561.3,268.5 572.6,267.8 583.8,267.1 595.0,266.4 606.3,265.6 617.5,264.9 628.8,264.2 640.0,263.4" />
+
+  <g>
+    <line class="tg-chart__gap" x1="640" y1="57" x2="640" y2="263.4" />
+    <text class="tg-chart__label" x="632" y="165" text-anchor="end">約6.6倍</text>
+  </g>
+
+  <g class="tg-chart__legend">
+    <line x1="648" y1="57" x2="662" y2="57" class="tg-chart__line--nlogn" />
+    <text x="668" y="61">n log n</text>
+    <line x1="648" y1="263.4" x2="662" y2="263.4" class="tg-chart__line--n" />
+    <text x="668" y="267">n</text>
+  </g>
+
+  <text class="tg-chart__axis" x="78" y="26">演算回数(相対)</text>
+  <text class="tg-chart__axis" x="640" y="338" text-anchor="end">n(要素数)</text>
+</svg>
+
 </div>
 <div>
 
-<Callout type="warn" title="② ガード">
-条件ごとに、関数の定義そのものを分けて書ける。<code>if</code>の入れ子ではなく<strong>場合分けを上から順に並べる</strong>形になる。上から試して、最初に<code>True</code>になった行が使われる。
-</Callout>
+- `n = 100`で**約6.6倍**、`n = 10000`なら**約13倍**
+- `head . sort`は、遅延評価のおかげで<span class="tg-cyan">下側の線</span>で済んでいる
+- ⚠ (Haskellの公式ライブラリはこんなネタ実装をしていない)
 
-<Callout type="info" title="③ 再帰">
-<code>for</code>や<code>while</code>は使わず<strong>自分自身を再度呼び出す</strong>。探索範囲を半分に狭めて呼び直すことが、ループの役割を果たしている。
-</Callout>
 
 </div>
 </div>
 
 <style scoped>
-/* 枠の色は右の Callout のアクセント色に合わせる (② warn=オレンジ / ③ info=シアン) */
-.tg-annotated .tg-guard,
-.tg-annotated .tg-rec {
-  outline: 2px solid;
-  outline-offset: 3px;
-  border-radius: 3px;
+.tg-chart {
+  width: 100%;
+  height: auto;
+  font-family: var(--slidev-font-sans, sans-serif);
 }
 
-.tg-annotated .tg-guard {
-  outline-color: var(--tg-orange);
-  background: rgba(244, 118, 60, 0.14);
+.tg-chart__grid line {
+  stroke: var(--tg-line);
+  stroke-width: 1;
 }
 
-.tg-annotated .tg-rec {
-  outline-color: var(--tg-cyan);
-  background: rgba(63, 208, 196, 0.14);
+.tg-chart__tick,
+.tg-chart__axis {
+  fill: var(--tg-muted);
+  font-size: 12px;
 }
 
-.tg-annotated .tg-guard-n,
-.tg-annotated .tg-rec-n {
-  font-size: 0.7em;
-  margin-left: 0.35em;
-  vertical-align: super;
+.tg-chart__line {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
 }
 
-.tg-annotated .tg-guard-n { color: var(--tg-orange); }
-.tg-annotated .tg-rec-n { color: var(--tg-cyan); }
+/* 系列色は dataviz の検証スクリプトで暗色面に対して通したもの */
+.tg-chart__line--n { stroke: #2aa198; }
+.tg-chart__line--nlogn { stroke: #e0662b; }
+
+.tg-chart__gap {
+  stroke: var(--tg-muted);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+}
+
+.tg-chart__label {
+  fill: var(--tg-bright);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tg-chart__legend line {
+  stroke-width: 2.5;
+}
+
+.tg-chart__legend text {
+  fill: var(--tg-text);
+  font-size: 13px;
+}
 </style>
-
----
-
-## ②プログラムをどう解釈したかの意味づけをする
-
-- Haskellはコンピュータに対する命令ではなく、構造を記述する
-- 宣言的なコードになりやすい
-- 関数の再利用がしやすい(カリー化、純粋関数、遅延評価等の恩恵)
-- 同じ処理をするためのコードでもいろいろな書き方ができる
-
----
-
-## ③Haskellを通して見えなかった世界との距離が縮まった(?)
-
-- Haskellは高級言語の中でも抽象度が高い言語である。
-- しかし、Haskellのコードのパフォーマンスを上げる/なぜこの機能が嬉しいのかを説明するためにはCSや数学の知識が必要になってくる
-  - サンクはヒープにどう積まれる?
-  - GCとの関係は?
-  - 圏論や集合論
-- Haskellを通して普段業務をしていると目が行かない抽象化されている面白い世界と出会うことができた
 
 ---
 
 ## まとめ
 
-- 最初のモチベーションはテストが書きやすいコードを書けるようになったりプログラミングを別の角度から見てみたいという好奇心からHaskellを始めた
-- Haskellを学ぶことで、プログラミングを初めて学んだときのような体験を再度得ることができ、世界が拡張されていくのを感じている
-- Haskellでコードを書く場合、その人の知識レベルに合わせて世界をどう解釈しているのか記述できる。
-  - AIがコードを書く時代でも、解釈を楽しむのは人間の特権
+- Haskellは遅延評価のために強い制約を払った関数型言語である。
+- 遅延評価があることでプログラミングの表現力があがる。
+- 関数型言語では、関数の組み合わせで処理を記述する
+  - 再帰
+  - パターンマッチ etc
+- 遅延評価を使える関数型言語だと生成と処理の
 
 ---
 
-## おわりに: 興味を持った人へ
+## おわりに: でも、Haskellって何の役に立つの?と思った人へ
 
-<div class="grid grid-cols-[1.6fr_1fr] gap-6 items-center">
-<div>
+<Callout type="warn" title="Blub Paradox (ポール・グレアム『Beating the Averages』)">
 
-- Haskellに興味を持ったら、**競技プログラミング**をHaskellでやるのをおすすめする
-  - 特に、育休を取る予定がある人・子供が小さい人におすすめ
-  - 土曜日の夜に出かける機会が減るので、ちょうどいい(自分も子供が生まれた2025年10月からちょこちょこやっている)
-- 最近[SICP](https://www.vocrf.net/docs_ja/jsicp.pdf)を読む会に参加し始めたが(この本はLispの方言の一つSchemeを使う)、Haskellでやったことが役に立っている!
+- 慣れ親しんだ言語(仮想言語Blub)より弱い言語は「あの機能がない」と分かる。
+- しかしBlubより強い言語を見ても、何が凄いのか分からない。
+- **Blubで考えている**から。
+- Blubの良さを正しく理解するためには**Blubを使ってみる必要がある**
 
-</div>
-<div class="flex justify-center">
+</Callout>
 
-<img src="/SICP_cover.jpg" class="max-h-65 object-contain rounded shadow-lg" alt="Structure and Interpretation of Computer Programs (SICP)" />
-
-</div>
-</div>
+- 結局やらないとわからない。
+- AIでコードを書ける時代だが、**理解を楽しめるのはプログラマーの特権**
 
 ---
 layout: end
@@ -775,9 +668,10 @@ qr2Caption: Qiita
 
 敬称略
 
-- [単体テストの考え方/使い方(Vladimir Khorikov 著 / 須田智之 訳、マイナビ出版)](https://amzn.asia/d/06B9me64)
-- [テスト駆動開発(Kent Beck 著 / 和田卓人 訳、オーム社)](https://amzn.asia/d/0axu2N9u)
 - [Lazy evaluation - HaskellWiki](https://wiki.haskell.org/Lazy_evaluation)
+- [関数型プログラミング - Wikipedia](https://ja.wikipedia.org/wiki/関数型プログラミング)
+- [A History of Haskell: Being Lazy With Class(Paul Hudak / John Hughes / Simon Peyton Jones / Philip Wadler、HOPL-III, 2007)](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/07/history.pdf)
+- [Why Functional Programming Matters(John Hughes、1990)](https://www.cs.kent.ac.uk/people/staff/dat/miranda/whyfp90.pdf)
 - [長く活躍できるエンジニアになるためには? 技術者として大切にしたいこと(伊藤直也)](https://speakerdeck.com/naoya/20230227-engineer-type-talk)
 - [アルゴリズムは何を圧縮しているのか ─ Haskell から育った「圧縮代数」というメンタルモデル(伊藤直也)](https://speakerdeck.com/naoya/compressed-algebra-with-haskell)
 - [【高校数学でわかる】Haskellで実装するフィボナッチ数列(sigma)](https://qiita.com/sigma_devsecops/items/24e05b6248b717aa4067)

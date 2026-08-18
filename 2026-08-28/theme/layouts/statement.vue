@@ -44,11 +44,14 @@
   margin-top: 1.2rem;
 }
 
-.tg-statement ul > li::before {
-  content: none;
-}
-
-.tg-statement ul > li {
-  padding-left: 0;
+/*
+ * このレイアウトは中央寄せなので、リストをそのまま置くと行頭が揃わない。
+ * リスト自体を inline-block にして中央に配置し、中身だけ左寄せに戻す。
+ * (点は theme/styles/index.css の li::before が描くので打ち消さない)
+ */
+.tg-statement ul {
+  display: inline-block;
+  text-align: left;
+  font-size: 1.35rem;
 }
 </style>

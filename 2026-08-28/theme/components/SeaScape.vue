@@ -35,7 +35,11 @@ const ISLAND = 'M0 120 L 40 118 C 80 116, 110 104, 140 84 C 158 72, 176 74, 188 
 
     <svg class="tg-sea__island" viewBox="0 0 380 120" preserveAspectRatio="xMidYMax meet">
       <path :d="ISLAND" fill="#001019" />
-      <path d="M182 90 L182 58 L196 58 L196 90 Z" fill="#001019" />
+      <!--
+        砲台跡。底辺は稜線ではなく島の下端(y=120)まで伸ばす。
+        稜線はこの位置で y=83.6〜96.7 と傾いているので、底辺を水平に切ると右側に隙間ができる。
+      -->
+      <path d="M182 120 L182 58 L196 58 L196 120 Z" fill="#001019" />
       <circle cx="189" cy="55" r="3" fill="#f5c542" />
     </svg>
 

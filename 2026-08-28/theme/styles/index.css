@@ -315,6 +315,38 @@ body,
   background: rgba(245, 197, 66, 0.14);
 }
 
+/*
+ * コード内で概念ごとに色を割り当てる枠。右に置く Callout のアクセント色と対応させる。
+ * ① パターンマッチ = ゴールド (point) / ③ 再帰 = シアン (info)
+ * 複数のスライドで使うので、スライド側の <style scoped> ではなくここに置く。
+ */
+.tg-annotated .tg-pat,
+.tg-annotated .tg-rec {
+  outline: 2px solid;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.tg-annotated .tg-pat {
+  outline-color: var(--tg-gold);
+  background: rgba(245, 197, 66, 0.14);
+}
+
+.tg-annotated .tg-rec {
+  outline-color: var(--tg-cyan);
+  background: rgba(63, 208, 196, 0.14);
+}
+
+.tg-annotated .tg-pat-n,
+.tg-annotated .tg-rec-n {
+  font-size: 0.7em;
+  margin-left: 0.35em;
+  vertical-align: super;
+}
+
+.tg-annotated .tg-pat-n { color: var(--tg-gold); }
+.tg-annotated .tg-rec-n { color: var(--tg-cyan); }
+
 /* ------------------------------------------------------------- 全体UI */
 
 .slidev-page {
