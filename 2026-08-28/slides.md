@@ -101,22 +101,21 @@ x = 2  -- error: Multiple declarations of 'x'
 
 ## 誓約③ 強い型
 
-本発表との関連が薄いため省略。
+- 副作用や例外も型として管理する。
 
-<!-- - 代数的データ型 -->
-<!-- - 副作用や例外も型として管理する。 -->
+```haskell
+readFile :: FilePath -> IO String              -- IOがあると型に書いてある
+lookup   :: Eq k => k -> [(k, v)] -> Maybe v   -- 失敗するかもと型に書いてある
+```
 
-<!-- ```haskell -->
-<!-- readFile :: FilePath -> IO String              -- IOがあると型に書いてある -->
-<!-- lookup   :: Eq k => k -> [(k, v)] -> Maybe v   -- 失敗するかもと型に書いてある -->
-<!-- ``` -->
+- `IO`が型に現れる → **シグネチャを見るだけ**で副作用の有無が分かる
+- `Maybe`/`Either` → 例外を投げずに「失敗」を**値として**返す
 
-<!-- - `IO`が型に現れる → **シグネチャを見るだけ**で副作用の有無が分かる -->
-<!-- - `Maybe`/`Either` → 例外を投げずに「失敗」を**値として**返す -->
+<Callout>
+型は単なるバグ避けではなく、<strong>関数の性質を表明するドキュメント</strong>になる。
+</Callout>
 
-<!-- <Callout> -->
-<!-- 型は単なるバグ避けではなく、<strong>関数の性質を表明するドキュメント</strong>になる。 -->
-<!-- </Callout> -->
+- (代数的データ型とか型クラスの話も面白いが時間の都合上割愛)
 
 ---
 layout: section
@@ -280,7 +279,7 @@ ghci> :sprint ys
 
 ---
 
-## 遅延評価のおもしろコード① `head . sort`
+## 遅延評価のおもしろコード `head . sort`で最小値を求める?
 
 ```haskell
 minimum' :: Ord a => [a] -> a
@@ -403,73 +402,6 @@ minimum' xs = (head . sort) xs
 
 ---
 
-## 遅延評価のおもしろコード② フィボナッチ数列
-
-$$
-a_n = a_{n-1} + a_{n-2} \quad (a_0 = 0,\ a_1 = 1)
-$$
-
-<Callout type="warn">
-漸化式をそのまま実装すると、同じ<code>fib</code>が何度も計算されてしまう。
-</Callout>
-
-```haskell
--- n番目のフィボナッチ数列を返す(メモ化なし)
-fib :: Int -> Int
-fib n
-  | n == 0 = 0
-  | n == 1 = 1
-  | otherwise = fib (n - 1) + fib (n - 2)
-```
-
----
-
-### Python: メモ化を自分で書く
-
-メモ化: 同じ計算を実行しなくてすむように計算した結果をキャッシュしておき、キャッシュがある場合には再計算しない
-
-```python
-memo = {}
-
-# n番目のフィボナッチ数列を返す
-def fib(n):
-    if n in memo: # キャッシュを引く
-        return memo[n]
-    if n < 2:
-        return n
-    result = fib(n - 1) + fib(n - 2)
-    memo[n] = result # ← キャッシュに入れる
-    return result
-
-fib(4)  # 3
-```
-
----
-
-### Haskell: 遅延評価の共有でメモ化を書かずにすむ
-
-- Haskellの遅延評価により、同じサンクを指す値は共有されるので、メモ化をしなくても同等の効果が得られる。
-- 自分自身を1つずらして足し合わせる形で、漸化式ではなく**フィボナッチ数列本体**を定義できる。
-
-```haskell
-fibs :: [Integer]
-fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
-
-fibs !! 4 -- 3
-```
-
-
-$$
-\begin{array}{r|ccccc}
-\texttt{fibs}                          & a_0       & a_1       & a_2       & a_3       & \cdots \\
-\texttt{tail\ fibs}                    & a_1       & a_2       & a_3       & a_4       & \cdots \\
-\hline
-\texttt{zipWith\ (+)\ fibs\ (tail\ fibs)} & a_0{+}a_1 & a_1{+}a_2 & a_2{+}a_3 & a_3{+}a_4 & \cdots \\
-                                       & \shortparallel & \shortparallel & \shortparallel & \shortparallel & \\
-                                       & a_2       & a_3       & a_4       & a_5       & \cdots
-\end{array}
-$$
-
 ---
 
 ## 遅延評価のまとめ
@@ -569,19 +501,81 @@ mySum <span class="tg-pat">(x : xs)</span><sup class="tg-pat-n">①</sup> = x + 
 
 ---
 
-## 関数型ってなにがうれしい?
+## フィボナッチ数列の例
 
-言語レベルで副作用の扱い方を決めてくれるのが嬉しい
+$$
+a_n = a_{n-1} + a_{n-2} \quad (a_0 = 0,\ a_1 = 1)
+$$
 
-- 純粋関数はモジュール性が高い(使いまわししやすい)
-- 宣言的で見通しが良いコードが書ける
-- コンパイラが最適化できる範囲が増える
-- 数学の高度な抽象化能力を扱えるようになる
-- 純粋関数は単体テストで検証できる
+漸化式をそのまま再帰で実装ればよい?
+
+
+```haskell
+-- n番目のフィボナッチ数列を返す(パフォーマンスが悪い)
+fib :: Int -> Int
+fib n
+  | n == 0 = 0
+  | n == 1 = 1
+  | otherwise = fib (n - 1) + fib (n - 2)
+```
+
+<Callout type="warn">
+同じ<code>fib</code>が何度も計算されてしまい、nが増えるごとに指数関数的に計算量が増えてしまう。
+</Callout>
 
 ---
 
-### (参考)関数型言語といっても種類は様々
+### パフォーマンス改善のためにメモ化を書く...?
+
+- メモ化: 同じ計算を実行しなくてすむように計算した結果をキャッシュしておき、キャッシュがある場合には再計算しない
+- メモ化すると純粋性を失ってしまう。
+
+```python
+memo = {}
+
+# n番目のフィボナッチ数列を返す
+def fib(n):
+    if n in memo: # キャッシュを引く
+        return memo[n]
+    if n < 2:
+        return n
+    result = fib(n - 1) + fib(n - 2)
+    memo[n] = result # ← キャッシュに入れる
+    return result
+
+fib(4)  # 3
+```
+
+---
+
+### Haskell: 遅延評価の力でシンプルな実装ができる
+
+- Haskellの遅延評価により、同じサンクを指す値は共有されるので、メモ化をしなくても同等の効果が得られる。
+- さらに、自分自身を1つずらして足し合わせる形で、漸化式ではなく**フィボナッチ数列本体**を定義できる
+  - (定義時にリストのサイズを決めなくていいのはありがたい)
+
+```haskell
+fibs :: [Integer]
+fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
+
+fibs !! 4 -- 3
+```
+
+
+$$
+\begin{array}{r|ccccc}
+\texttt{fibs}                          & a_0       & a_1       & a_2       & a_3       & \cdots \\
+\texttt{tail\ fibs}                    & a_1       & a_2       & a_3       & a_4       & \cdots \\
+\hline
+\texttt{zipWith\ (+)\ fibs\ (tail\ fibs)} & a_0{+}a_1 & a_1{+}a_2 & a_2{+}a_3 & a_3{+}a_4 & \cdots \\
+                                       & \shortparallel & \shortparallel & \shortparallel & \shortparallel & \\
+                                       & a_2       & a_3       & a_4       & a_5       & \cdots
+\end{array}
+$$
+
+---
+
+### (参考) 遅延評価でない関数型言語もたくさんある [関数型プログラミング - Wikipedia](https://ja.wikipedia.org/wiki/%E9%96%A2%E6%95%B0%E5%9E%8B%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0)より抜粋
 
 <div class="tg-dense tg-langtable">
 
@@ -598,43 +592,89 @@ mySum <span class="tg-pat">(x : xs)</span><sup class="tg-pat-n">①</sup> = x + 
 
 </div>
 
-[関数型プログラミング - Wikipedia](https://ja.wikipedia.org/wiki/%E9%96%A2%E6%95%B0%E5%9E%8B%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0)より抜粋
 
-遅延評価は関数型の前提にはなっていない。
+関数型を扱うとパフォーマンスの問題は必ず出てくる。
+言語によってパフォーマンスとの向き合い方は異なるのが面白い
 
-<style scoped>
-/* 1行目(Haskell)を強調する。行を入れ替えるときはこのセレクタも直すこと */
-.tg-langtable tbody tr:first-child td {
-  background: rgba(245, 197, 66, 0.14);
-  color: var(--tg-bright);
-}
+---
+layout: section
+index: "04"
+---
 
-.tg-langtable tbody tr:first-child td:first-child {
-  box-shadow: inset 3px 0 0 var(--tg-gold);
-}
-</style>
+# 実務でHaskellで学んだことをどう活かす?
+~~楽しいからやっているだけ~~
 
 ---
 
-## Haskellの遅延評価で関数のモジュール性がさらに向上する例
+## 副作用を特別視する関数型の考え方を転用
 
+<div class="grid grid-cols-[1.35fr_1fr] gap-6 items-center">
+<div>
 
+- 純粋関数にできないか考えてみる
+  - 単体テストで検証できてうれしい
+- 副作用をコントローラーに集める設計
+- DDDと相性が良い(関数型ドメインモデリング)という考え方がある。
 
+</div>
+<div class="flex gap-3 justify-center">
+
+<img src="/book-unit-testing.jpg" class="max-h-58 object-contain rounded shadow-lg" alt="単体テストの考え方/使い方" />
+<img src="/book-fp-domain-modeling.jpg" class="max-h-58 object-contain rounded shadow-lg" alt="関数型ドメインモデリング (Scott Wlaschin)" />
+
+</div>
+</div>
+
+---
+
+## 意外とHaskell発の概念を他のプログラミング言語が使っている
+
+<div class="tg-dense">
+
+| 言語 | Haskellが先に入れた機能 | その言語での機能 |
+| --- | --- | --- |
+| Rust | 型クラス | `trait` |
+| Scala | 型クラス | `given` / `implicit` |
+| Swift | 型クラス | `protocol` |
+| C# | モナドとdo記法 | `async/await` |
+
+</div>
+
+(型クラスは1988年にWadlerがHaskellへ提案したもの。`async/await`はF#のcomputation expressionを経由している)
+
+(**ADT・パターンマッチ・`Option`/`Result`**はHaskellではなく、より古い**ML**(1970年代)が先)
+
+---
+
+## (参考) 最近関数型言語流行っているのかも?
+
+<div class="grid grid-cols-[1fr_1.15fr] gap-6 items-center">
+<div>
+
+- 関数型言語の中でも定理証明支援系に分類されるLeanを使ってAIが数学の未解決問題を証明
+- DDD x 関数型 x AI駆動開発が流行っている?
+
+</div>
+<div class="flex justify-center">
+
+<img src="/tweet.png" class="max-h-75 object-contain rounded shadow-lg" alt="関数型 x DDD x AI駆動開発についてのポスト (@nullpommel)" />
+
+</div>
+</div>
 
 ---
 
 ## まとめ
 
-- Haskellは遅延評価のために強い制約を払った関数型言語である。
+- Haskellは遅延評価のために強い制約を払った純粋関数型言語である。
 - 遅延評価があることでプログラミングの表現力があがる。
-- 関数型言語では、関数の組み合わせで処理を記述する
-  - 再帰
-  - パターンマッチ etc
-- 遅延評価を使える関数型言語だと生成と処理の
+- 関数型言語では、関数の組み合わせで処理を記述する。
+- Haskellで学んだ副作用の取り扱いは業務でも生きるかも?
+- 最近関数型が流行っている説があるのでみんなもやってみてね!
 
 ---
 
-## おわりに: でも、Haskellって何の役に立つの?と思った人へ
+## おわりに: AI時代に技術をしっかりやる意味
 
 <Callout type="warn" title="Blub Paradox (ポール・グレアム『Beating the Averages』)">
 
@@ -645,8 +685,9 @@ mySum <span class="tg-pat">(x : xs)</span><sup class="tg-pat-n">①</sup> = x + 
 
 </Callout>
 
-- 結局やらないとわからない。
+- 結局手を動かした人にしか見えない世界がある。
 - AIでコードを書ける時代だが、**理解を楽しめるのはプログラマーの特権**
+- 自分も見えなかった世界が見えるように理解にしっかり時間をかけていきたい
 
 ---
 layout: end
@@ -670,6 +711,7 @@ qr2Caption: Qiita
 - [関数型プログラミング - Wikipedia](https://ja.wikipedia.org/wiki/関数型プログラミング)
 - [A History of Haskell: Being Lazy With Class(Paul Hudak / John Hughes / Simon Peyton Jones / Philip Wadler、HOPL-III, 2007)](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/07/history.pdf)
 - [Why Functional Programming Matters(John Hughes、1990)](https://www.cs.kent.ac.uk/people/staff/dat/miranda/whyfp90.pdf)
+- [なぜ業界で使われないHaskellが、業界に決定的な影響を与えているのか(YouTube)](https://www.youtube.com/watch?v=o0sOxJ0-tXY)
 - [長く活躍できるエンジニアになるためには? 技術者として大切にしたいこと(伊藤直也)](https://speakerdeck.com/naoya/20230227-engineer-type-talk)
 - [アルゴリズムは何を圧縮しているのか ─ Haskell から育った「圧縮代数」というメンタルモデル(伊藤直也)](https://speakerdeck.com/naoya/compressed-algebra-with-haskell)
 - [【高校数学でわかる】Haskellで実装するフィボナッチ数列(sigma)](https://qiita.com/sigma_devsecops/items/24e05b6248b717aa4067)
