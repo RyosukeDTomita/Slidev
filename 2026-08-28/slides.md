@@ -9,6 +9,8 @@ icon: /icon.png
 speaker: sigma (Ryosuke Tomita)
 meta: "Netadashi Meetup #17 / 2026-08-28"
 link: https://peatix.com/event/5095532
+qr: /資料QR.png
+qrCaption: 発表資料
 transition: fade-out
 mdc: true
 ---
@@ -33,7 +35,7 @@ layout: statement
 - 自分はとてもプログラミングが楽しくなった
 - 遅延評価と関数型プログラミングに絞って話す
 
-**#netadashi** **#Haskellはいいぞ** (良ければツイートしてね🐦)
+**#netadashi** **#Haskellはいいぞ**(良ければツイートしてね🐦)
 
 ---
 layout: section
@@ -48,7 +50,7 @@ index: "01"
 
 ---
 
-## 誓約と制約で力を得た言語
+## Haskellとは、「制約と誓約」で力を得た言語
 
 HUNTER×HUNTERの念能力: 自らに**強い制約**を課すことで、**強力なパワー**を得る
 
@@ -56,7 +58,7 @@ HUNTER×HUNTERの念能力: 自らに**強い制約**を課すことで、**強�
 
 | 自らに課した制約(誓約) | 内容 |
 | --- | --- |
-| **純粋関数** | 参照透過性をもち、副作用を持たない |
+| **純粋関数** | 参照透過性を持ち、副作用を持たない |
 | **束縛(不変性)** | 変数は書き換えない。値と名前を結びつけるだけ |
 | **強い型** | 副作用や失敗にも型がつく |
 
@@ -66,6 +68,10 @@ HUNTER×HUNTERの念能力: 自らに**強い制約**を課すことで、**強�
 <strong>遅延評価(lazy evaluation)</strong>: 値が必要になる瞬間まで計算をサボれる。<br>
 その結果、<strong>無限リスト</strong>が扱えるなど、プログラムの表現力が拡張された。
 </Callout>
+
+<!--
+Haskellはプログラミング言語。
+-->
 
 ---
 
@@ -85,7 +91,7 @@ HUNTER×HUNTERの念能力: 自らに**強い制約**を課すことで、**強�
 
 ## 誓約② 束縛(不変性)
 
-- 変数への代入ではなく、値と名前を結びつける**束縛(binding)**という言葉を使う。
+- 変数への代入ではなく、値と名前を結びつける**束縛**(binding)という言葉を使う
 - 再代入はコンパイルエラーになる
 
 ```haskell
@@ -95,13 +101,14 @@ x = 1
 x = 2  -- error: Multiple declarations of 'x'
 ```
 
-(パフォーマンスの問題上、更新が必要な場合にはSTモナド等を使い安全に更新できる)
+(パフォーマンスの問題上、更新が必要な場合には範囲を絞って制約を緩め、安全に更新できる仕組みもあるが割愛)
+
 
 ---
 
 ## 誓約③ 強い型
 
-- 副作用や例外も型として管理する。
+- 純粋関数のまま、副作用を扱うために副作用も型で管理する。
 
 ```haskell
 readFile :: FilePath -> IO String              -- IOがあると型に書いてある
@@ -112,10 +119,8 @@ lookup   :: Eq k => k -> [(k, v)] -> Maybe v   -- 失敗するかもと型に書
 - `Maybe`/`Either` → 例外を投げずに「失敗」を**値として**返す
 
 <Callout>
-型は単なるバグ避けではなく、<strong>関数の性質を表明するドキュメント</strong>になる。
+型は<strong>関数の性質を表明するドキュメント</strong>にもなる。
 </Callout>
-
-- (代数的データ型とか型クラスの話も面白いが時間の都合上割愛)
 
 ---
 layout: section
@@ -133,12 +138,13 @@ index: "02"
 - 式はすぐに計算されず、**サンク**(thunk)という「計算の予約」が積まれる
 - 値が**本当に必要になった瞬間**に、初めてサンクが潰れて値になる
 - だから「無限リスト」のような、普通の言語では作れないものが作れる
-- 複数の式が同じサンクを共有することができ、同じ計算が二度行われない(グラフ簡約)
 
 ```haskell
 -- 無限リスト
 xs = [1..] :: [Int]
 ```
+
+- 複数の式が同じサンクを共有することができ、同じ計算が二度行われない(グラフ簡約)
 
 ```haskell
 -- xsが共有される例
@@ -146,7 +152,7 @@ let xs = map f [1..100]
  in (sum xs, length xs)
 ```
 
-### -> 対話型実行環境と`ghc-vis`(視覚化するツール)を使って遅延評価を観察してみる
+### → 対話型実行環境と`ghc-vis`(視覚化するツール)を使って遅延評価を観察してみる
 
 ---
 
@@ -174,14 +180,13 @@ ghci> :sprint xs
 </code></pre>
 
 - 先頭の`1`**だけ**が評価された
-- 残り(無限のしっぽ)は**Thunkのまま**
+- 残り(無限のしっぽ)は**サンクのまま**
 - 無限リストでも、必要な分しか計算しない
 
 </div>
 <div>
 
 <img src="/demo-xs-head.png" class="max-h-70 mx-auto object-contain" alt="先頭だけ評価されたリスト" />
-
 
 </div>
 </div>
@@ -209,7 +214,7 @@ ghci> :sprint ys
 </code></pre>
 
 長さを数えるのにリストの**構造**は必要だが、要素の中身を評価する必要はない<br>
-→サンクが10個のリスト
+→ サンクが10個のリスト
 
 </div>
 <div>
@@ -220,7 +225,7 @@ ghci> :sprint ys
 </div>
 
 <!--
-[0..]はenumFromのシンタックスシュガー。内部実装はプリミティブ演算(eftInt)で、Int自体がunlifted型でサンクになれないため、要素位置にサンクを置く目的でmap (+1)を挟んでいる。
+[0..]はenumFromの糖衣構文。Int向けの実装(eftInt)がgo x = I# x : ...の形で構築済みの値を直接コンズセルに入れるので、この経路では要素がサンクにならない(Int自体はliftedなのでサンクにはなれる。unliftedなのはInt#のほう)。そこで要素位置にサンクを置く目的でmap (+1)を挟んでいる。
 -->
 
 ---
@@ -231,6 +236,7 @@ ghci> :sprint ys
 <div>
 
 <pre class="slidev-code tg-annotated"><code>-- 1から10のリスト
+ghci> import Data.List (find)
 ghci> let ys = (map (+1) . take 10) [0..] :: [Int]
 
 ghci> find (==3) ys
@@ -254,7 +260,7 @@ ghci> :sprint ys
 
 ---
 
-## デモ④ 表示すれば、全て評価される
+## デモ④ 表示すれば、すべて評価される
 
 <div class="grid grid-cols-[1.1fr_1fr] gap-6 items-center">
 <div>
@@ -282,11 +288,13 @@ ghci> :sprint ys
 ## 遅延評価のおもしろコード `head . sort`で最小値を求める?
 
 ```haskell
+import Data.List (sort)
+
 minimum' :: Ord a => [a] -> a
 minimum' xs = (head . sort) xs
 ```
 
-- 見た目は「全部ソートして先頭を取る」= $O(n \log n)$に見える
+- 見た目は「全部ソートして先頭を取る」= マージソートのため、$O(n \log n)$に見える
 - しかし`head`は**先頭の1要素しか要求しない**
   - 遅延評価により、ソートは先頭を確定させる分までしか進まない
   - 計算量は、おおよそ$O(n)$に
@@ -345,7 +353,6 @@ minimum' xs = (head . sort) xs
 - `head . sort`は、遅延評価のおかげで<span class="tg-cyan">下側の線</span>で済んでいる
 - ⚠ (Haskellの公式ライブラリはこんなネタ実装をしていない)
 
-
 </div>
 </div>
 
@@ -402,11 +409,9 @@ minimum' xs = (head . sort) xs
 
 ---
 
----
-
 ## 遅延評価のまとめ
 
-- 遅延評価をつかうと面白いコードが書ける
+- 遅延評価を使うと面白いコードが書ける
 - 理論的には理にかなっており、良い例だけを見せてしまったが、実際はCとかRustのほうが速い
 
 ---
@@ -421,7 +426,6 @@ index: "03"
 ## 関数型プログラミングとは?
 
 以下は[Wikipedia](https://ja.wikipedia.org/wiki/%E9%96%A2%E6%95%B0%E5%9E%8B%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0)より引用
-
 
 > 関数型プログラミング（かんすうがたプログラミング、英: functional programming）とは、数学的な意味での関数を主に使うプログラミングのスタイルである
 
@@ -443,7 +447,7 @@ Haskellは、乱立していた非正格・純粋関数型言語を統一する�
 ### 再代入とループで書く(Python)
 
 ```python
-# 関数型でない例(Python3): 箱を用意して、ループで書き換えていく
+# 関数型でない例(Python 3): 箱を用意して、ループで書き換えていく
 def my_sum(xs):
     total = 0       # 状態を持つ変数
     for x in xs:    # ループ
@@ -456,9 +460,9 @@ def my_sum(xs):
 ---
 
 ### パターンマッチと再帰で書ける(Haskell)
+
 <div class="grid grid-cols-[1.3fr_1fr] gap-6 items-center">
 <div>
-
 
 リストは`[]`(空) or `(x : xs)`(先頭と残り)の2つの形がある
 
@@ -466,10 +470,10 @@ def my_sum(xs):
 
 <pre class="slidev-code tg-annotated"><code>mySum :: [Int] -> Int
 mySum <span class="tg-pat">[]</span><sup class="tg-pat-n">①</sup> = 0 -- 再帰の停止条件
-mySum <span class="tg-pat">(x : xs)</span><sup class="tg-pat-n">①</sup> = x + <span class="tg-rec">mySum xs</span><sup class="tg-rec-n">③</sup>
+mySum <span class="tg-pat">(x : xs)</span><sup class="tg-pat-n">①</sup> = x + <span class="tg-rec">mySum xs</span><sup class="tg-rec-n">②</sup>
 </code></pre>
 
-(`sum`はPreludeにあるので`mySum`という名前にしている)
+コードが宣言的になり、読みやすくなるのがうれしい
 
 </div>
 <div>
@@ -478,7 +482,7 @@ mySum <span class="tg-pat">(x : xs)</span><sup class="tg-pat-n">①</sup> = x + 
 引数の<strong>構造</strong>そのもので場合分けする。長さを<code>if</code>で調べるのではなく、<strong>値の形ごとに等式を並べる</strong>。上から順に試して、最初に形が合った行が使われる。
 </Callout>
 
-<Callout type="info" title="③ 再帰">
+<Callout type="info" title="② 再帰">
 <code>(x : xs)</code>で取り出した<strong>残り</strong>に対して自分自身を呼ぶ。リストが1つずつ短くなり、いつか<code>[]</code>に到達して止まる。
 </Callout>
 
@@ -501,17 +505,38 @@ mySum <span class="tg-pat">(x : xs)</span><sup class="tg-pat-n">①</sup> = x + 
 
 ---
 
-## フィボナッチ数列の例
+
+## (参考)遅延評価でない関数型言語もたくさんある [関数型プログラミング - Wikipedia](https://ja.wikipedia.org/wiki/%E9%96%A2%E6%95%B0%E5%9E%8B%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0)より抜粋
+
+<div class="tg-dense tg-langtable">
+
+| 名前 | 型付け | 純粋性 | 評価戦略 |
+| --- | --- | --- | --- |
+| **Haskell** | 静的型付け | 純粋 | 遅延評価 |
+| Clean | 静的型付け | 純粋 | 遅延評価 |
+| Elm | 静的型付け | 純粋 | 正格評価 |
+| Lean | 静的型付け | 純粋 | 正格評価 |
+| OCaml | 静的型付け | 非純粋 | 正格評価 |
+| Scala | 静的型付け | 非純粋 | 正格評価 |
+| F# | 静的型付け | 非純粋 | 正格評価 |
+| Lispの各種方言(Scheme / Common Lisp / Clojure) | 動的型付け | 非純粋 | 正格評価 |
+
+</div>
+
+遅延評価の関数型のHaskellだからできる例を紹介!
+
+---
+
+## フィボナッチ数列
 
 $$
 a_n = a_{n-1} + a_{n-2} \quad (a_0 = 0,\ a_1 = 1)
 $$
 
-漸化式をそのまま再帰で実装ればよい?
-
+漸化式をそのまま再帰で実装すればよい?
 
 ```haskell
--- n番目のフィボナッチ数列を返す(パフォーマンスが悪い)
+-- n番目のフィボナッチ数を返す(パフォーマンスが悪い)
 fib :: Int -> Int
 fib n
   | n == 0 = 0
@@ -525,15 +550,14 @@ fib n
 
 ---
 
-### パフォーマンス改善のためにメモ化を書く...?
+### Python3: パフォーマンス改善のためにメモ化
 
-- メモ化: 同じ計算を実行しなくてすむように計算した結果をキャッシュしておき、キャッシュがある場合には再計算しない
-- メモ化すると純粋性を失ってしまう。
+- メモ化: 同じ計算を実行しなくてすむように計算した結果をキャッシュしておく。
 
 ```python
 memo = {}
 
-# n番目のフィボナッチ数列を返す
+# n番目のフィボナッチ数を返す
 def fib(n):
     if n in memo: # キャッシュを引く
         return memo[n]
@@ -545,14 +569,14 @@ def fib(n):
 
 fib(4)  # 3
 ```
+グローバルな`memo`を更新する必要があるので純粋関数でなくなってしまう。
 
 ---
 
-### Haskell: 遅延評価の力でシンプルな実装ができる
+### Haskell: 遅延評価の力で関数型単体よりも宣言的なコードに
 
 - Haskellの遅延評価により、同じサンクを指す値は共有されるので、メモ化をしなくても同等の効果が得られる。
 - さらに、自分自身を1つずらして足し合わせる形で、漸化式ではなく**フィボナッチ数列本体**を定義できる
-  - (定義時にリストのサイズを決めなくていいのはありがたい)
 
 ```haskell
 fibs :: [Integer]
@@ -560,7 +584,6 @@ fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
 
 fibs !! 4 -- 3
 ```
-
 
 $$
 \begin{array}{r|ccccc}
@@ -573,28 +596,10 @@ $$
 \end{array}
 $$
 
+遅延評価と関数型の組み合わせでただの関数型言語よりも宣言的なコードがかけるのがうれしい
+
 ---
 
-### (参考) 遅延評価でない関数型言語もたくさんある [関数型プログラミング - Wikipedia](https://ja.wikipedia.org/wiki/%E9%96%A2%E6%95%B0%E5%9E%8B%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0)より抜粋
-
-<div class="tg-dense tg-langtable">
-
-| 名前 | 型付け | 純粋性 | 評価戦略 |
-| --- | --- | --- | --- |
-| **Haskell** | 静的型付け | 純粋 | 遅延評価 |
-| Clean | 静的型付け | 純粋 | 遅延評価 |
-| Elm | 静的型付け | 純粋 | 正格評価 |
-| Lean | 静的型付け | 純粋 | 正格評価 |
-| OCaml | 静的型付け | 非純粋 | 正格評価 |
-| Scala | 静的型付け | 非純粋 | 正格評価 |
-| F# | 静的型付け | 非純粋 | 正格評価 |
-| LISPの各種方言(Scheme / Common Lisp / Clojure) | 動的型付け | 非純粋 | 正格評価 |
-
-</div>
-
-
-関数型を扱うとパフォーマンスの問題は必ず出てくる。
-言語によってパフォーマンスとの向き合い方は異なるのが面白い
 
 ---
 layout: section
@@ -602,6 +607,7 @@ index: "04"
 ---
 
 # 実務でHaskellで学んだことをどう活かす?
+
 ~~楽しいからやっているだけ~~
 
 ---
@@ -613,8 +619,8 @@ index: "04"
 
 - 純粋関数にできないか考えてみる
   - 単体テストで検証できてうれしい
-- 副作用をコントローラーに集める設計
-- DDDと相性が良い(関数型ドメインモデリング)という考え方がある。
+- 設計とかアーキテクチャのベストプラクティスも副作用とか依存をどう扱うかの話をしているので、関数型の経験が役に立つかも?
+- DDDと相性が良い(関数型ドメインモデリング)という考え方がある
 
 </div>
 <div class="flex gap-3 justify-center">
@@ -627,37 +633,18 @@ index: "04"
 
 ---
 
-## 意外とHaskell発の概念を他のプログラミング言語が使っている
-
-<div class="tg-dense">
-
-| 言語 | Haskellが先に入れた機能 | その言語での機能 |
-| --- | --- | --- |
-| Rust | 型クラス | `trait` |
-| Scala | 型クラス | `given` / `implicit` |
-| Swift | 型クラス | `protocol` |
-| C# | モナドとdo記法 | `async/await` |
-
-</div>
-
-(型クラスは1988年にWadlerがHaskellへ提案したもの。`async/await`はF#のcomputation expressionを経由している)
-
-(**ADT・パターンマッチ・`Option`/`Result`**はHaskellではなく、より古い**ML**(1970年代)が先)
-
----
-
-## (参考) 最近関数型言語流行っているのかも?
+## 最近関数型言語が流行ってきているかも?
 
 <div class="grid grid-cols-[1fr_1.15fr] gap-6 items-center">
 <div>
 
-- 関数型言語の中でも定理証明支援系に分類されるLeanを使ってAIが数学の未解決問題を証明
-- DDD x 関数型 x AI駆動開発が流行っている?
+- 関数型言語の中でも定理証明支援系に分類されるLeanを使ってAIが数学の未解決問題を証明したり、反例を見つけたり。
+- DDD × 関数型 × AI駆動開発が流行っている?
 
 </div>
 <div class="flex justify-center">
 
-<img src="/tweet.png" class="max-h-75 object-contain rounded shadow-lg" alt="関数型 x DDD x AI駆動開発についてのポスト (@nullpommel)" />
+<img src="/tweet.png" class="max-h-75 object-contain rounded shadow-lg" alt="関数型 × DDD × AI駆動開発についてのポスト (@nullpommel)" />
 
 </div>
 </div>
@@ -666,11 +653,10 @@ index: "04"
 
 ## まとめ
 
-- Haskellは遅延評価のために強い制約を払った純粋関数型言語である。
+- Haskellは遅延評価のために強い制約を課した純粋関数型言語である。
 - 遅延評価があることでプログラミングの表現力があがる。
 - 関数型言語では、関数の組み合わせで処理を記述する。
-- Haskellで学んだ副作用の取り扱いは業務でも生きるかも?
-- 最近関数型が流行っている説があるのでみんなもやってみてね!
+- Haskellで学んだ副作用の取り扱いは実務でも生きるかも?
 
 ---
 
@@ -679,10 +665,8 @@ index: "04"
 <Callout type="warn" title="Blub Paradox (ポール・グレアム『Beating the Averages』)">
 
 - 慣れ親しんだ言語(仮想言語Blub)より弱い言語は「あの機能がない」と分かる。
-- しかしBlubより強い言語を見ても、何が凄いのか分からない。
-- **Blubで考えている**から。
-- Blubの良さを正しく理解するためには**Blubを使ってみる必要がある**
-
+- しかしBlubより強い言語を見ても、何がすごいのか分からない。
+- それは、**Blubで考えている**から。
 </Callout>
 
 - 結局手を動かした人にしか見えない世界がある。
@@ -703,20 +687,29 @@ qr2Caption: Qiita
 
 ---
 
-## Reference
+## Reference① 文献・書籍
 
 敬称略
 
 - [Lazy evaluation - HaskellWiki](https://wiki.haskell.org/Lazy_evaluation)
-- [関数型プログラミング - Wikipedia](https://ja.wikipedia.org/wiki/関数型プログラミング)
-- [A History of Haskell: Being Lazy With Class(Paul Hudak / John Hughes / Simon Peyton Jones / Philip Wadler、HOPL-III, 2007)](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/07/history.pdf)
+- [関数型プログラミング - Wikipedia](https://ja.wikipedia.org/wiki/%E9%96%A2%E6%95%B0%E5%9E%8B%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0)
+- [A History of Haskell: Being Lazy With Class(Paul Hudak / John Hughes / Simon Peyton Jones / Philip Wadler、HOPL III, 2007)](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/07/history.pdf)
 - [Why Functional Programming Matters(John Hughes、1990)](https://www.cs.kent.ac.uk/people/staff/dat/miranda/whyfp90.pdf)
+- [Beating the Averages(Paul Graham)](https://www.paulgraham.com/avg.html)
+- [単体テストの考え方/使い方(Vladimir Khorikov、須田智之 訳、マイナビ出版)](https://book.mynavi.jp/ec/products/detail/id=134252)
+- [関数型ドメインモデリング(Scott Wlaschin、猪股健太郎 訳、アスキードワンゴ)](https://www.kadokawa.co.jp/product/302405003608/)
+
+---
+
+## Reference② 発表・記事・ポスト
+
+敬称略
+
 - [なぜ業界で使われないHaskellが、業界に決定的な影響を与えているのか(YouTube)](https://www.youtube.com/watch?v=o0sOxJ0-tXY)
 - [長く活躍できるエンジニアになるためには? 技術者として大切にしたいこと(伊藤直也)](https://speakerdeck.com/naoya/20230227-engineer-type-talk)
 - [アルゴリズムは何を圧縮しているのか ─ Haskell から育った「圧縮代数」というメンタルモデル(伊藤直也)](https://speakerdeck.com/naoya/compressed-algebra-with-haskell)
 - [【高校数学でわかる】Haskellで実装するフィボナッチ数列(sigma)](https://qiita.com/sigma_devsecops/items/24e05b6248b717aa4067)
 - [関数型プログラミングを知らない人向けに、「Haskellって何が面白いの?」と聞かれた時の回答(sigma)](https://qiita.com/sigma_devsecops/items/3f2a397e944401fcc6cb)
-- [Beating the Averages(Paul Graham)](https://www.paulgraham.com/avg.html)
 - [lotz(@lotz84_)のポスト](https://x.com/lotz84_/status/2066094796024823833)
 
 ---
@@ -735,7 +728,7 @@ index: "Appendix"
 - デモ②で観察したかったのは「**要素がサンクのまま**の状態」
 - しかし`take 10 [0..] :: [Int]`だと、要素位置に**サンクが積まれない**
 
-```
+```text
 ghci> let as = take 10 [0..] :: [Int]
 ghci> length as
 10
@@ -744,14 +737,14 @@ as = [0,1,2,3,4,5,6,7,8,9]  -- サンクがない!
 ```
 
 - `[0..]`は`enumFrom`の糖衣構文で、`Int`ではプリミティブ演算(`eftInt`)まで落ちる
-- そこで作られるコンズセルには、**評価済みの値**が直接入る
+- そこで作られるコンスセルには、**評価済みの値**が直接入る
   - `length`しか呼んでいないのに中身まで見えてしまう
 
 ---
 
 ## 解決: `map (+1)`を一枚挟む
 
-```
+```text
 ghci> let ys = (map (+1) . take 10) [0..] :: [Int]
 ghci> length ys
 10
@@ -760,7 +753,7 @@ ys = [_,_,_,_,_,_,_,_,_,_]
 ```
 
 - `map (+1)`を通すと、要素位置が「あとで`(+1)`を適用する」という**サンク**になる
-- `length`は構造だけを辿るので、そのサンクは潰れない
+- `length`は構造だけをたどるので、そのサンクは潰れない
 - → 狙いどおり`ys = [_,_,_,_,_,_,_,_,_,_]`が観察できる
 
 <Callout type="warn">

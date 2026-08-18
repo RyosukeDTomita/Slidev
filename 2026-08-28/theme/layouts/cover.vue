@@ -10,6 +10,10 @@ const props = defineProps<{
   meta?: string
   /** イベントページなどの URL。右下に小さく出す */
   link?: string
+  /** public/ 配下の QR 画像。右下に小さく出す */
+  qr?: string
+  /** QR の説明 */
+  qrCaption?: string
 }>()
 
 /** デプロイ先の base (`/Slidev/2026-08-28/` など) を前置する */
@@ -38,6 +42,9 @@ const iconSrc = computed(() => {
           {{ meta }}
         </div>
       </div>
+    </div>
+    <div v-if="qr" class="tg-cover__qr">
+      <QrCode :src="qr" size="120px" :caption="qrCaption" />
     </div>
     <a v-if="link" class="tg-cover__link" :href="link" target="_blank" rel="noreferrer">
       {{ link }}
@@ -135,6 +142,17 @@ const iconSrc = computed(() => {
   font-size: 0.78rem;
   color: var(--tg-muted);
   text-shadow: 0 2px 10px rgba(0, 16, 25, 0.95);
+}
+
+/*
+ * 資料の QR。左下の署名と釣り合うよう右下に置き、イベント URL の上に重ねる。
+ * 白いカードごと夕日にかかるが、QrCode 側でクワイエットゾーンを確保しているので読める。
+ */
+.tg-cover__qr {
+  position: absolute;
+  right: 2.8rem;
+  bottom: 4.2rem;
+  z-index: 3;
 }
 
 /* イベントページの URL。署名と釣り合うよう右下に置く */
