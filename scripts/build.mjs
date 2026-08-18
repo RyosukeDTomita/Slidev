@@ -2,6 +2,7 @@ import { spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
+import { load } from '@slidev/parser/fs'
 import { rootDir, selectDecks } from './decks.mjs'
 
 // GitHub Pages ではリポジトリ名がパスに入るため `/Slidev/` のようなベースが必要。
@@ -25,10 +26,33 @@ for (const deck of decks) {
 
   if (result.status !== 0)
     process.exit(result.status ?? 1)
+
+  await writePageDirs(out, deck)
 }
 
 writeIndex(outRoot, basePath, decks)
 console.log(`\n==> ${decks.length} deck(s) -> ${path.relative(rootDir, outRoot)}/`)
+
+/**
+ * Slidev の出力は SPA なので実体は index.html しかなく、`/<スライド名>/9/` を直接開くと
+ * サーバ側の rewrite が要る。GitHub Pages にはそれが無い(Slidev が出す `_redirects` は
+ * Netlify 用で、サブディレクトリの 404.html も Pages は使わない)ので、
+ * ページ番号のディレクトリに index.html を実ファイルとして複製しておく。
+ * これでリロードもSNSからの直リンクも 200 で開ける。
+ */
+async function writePageDirs(out, deck) {
+  // hide / disabled のスライドはルートを持たないため、load の時点で除かれている。
+  const { slides } = await load({ roots: [deck.dir], userRoot: deck.dir }, deck.entry)
+  const html = fs.readFileSync(path.join(out, 'index.html'), 'utf8')
+
+  for (let no = 1; no <= slides.length; no++) {
+    const dir = path.join(out, String(no))
+    fs.mkdirSync(dir, { recursive: true })
+    fs.writeFileSync(path.join(dir, 'index.html'), html)
+  }
+
+  console.log(`    ${slides.length} page(s) -> ${path.relative(rootDir, out)}/<番号>/index.html`)
+}
 
 function normalizeBase(value) {
   const trimmed = `/${value.replace(/^\/+|\/+$/g, '')}/`
