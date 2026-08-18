@@ -81,14 +81,6 @@ HUNTER×HUNTERの念能力: 自らに**強い制約**を課すことで、**強�
 - ランダムな値を使う
 - グローバル変数やインスタンス変数の変更
 
-<Callout>
-
-遅延評価を使うと評価されるタイミングがわかりにくくなる。<br>
-副作用によって実行順を変えたくない e.g. `print`デバッグを入れると評価されるタイミングが変わってしまう<br>
-<strong> -> 純粋関数は遅延評価の前提条件</strong>
-
-</Callout>
-
 ---
 
 ## 誓約② 束縛(不変性)
@@ -103,26 +95,28 @@ x = 1
 x = 2  -- error: Multiple declarations of 'x'
 ```
 
-- 値が変わらないので、状態管理が不要になって嬉しい。
-<!-- - パフォーマンスなどの事情で再代入が必要な場合には`ST`モナド等を使って範囲を絞って許可できる。 -->
+(パフォーマンスの問題上、更新が必要な場合にはSTモナド等を使い安全に更新できる)
 
 ---
 
 ## 誓約③ 強い型
 
-- 副作用や例外も型として管理する。
+本発表との関連が薄いため省略。
 
-```haskell
-readFile :: FilePath -> IO String              -- IOがあると型に書いてある
-lookup   :: Eq k => k -> [(k, v)] -> Maybe v   -- 失敗するかもと型に書いてある
-```
+<!-- - 代数的データ型 -->
+<!-- - 副作用や例外も型として管理する。 -->
 
-- `IO`が型に現れる → **シグネチャを見るだけ**で副作用の有無が分かる
-- `Maybe`/`Either` → 例外を投げずに「失敗」を**値として**返す
+<!-- ```haskell -->
+<!-- readFile :: FilePath -> IO String              -- IOがあると型に書いてある -->
+<!-- lookup   :: Eq k => k -> [(k, v)] -> Maybe v   -- 失敗するかもと型に書いてある -->
+<!-- ``` -->
 
-<Callout>
-型は単なるバグ避けではなく、<strong>関数の性質を表明するドキュメント</strong>になる。
-</Callout>
+<!-- - `IO`が型に現れる → **シグネチャを見るだけ**で副作用の有無が分かる -->
+<!-- - `Maybe`/`Either` → 例外を投げずに「失敗」を**値として**返す -->
+
+<!-- <Callout> -->
+<!-- 型は単なるバグ避けではなく、<strong>関数の性質を表明するドキュメント</strong>になる。 -->
+<!-- </Callout> -->
 
 ---
 layout: section
@@ -286,222 +280,6 @@ ghci> :sprint ys
 
 ---
 
-## 遅延評価のおもしろコード② フィボナッチ数列
-
-$$
-a_n = a_{n-1} + a_{n-2} \quad (a_0 = 0,\ a_1 = 1)
-$$
-
-<Callout type="warn">
-漸化式をそのまま実装すると、同じ<code>fib</code>が何度も計算されてしまう。
-</Callout>
-
-```haskell
--- n番目のフィボナッチ数列を返す(メモ化なし)
-fib :: Int -> Int
-fib n
-  | n == 0 = 0
-  | n == 1 = 1
-  | otherwise = fib (n - 1) + fib (n - 2)
-```
-
----
-
-### Python: メモ化を自分で書く
-
-メモ化: 同じ計算を実行しなくてすむように計算した結果をキャッシュしておき、キャッシュがある場合には再計算しない
-
-```python
-memo = {}
-
-# n番目のフィボナッチ数列を返す
-def fib(n):
-    if n in memo: # キャッシュを引く
-        return memo[n]
-    if n < 2:
-        return n
-    result = fib(n - 1) + fib(n - 2)
-    memo[n] = result # ← キャッシュに入れる
-    return result
-
-fib(4)  # 3
-```
-
----
-
-### Haskell: 遅延評価の共有でメモ化を書かずにすむ
-
-- Haskellの遅延評価により、同じサンクを指す値は共有されるので、メモ化をしなくても同等の効果が得られる。
-- 自分自身を1つずらして足し合わせる形で、漸化式ではなく**フィボナッチ数列本体**を定義できる。
-
-```haskell
-fibs :: [Integer]
-fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
-
-fibs !! 4 -- 3
-```
-
-
-$$
-\begin{array}{r|ccccc}
-\texttt{fibs}                          & a_0       & a_1       & a_2       & a_3       & \cdots \\
-\texttt{tail\ fibs}                    & a_1       & a_2       & a_3       & a_4       & \cdots \\
-\hline
-\texttt{zipWith\ (+)\ fibs\ (tail\ fibs)} & a_0{+}a_1 & a_1{+}a_2 & a_2{+}a_3 & a_3{+}a_4 & \cdots \\
-                                       & \shortparallel & \shortparallel & \shortparallel & \shortparallel & \\
-                                       & a_2       & a_3       & a_4       & a_5       & \cdots
-\end{array}
-$$
-
----
-layout: section
-index: "03"
----
-
-# Haskellと関数型プログラミング
-
----
-
-## 関数型プログラミングとは?
-
-以下は[Wikipedia](https://ja.wikipedia.org/wiki/%E9%96%A2%E6%95%B0%E5%9E%8B%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0)より引用
-
-
-> 関数型プログラミング（かんすうがたプログラミング、英: functional programming）とは、数学的な意味での関数を主に使うプログラミングのスタイルである
-
-> 関数型プログラミング言語とは、関数型プログラミングを推奨しているプログラミング言語である。略して関数型言語ともいう
-
-> 全ての関数が参照透過性を持つようなものを、特に純粋関数型プログラミング言語という
-
-Haskellは、乱立していた非正格・純粋関数型言語を統一する共通言語として設計が始まった。<br>
-遅延評価を選んだ結果、副作用を持てなくなり、純粋関数型言語の代表として知られるようになった
-
----
-
-
-## 関数型の雰囲気を感じる
-
-リストの合計を求める関数の実装をPythonとHaskellで比較してみる。
-
----
-
-### 再代入とループで書く(Python)
-
-```python
-# 関数型でない例(Python3): 箱を用意して、ループで書き換えていく
-def my_sum(xs):
-    total = 0       # 状態を持つ変数
-    for x in xs:    # ループ
-        total += x  # 再代入で状態を更新
-    return total
-```
-
-この`total`の**書き換え**と**ループ**が、Haskellでは**パターンマッチ**と**再帰**に置き換わる。
-
----
-
-### パターンマッチと再帰で書ける(Haskell)
-<div class="grid grid-cols-[1.3fr_1fr] gap-6 items-center">
-<div>
-
-
-リストは`[]`(空) or `(x : xs)`(先頭と残り)の2つの形がある
-
-その形ごとに定義を書く。
-
-<pre class="slidev-code tg-annotated"><code>mySum :: [Int] -> Int
-mySum <span class="tg-pat">[]</span><sup class="tg-pat-n">①</sup> = 0 -- 再帰の停止条件
-mySum <span class="tg-pat">(x : xs)</span><sup class="tg-pat-n">①</sup> = x + <span class="tg-rec">mySum xs</span><sup class="tg-rec-n">③</sup>
-</code></pre>
-
-(`sum`はPreludeにあるので`mySum`という名前にしている)
-
-</div>
-<div>
-
-<Callout title="① パターンマッチ">
-引数の<strong>構造</strong>そのもので場合分けする。長さを<code>if</code>で調べるのではなく、<strong>値の形ごとに等式を並べる</strong>。上から順に試して、最初に形が合った行が使われる。
-</Callout>
-
-<Callout type="info" title="③ 再帰">
-<code>(x : xs)</code>で取り出した<strong>残り</strong>に対して自分自身を呼ぶ。リストが1つずつ短くなり、いつか<code>[]</code>に到達して止まる。
-</Callout>
-
-</div>
-</div>
-
----
-
-### 再帰はどう進むのか: `mySum [1,2,3]`
-
-<pre class="slidev-code tg-annotated"><code>mySum [1,2,3]
-= 1 + <span class="tg-rec">mySum [2,3]</span>              -- (x : xs) にマッチ。x = 1, xs = [2,3]
-= 1 + (2 + <span class="tg-rec">mySum [3]</span>)          -- x = 2, xs = [3]
-= 1 + (2 + (3 + <span class="tg-rec">mySum []</span>))     -- x = 3, xs = []
-= 1 + (2 + (3 + <span class="tg-pat">0</span>))            -- [] にマッチ。ここで再帰が止まる
-= 1 + (2 + 3)
-= 1 + 5
-= 6
-</code></pre>
-
-
----
-
-## 一般的に関数型プログラミングをするとなにが嬉しい?
-
-(個人的には見通しが良くなるだけで嬉しいが)
-
-副作用を言語レベルで例外的に扱うことで
-
-- コンパイラまかせの最適化が可能
-- 数学の高度な抽象化能力を扱えるようになる
-- 参照透過性があるので並行/並列化がしやすい(簡単とは言ってない)
-
----
-
-## (参考)関数型言語といっても中身はバラバラ
-
-<div class="tg-dense tg-langtable">
-
-| 名前 | 型付け | 純粋性 | 評価戦略 |
-| --- | --- | --- | --- |
-| **Haskell** | 静的型付け | 純粋 | 遅延評価 |
-| Clean | 静的型付け | 純粋 | 遅延評価 |
-| Elm | 静的型付け | 純粋 | 正格評価 |
-| Lean | 静的型付け | 純粋 | 正格評価 |
-| OCaml | 静的型付け | 非純粋 | 正格評価 |
-| Scala | 静的型付け | 非純粋 | 正格評価 |
-| F# | 静的型付け | 非純粋 | 正格評価 |
-| LISPの各種方言(Scheme / Common Lisp / Clojure) | 動的型付け | 非純粋 | 正格評価 |
-
-</div>
-
-遅延評価は関数型の前提にはなっていない。
-
-[関数型プログラミング - Wikipedia](https://ja.wikipedia.org/wiki/%E9%96%A2%E6%95%B0%E5%9E%8B%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0)より抜粋
-
-<style scoped>
-/* 1行目(Haskell)を強調する。行を入れ替えるときはこのセレクタも直すこと */
-.tg-langtable tbody tr:first-child td {
-  background: rgba(245, 197, 66, 0.14);
-  color: var(--tg-bright);
-}
-
-.tg-langtable tbody tr:first-child td:first-child {
-  box-shadow: inset 3px 0 0 var(--tg-gold);
-}
-</style>
-
----
-
-## 遅延評価をもつHaskellだからできること
-
-生成器と選択器の分離
-
-おまけで多角形近似とかかな?
-
----
-
 ## 遅延評価のおもしろコード① `head . sort`
 
 ```haskell
@@ -516,7 +294,7 @@ minimum' xs = (head . sort) xs
 
 ---
 
-## (参考)$O(n)$と$O(n \log n)$はどれくらい違うのか
+### (参考)$O(n)$と$O(n \log n)$はどれくらい違うのか
 
 <div class="grid grid-cols-[1.65fr_1fr] gap-6 items-center">
 <div>
@@ -622,6 +400,226 @@ minimum' xs = (head . sort) xs
   font-size: 13px;
 }
 </style>
+
+---
+
+## 遅延評価のおもしろコード② フィボナッチ数列
+
+$$
+a_n = a_{n-1} + a_{n-2} \quad (a_0 = 0,\ a_1 = 1)
+$$
+
+<Callout type="warn">
+漸化式をそのまま実装すると、同じ<code>fib</code>が何度も計算されてしまう。
+</Callout>
+
+```haskell
+-- n番目のフィボナッチ数列を返す(メモ化なし)
+fib :: Int -> Int
+fib n
+  | n == 0 = 0
+  | n == 1 = 1
+  | otherwise = fib (n - 1) + fib (n - 2)
+```
+
+---
+
+### Python: メモ化を自分で書く
+
+メモ化: 同じ計算を実行しなくてすむように計算した結果をキャッシュしておき、キャッシュがある場合には再計算しない
+
+```python
+memo = {}
+
+# n番目のフィボナッチ数列を返す
+def fib(n):
+    if n in memo: # キャッシュを引く
+        return memo[n]
+    if n < 2:
+        return n
+    result = fib(n - 1) + fib(n - 2)
+    memo[n] = result # ← キャッシュに入れる
+    return result
+
+fib(4)  # 3
+```
+
+---
+
+### Haskell: 遅延評価の共有でメモ化を書かずにすむ
+
+- Haskellの遅延評価により、同じサンクを指す値は共有されるので、メモ化をしなくても同等の効果が得られる。
+- 自分自身を1つずらして足し合わせる形で、漸化式ではなく**フィボナッチ数列本体**を定義できる。
+
+```haskell
+fibs :: [Integer]
+fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
+
+fibs !! 4 -- 3
+```
+
+
+$$
+\begin{array}{r|ccccc}
+\texttt{fibs}                          & a_0       & a_1       & a_2       & a_3       & \cdots \\
+\texttt{tail\ fibs}                    & a_1       & a_2       & a_3       & a_4       & \cdots \\
+\hline
+\texttt{zipWith\ (+)\ fibs\ (tail\ fibs)} & a_0{+}a_1 & a_1{+}a_2 & a_2{+}a_3 & a_3{+}a_4 & \cdots \\
+                                       & \shortparallel & \shortparallel & \shortparallel & \shortparallel & \\
+                                       & a_2       & a_3       & a_4       & a_5       & \cdots
+\end{array}
+$$
+
+---
+
+## 遅延評価のまとめ
+
+- 遅延評価をつかうと面白いコードが書ける
+- 理論的には理にかなっており、良い例だけを見せてしまったが、実際はCとかRustのほうが速い
+
+---
+layout: section
+index: "03"
+---
+
+# Haskellと関数型プログラミング
+
+---
+
+## 関数型プログラミングとは?
+
+以下は[Wikipedia](https://ja.wikipedia.org/wiki/%E9%96%A2%E6%95%B0%E5%9E%8B%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0)より引用
+
+
+> 関数型プログラミング（かんすうがたプログラミング、英: functional programming）とは、数学的な意味での関数を主に使うプログラミングのスタイルである
+
+> 関数型プログラミング言語とは、関数型プログラミングを推奨しているプログラミング言語である。略して関数型言語ともいう
+
+> 全ての関数が参照透過性を持つようなものを、特に純粋関数型プログラミング言語という
+
+Haskellは、乱立していた非正格・純粋関数型言語を統一する共通言語として設計が始まった。<br>
+遅延評価を選んだ結果、副作用を持てなくなり、純粋関数型言語の代表として知られるようになった
+
+---
+
+## 関数型の雰囲気を感じてみよう!
+
+リストの合計を求める関数の実装をPythonとHaskellで比較してみる。
+
+---
+
+### 再代入とループで書く(Python)
+
+```python
+# 関数型でない例(Python3): 箱を用意して、ループで書き換えていく
+def my_sum(xs):
+    total = 0       # 状態を持つ変数
+    for x in xs:    # ループ
+        total += x  # 再代入で状態を更新
+    return total
+```
+
+この`total`の**書き換え**と**ループ**が、Haskellでは**パターンマッチ**と**再帰**に置き換わる。
+
+---
+
+### パターンマッチと再帰で書ける(Haskell)
+<div class="grid grid-cols-[1.3fr_1fr] gap-6 items-center">
+<div>
+
+
+リストは`[]`(空) or `(x : xs)`(先頭と残り)の2つの形がある
+
+その形ごとに定義を書く。
+
+<pre class="slidev-code tg-annotated"><code>mySum :: [Int] -> Int
+mySum <span class="tg-pat">[]</span><sup class="tg-pat-n">①</sup> = 0 -- 再帰の停止条件
+mySum <span class="tg-pat">(x : xs)</span><sup class="tg-pat-n">①</sup> = x + <span class="tg-rec">mySum xs</span><sup class="tg-rec-n">③</sup>
+</code></pre>
+
+(`sum`はPreludeにあるので`mySum`という名前にしている)
+
+</div>
+<div>
+
+<Callout title="① パターンマッチ">
+引数の<strong>構造</strong>そのもので場合分けする。長さを<code>if</code>で調べるのではなく、<strong>値の形ごとに等式を並べる</strong>。上から順に試して、最初に形が合った行が使われる。
+</Callout>
+
+<Callout type="info" title="③ 再帰">
+<code>(x : xs)</code>で取り出した<strong>残り</strong>に対して自分自身を呼ぶ。リストが1つずつ短くなり、いつか<code>[]</code>に到達して止まる。
+</Callout>
+
+</div>
+</div>
+
+---
+
+### (参考)再帰はどう進むのか: `mySum [1,2,3]`
+
+<pre class="slidev-code tg-annotated"><code>mySum [1,2,3]
+= 1 + <span class="tg-rec">mySum [2,3]</span>              -- (x : xs) にマッチ。x = 1, xs = [2,3]
+= 1 + (2 + <span class="tg-rec">mySum [3]</span>)          -- x = 2, xs = [3]
+= 1 + (2 + (3 + <span class="tg-rec">mySum []</span>))     -- x = 3, xs = []
+= 1 + (2 + (3 + <span class="tg-pat">0</span>))            -- [] にマッチ。ここで再帰が止まる
+= 1 + (2 + 3)
+= 1 + 5
+= 6
+</code></pre>
+
+---
+
+## 関数型ってなにがうれしい?
+
+言語レベルで副作用の扱い方を決めてくれるのが嬉しい
+
+- 純粋関数はモジュール性が高い(使いまわししやすい)
+- 宣言的で見通しが良いコードが書ける
+- コンパイラが最適化できる範囲が増える
+- 数学の高度な抽象化能力を扱えるようになる
+- 純粋関数は単体テストで検証できる
+
+---
+
+### (参考)関数型言語といっても種類は様々
+
+<div class="tg-dense tg-langtable">
+
+| 名前 | 型付け | 純粋性 | 評価戦略 |
+| --- | --- | --- | --- |
+| **Haskell** | 静的型付け | 純粋 | 遅延評価 |
+| Clean | 静的型付け | 純粋 | 遅延評価 |
+| Elm | 静的型付け | 純粋 | 正格評価 |
+| Lean | 静的型付け | 純粋 | 正格評価 |
+| OCaml | 静的型付け | 非純粋 | 正格評価 |
+| Scala | 静的型付け | 非純粋 | 正格評価 |
+| F# | 静的型付け | 非純粋 | 正格評価 |
+| LISPの各種方言(Scheme / Common Lisp / Clojure) | 動的型付け | 非純粋 | 正格評価 |
+
+</div>
+
+[関数型プログラミング - Wikipedia](https://ja.wikipedia.org/wiki/%E9%96%A2%E6%95%B0%E5%9E%8B%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0)より抜粋
+
+遅延評価は関数型の前提にはなっていない。
+
+<style scoped>
+/* 1行目(Haskell)を強調する。行を入れ替えるときはこのセレクタも直すこと */
+.tg-langtable tbody tr:first-child td {
+  background: rgba(245, 197, 66, 0.14);
+  color: var(--tg-bright);
+}
+
+.tg-langtable tbody tr:first-child td:first-child {
+  box-shadow: inset 3px 0 0 var(--tg-gold);
+}
+</style>
+
+---
+
+## Haskellの遅延評価で関数のモジュール性がさらに向上する例
+
+
+
 
 ---
 
