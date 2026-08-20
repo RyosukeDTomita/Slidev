@@ -145,13 +145,13 @@ const iconSrc = computed(() => {
 }
 
 /*
- * 資料の QR。左下の署名と釣り合うよう右下に置き、イベント URL の上に重ねる。
- * 白いカードごと夕日にかかるが、QrCode 側でクワイエットゾーンを確保しているので読める。
+ * 資料の QR。署名と縦に並べたいので左端に置き、署名(アイコン 68px)の上へ逃がす。
+ * 島のシルエットに少しかかるが、QrCode 側が白いカードでクワイエットゾーンを確保している。
  */
 .tg-cover__qr {
   position: absolute;
-  right: 2.8rem;
-  bottom: 4.2rem;
+  left: 2.8rem;
+  bottom: 7.6rem;
   z-index: 3;
 }
 

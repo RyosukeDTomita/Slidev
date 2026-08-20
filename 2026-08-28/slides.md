@@ -31,9 +31,10 @@ layout: statement
 
 ## 今日話したいこと
 
-- Haskellは美しい言語である
-- 自分はとてもプログラミングが楽しくなった
-- 遅延評価と関数型プログラミングに絞って話す
+- Haskellというプログラミング言語の布教
+  - 遅延評価
+  - 関数型プログラミング
+- Haskellをどう活かす?
 
 **#netadashi** **#Haskellはいいぞ**(良ければツイートしてね🐦)
 
@@ -56,7 +57,7 @@ HUNTER×HUNTERの念能力: 自らに**強い制約**を課すことで、**強�
 
 <div class="tg-dense">
 
-| 自らに課した制約(誓約) | 内容 |
+| 自らに課した制約 | 内容 |
 | --- | --- |
 | **純粋関数** | 参照透過性を持ち、副作用を持たない |
 | **束縛(不変性)** | 変数は書き換えない。値と名前を結びつけるだけ |
@@ -66,14 +67,10 @@ HUNTER×HUNTERの念能力: 自らに**強い制約**を課すことで、**強�
 
 <Callout title="得たパワー">
 <strong>遅延評価(lazy evaluation)</strong>: 値が必要になる瞬間まで計算をサボれる。<br>
-その結果、<strong>無限リスト</strong>が扱えるなど、プログラムの表現力が拡張された。
+その結果、<strong>無限リスト</strong>を宣言できるなど、プログラムの表現力が拡張された。
 </Callout>
 
 制約によって遅延評価が安全に使用できる。
-
-<!--
-Haskellはプログラミング言語。
--->
 
 ---
 
@@ -93,8 +90,9 @@ Haskellはプログラミング言語。
 
 ## 誓約② 束縛(不変性)
 
+- Javaだと`final`、Rustだと`mut`をつけないと不変
 - 変数への代入ではなく、値と名前を結びつける**束縛**(binding)という言葉を使う
-- 再代入はコンパイルエラーになる
+- (再代入はコンパイルエラーになる)
 
 ```haskell
 x :: Int
@@ -110,11 +108,12 @@ x = 2  -- error: Multiple declarations of 'x'
 
 ## 誓約③ 強い型
 
+- 副作用が全く扱えないとなにもできない = 現実世界に影響を及ぼせない
 - 純粋関数のまま、副作用を扱うために副作用も型で管理する
 
 ```haskell
 readFile :: FilePath -> IO String              -- IOがあると型に書いてある
-lookup   :: Eq k => k -> [(k, v)] -> Maybe v   -- 失敗するかもと型に書いてある
+find :: Foldable t => (a -> Bool) -> t a -> Maybe a -- 失敗するかもと型に書いてある
 ```
 
 - `IO`が型に現れる → **シグネチャを見るだけ**で副作用の有無が分かる
@@ -208,7 +207,7 @@ ghci> :sprint xs
 
 <pre class="slidev-code tg-annotated"><code>-- 1から10のリスト
 -- map (+1)を挟む理由は巻末のおまけ参照
-ghci> let ys = (map (+1) . take 10) [0..] :: [Int]
+ghci> let ys = map (+1) $ [0..9] :: [Int]
 ghci> length ys
 10
 ghci> :sprint ys
@@ -239,7 +238,7 @@ ghci> :sprint ys
 
 <pre class="slidev-code tg-annotated"><code>-- 1から10のリスト
 ghci> import Data.List (find)
-ghci> let ys = (map (+1) . take 10) [0..] :: [Int]
+ghci> let ys = map (+1) $ [0..9] :: [Int]
 
 ghci> find (==3) ys
 Just 3
@@ -608,6 +607,10 @@ index: "04"
 # 実務でHaskellで学んだことをどう活かす?
 
 ~~楽しいからやっているだけ~~
+
+<!--
+初回はここまでしかいけなかった。20分
+-->
 
 ---
 
