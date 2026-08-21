@@ -45,7 +45,7 @@ const DEFAULT_TITLE = {
 
 .tg-callout__title {
   color: var(--tg-callout-accent);
-  font-size: 0.82em;
+  font-size: 1em;
   font-weight: 700;
   letter-spacing: 0.08em;
   margin-bottom: 0.25rem;

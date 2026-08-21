@@ -44,7 +44,7 @@ const visible = computed(() =>
 .tg-breadcrumb {
   /* 見出しの上、.slidev-layout の上パディング(2.6rem)の内側に収める */
   position: absolute;
-  top: 0.95rem;
+  top: 1.15rem;
   /* 左端は h2 の縦罫と揃える */
   left: 3rem;
   right: 3rem;
@@ -52,7 +52,7 @@ const visible = computed(() =>
   display: flex;
   align-items: baseline;
   gap: 0.45rem;
-  font-size: 0.72rem;
+  font-size: 1.5rem;
   line-height: 1;
   color: var(--tg-muted);
   white-space: nowrap;
@@ -61,7 +61,7 @@ const visible = computed(() =>
 
 .tg-breadcrumb__index {
   font-family: var(--slidev-font-mono, monospace);
-  font-size: 0.9em;
+  font-size: 1em;
   font-weight: 700;
   letter-spacing: 0.12em;
   color: var(--tg-cyan);

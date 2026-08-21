@@ -6,9 +6,9 @@ const props = defineProps<{
   icon?: string
   /** 発表者名 */
   speaker?: string
-  /** 日付やイベント名 */
+  /** 日付やイベント名。link があるときは、そのリンクのラベルとして使う */
   meta?: string
-  /** イベントページなどの URL。右下に小さく出す */
+  /** イベントページなどの URL。右下に meta をラベルにして出す */
   link?: string
   /** public/ 配下の QR 画像。右下に小さく出す */
   qr?: string
@@ -38,7 +38,8 @@ const iconSrc = computed(() => {
         <div v-if="speaker" class="tg-cover__name">
           {{ speaker }}
         </div>
-        <div v-if="meta" class="tg-cover__meta">
+        <!-- link があるときは meta を右下のリンクのラベルに回すので、ここには出さない -->
+        <div v-if="meta && !link" class="tg-cover__meta">
           {{ meta }}
         </div>
       </div>
@@ -46,8 +47,9 @@ const iconSrc = computed(() => {
     <div v-if="qr" class="tg-cover__qr">
       <QrCode :src="qr" size="120px" :caption="qrCaption" />
     </div>
+    <!-- 生の URL は横に長く、左下の署名と衝突するので、イベント名+日付をラベルにする -->
     <a v-if="link" class="tg-cover__link" :href="link" target="_blank" rel="noreferrer">
-      {{ link }}
+      {{ meta ?? link }}
     </a>
   </div>
 </template>
@@ -86,7 +88,7 @@ const iconSrc = computed(() => {
 .tg-cover h2 {
   border: none;
   padding: 0;
-  font-size: 1.35rem;
+  font-size: 1.6rem;
   font-weight: 500;
   color: var(--tg-gold);
   text-shadow: 0 2px 12px rgba(0, 16, 25, 0.9);
@@ -130,7 +132,7 @@ const iconSrc = computed(() => {
 }
 
 .tg-cover__name {
-  font-size: 1.15rem;
+  font-size: 1.5rem;
   font-weight: 700;
   line-height: 1.3;
   color: var(--tg-bright);
@@ -139,7 +141,7 @@ const iconSrc = computed(() => {
 
 .tg-cover__meta {
   font-family: var(--slidev-font-mono, monospace);
-  font-size: 0.78rem;
+  font-size: 1.5rem;
   color: var(--tg-muted);
   text-shadow: 0 2px 10px rgba(0, 16, 25, 0.95);
 }
@@ -155,21 +157,25 @@ const iconSrc = computed(() => {
   z-index: 3;
 }
 
-/* イベントページの URL。署名と釣り合うよう右下に置く */
-.tg-cover__link {
+/*
+ * イベントページへのリンク。署名と釣り合うよう右下に置く。
+ * `.slidev-layout a` の underline のほうが詳細度で勝つと border-bottom と
+ * 二重線になるので、要素セレクタを足して打ち消せるようにしている。
+ */
+.tg-cover a.tg-cover__link {
   position: absolute;
   right: 2.8rem;
   bottom: 2.4rem;
   z-index: 3;
   font-family: var(--slidev-font-mono, monospace);
-  font-size: 0.72rem;
+  font-size: 1.5rem;
   color: var(--tg-muted);
   text-decoration: none;
   border-bottom: 1px solid rgba(147, 168, 171, 0.5);
   text-shadow: 0 2px 10px rgba(0, 16, 25, 0.95);
 }
 
-.tg-cover__link:hover {
+.tg-cover a.tg-cover__link:hover {
   color: var(--tg-cyan);
 }
 </style>

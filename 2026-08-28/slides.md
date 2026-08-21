@@ -1,7 +1,7 @@
 ---
 theme: ./theme
-title: Haskellでプログラミングに対するメンタルモデルを拡張する
-info: "Haskellでプログラミングに対するメンタルモデルを拡張する - Netadashi Meetup #17"
+title: Haskellのすゝめ
+info: "Haskellのすゝめ - Netadashi Meetup #17"
 author: sigma (Ryosuke Tomita)
 layout: cover
 favicon: /favicon.png
@@ -15,7 +15,7 @@ transition: fade-out
 mdc: true
 ---
 
-# Haskellでプログラミングに対する<br>メンタルモデルを拡張する
+# Haskellのすゝめ
 
 ---
 layout: statement
@@ -25,16 +25,17 @@ layout: statement
 
 <QrCode src="/資料QR.png" size="265px" />
 
+ソースコードもあるのでスキャン推奨!
+
 ---
 layout: statement
 ---
 
 ## 今日話したいこと
 
-- Haskellというプログラミング言語の布教
-  - 遅延評価
+- Haskellというプログラミング言語を布教したい
+  - 遅延評価という評価戦略
   - 関数型プログラミング
-- Haskellをどう活かす?
 
 **#netadashi** **#Haskellはいいぞ**(良ければツイートしてね🐦)
 
@@ -45,7 +46,7 @@ index: "01"
 
 # Haskellの自己紹介
 
-遅延評価のための言語
+遅延評価を前提とした関数型言語
 
 <img src="/haskell-logo-purple.png" class="mt-6 w-40 object-contain" alt="Haskellのロゴ (Thompson-Wheeler logo)" />
 
@@ -90,30 +91,27 @@ HUNTER×HUNTERの念能力: 自らに**強い制約**を課すことで、**強�
 
 ## 誓約② 束縛(不変性)
 
-- Javaだと`final`、Rustだと`mut`をつけないと不変
-- 変数への代入ではなく、値と名前を結びつける**束縛**(binding)という言葉を使う
+- Javaだと`final`をつけて変数を不変にできる。
+- Haskellでは変数への代入ではなく、値と名前を結びつける**束縛**(binding)という言葉を使う
 - (再代入はコンパイルエラーになる)
 
 ```haskell
-x :: Int
 x = 1
-
 x = 2  -- error: Multiple declarations of 'x'
 ```
 
 (パフォーマンス上の理由で更新が必要な場合には範囲を絞って制約を緩め、安全に更新できる仕組みもあるが割愛)
 
-
 ---
 
 ## 誓約③ 強い型
 
-- 副作用が全く扱えないとなにもできない = 現実世界に影響を及ぼせない
+- システムは現実世界に影響を及ぼすために副作用が必要
 - 純粋関数のまま、副作用を扱うために副作用も型で管理する
 
 ```haskell
-readFile :: FilePath -> IO String              -- IOがあると型に書いてある
-find :: Foldable t => (a -> Bool) -> t a -> Maybe a -- 失敗するかもと型に書いてある
+readFile :: FilePath -> IO String
+find :: Foldable t => (a -> Bool) -> t a -> Maybe a
 ```
 
 - `IO`が型に現れる → **シグネチャを見るだけ**で副作用の有無が分かる
@@ -130,30 +128,39 @@ index: "02"
 
 # 遅延評価とは?
 
-簡単な例を通して紹介
-
 ---
 
 ## 遅延評価: 必要になるまで評価しない
 
 - 式はすぐに計算されず、**サンク**(thunk)という「計算の予約」が積まれる
-- 値が**本当に必要になった瞬間**に、初めてサンクが潰れて値になる
-- だから「無限リスト」のような、普通の言語では作れないものが作れる
+- 値が**本当に必要になった瞬間**に、式が評価されて値になる
+- だから「無限リスト」などの普通の言語では書けないコードが書ける
 
 ```haskell
--- 無限リスト
 xs = [1..] :: [Int]
 ```
 
-- 複数の式が同じサンクを共有することができ、同じ計算が二度行われない(グラフ簡約)
+- 逆に必要がない値は評価されず、サンクのまま
 
 ```haskell
--- xsが共有される例
+cond = False
+let x = expensive in if cond then x + x else 0
+```
+
+---
+
+### グラフ簡約
+
+- 複数の式が同じサンクを共有することができ、同じ**計算**が二度行われない
+
+```haskell
 let xs = map f [1..100]
  in (sum xs, length xs)
 ```
 
-### → 対話型実行環境と`ghc-vis`(視覚化するツール)を使って遅延評価を観察してみる
+---
+
+## → 対話型実行環境と`ghc-vis`(視覚化するツール)を使って遅延評価を観察してみる
 
 ---
 
@@ -226,7 +233,7 @@ ghci> :sprint ys
 </div>
 
 <!--
-[0..]はenumFromの糖衣構文。Int向けの実装(eftInt)がgo x = I# x : ...の形で構築済みの値を直接コンズセルに入れるので、この経路では要素がサンクにならない(Int自体はliftedなのでサンクにはなれる。unliftedなのはInt#のほう)。そこで要素位置にサンクを置く目的でmap (+1)を挟んでいる。
+[0..9]はenumFromToの糖衣構文。Int向けの実装(eftInt)がgo x = I# x : ...の形で構築済みの値を直接コンズセルに入れるので、この経路では要素がサンクにならない(Int自体はliftedなのでサンクにはなれる。unliftedなのはInt#のほう)。そこで要素位置にサンクを置く目的でmap (+1)を挟んでいる。
 -->
 
 ---
@@ -266,7 +273,7 @@ ghci> :sprint ys
 <div class="grid grid-cols-[1.1fr_1fr] gap-6 items-center">
 <div>
 
-<pre class="slidev-code tg-annotated"><code>ghci> let ys = (map (+1) . take 10) [0..] :: [Int]
+<pre class="slidev-code tg-annotated"><code>ghci> let ys = map (+1) $ [0..9] :: [Int]
 ghci> show ys
 "[1,2,3,4,5,6,7,8,9,10]"
 ghci> :sprint ys
@@ -304,10 +311,10 @@ minimum' xs = (head . sort) xs
 
 ### (参考)$O(n)$と$O(n \log n)$はどれくらい違うのか
 
-<div class="grid grid-cols-[1.65fr_1fr] gap-6 items-center">
+<div class="grid grid-cols-1 gap-2">
 <div>
 
-<svg class="tg-chart" viewBox="0 0 720 340" role="img" aria-label="要素数nに対する演算回数の増え方。O(n)は直線的、O(n log n)はより急に増える">
+<svg class="tg-chart" viewBox="0 0 720 348" role="img" aria-label="要素数nに対する演算回数の増え方。O(n)は直線的、O(n log n)はより急に増える">
   <g class="tg-chart__grid">
     <line x1="78" y1="300.0" x2="640" y2="300.0" />
     <line x1="78" y1="226.9" x2="640" y2="226.9" />
@@ -337,14 +344,14 @@ minimum' xs = (head . sort) xs
   </g>
 
   <g class="tg-chart__legend">
-    <line x1="648" y1="57" x2="662" y2="57" class="tg-chart__line--nlogn" />
-    <text x="668" y="61">n log n</text>
-    <line x1="648" y1="263.4" x2="662" y2="263.4" class="tg-chart__line--n" />
-    <text x="668" y="267">n</text>
+    <line x1="92" y1="64" x2="124" y2="64" class="tg-chart__line--nlogn" />
+    <text x="132" y="71">n log n</text>
+    <line x1="92" y1="104" x2="124" y2="104" class="tg-chart__line--n" />
+    <text x="132" y="111">n</text>
   </g>
 
   <text class="tg-chart__axis" x="78" y="26">演算回数(相対)</text>
-  <text class="tg-chart__axis" x="640" y="338" text-anchor="end">n(要素数)</text>
+  <text class="tg-chart__axis" x="640" y="344" text-anchor="end">n(要素数)</text>
 </svg>
 
 </div>
@@ -372,7 +379,8 @@ minimum' xs = (head . sort) xs
 .tg-chart__tick,
 .tg-chart__axis {
   fill: var(--tg-muted);
-  font-size: 12px;
+  /* viewBox 720 が 884px で描画される(1.228倍)ので、20単位で約24.6px */
+  font-size: 20px;
 }
 
 .tg-chart__line {
@@ -394,7 +402,7 @@ minimum' xs = (head . sort) xs
 
 .tg-chart__label {
   fill: var(--tg-bright);
-  font-size: 13px;
+  font-size: 20px;
   font-weight: 700;
 }
 
@@ -404,7 +412,7 @@ minimum' xs = (head . sort) xs
 
 .tg-chart__legend text {
   fill: var(--tg-text);
-  font-size: 13px;
+  font-size: 20px;
 }
 </style>
 
@@ -578,6 +586,7 @@ fib(4)  # 3
 
 - Haskellの遅延評価により、同じサンクを指す値は共有されるので、メモ化をしなくても同等の効果が得られる。
 - さらに、自分自身を1つずらして足し合わせる形で、漸化式ではなく**フィボナッチ数列本体**を定義できる
+  - 評価が遅延されるので、定義の中で自分自身を参照する**自己参照構造**が書ける
 
 ```haskell
 fibs :: [Integer]
@@ -604,9 +613,9 @@ layout: section
 index: "04"
 ---
 
-# 実務でHaskellで学んだことをどう活かす?
+# Haskellをやって得たもの
 
-~~楽しいからやっているだけ~~
+楽しいだけじゃない
 
 <!--
 初回はここまでしかいけなかった。20分
@@ -614,7 +623,7 @@ index: "04"
 
 ---
 
-## 副作用を特別視する関数型の考え方を転用
+## 副作用を特別視する関数型の考え方が設計などの業務に生きるかも
 
 <div class="grid grid-cols-[1.35fr_1fr] gap-6 items-center">
 <div>
@@ -622,7 +631,8 @@ index: "04"
 - 純粋関数にできないか考えてみる
   - 単体テストで検証できてうれしい
 - 設計とかアーキテクチャのベストプラクティスも副作用とか依存をどう扱うかの話をしているので、関数型の経験が役に立つかも?
-- DDDと相性が良い(関数型ドメインモデリング)という考え方がある
+  - 割と設計の話が入ってきやすくなった気がする
+- DDDと相性が良い(関数型ドメインモデリング)という考え方があったり
 
 </div>
 <div class="flex gap-3 justify-center">
@@ -635,32 +645,36 @@ index: "04"
 
 ---
 
-## 最近関数型言語が流行ってきているかも?
+## 今まで手が出なかった分野に手が届きそうな気がしてくる
 
-<div class="grid grid-cols-[1fr_1.15fr] gap-6 items-center">
-<div>
+プログラミングしているだけで、勝手に別分野の知識がつくのが強い
 
-- 関数型言語の中でも定理証明支援系に分類されるLeanを使ってAIが数学の未解決問題を証明したり、反例を見つけたり。
-- DDD × 関数型 × AI駆動開発が流行っている?
+- 数学の未解決問題を**関数型言語Lean**で形式証明する話
+  - 関数型に対するメンタルモデルができているので、形式証明のイメージがつきやすかった
+- [計算機プログラムの構造と解釈(SICP)](https://www.vocrf.net/docs_ja/jsicp.pdf)を読む会
+  - Lisp (Scheme)についてHaskellをメタファーにして多少理解が進みやすい
+- [Googleが完全準同系暗号を利用したAIモデルのコンパイラを作った](https://www.publickey1.jp/blog/26/googleaiheirai.html)
+    - 圏論のFunctorって準同系の一部だったな
+    - Haskellには、Functor型クラスがあるので少しイメージが湧く
+<!--
+Functorを使うと型(文脈)を保ったまま関数適用ができる
 
-</div>
-<div class="flex justify-center">
+高校数学の実践例としての高校物理で相互理解が進むのに近い。
+-->
 
-<img src="/tweet.png" class="max-h-75 object-contain rounded shadow-lg" alt="関数型 × DDD × AI駆動開発についてのポスト (@nullpommel)" />
-
-</div>
-</div>
-
-## 俺が流行らせるぞ🔥
+### Haskellを通じてプログラミングのメンタルモデルが変わったことが複利で効いてきた?
 
 ---
 
 ## まとめ
 
 - Haskellは遅延評価のために強い制約を課した純粋関数型言語である。
-- 遅延評価があることでおもしろいコードがかける
-- 関数型言語では、関数の組み合わせで処理を記述する一つのパラダイム
+  - 遅延評価があることでおもしろいコードがかける
+  - 関数型言語では、関数の組み合わせで処理を記述する一つのパラダイム
 - 遅延評価と関数型の組み合わせおもしろい
+- Haskellをやっていることで自分はお得になった気がしている
+
+### **#Haskellはいいぞ**
 
 ---
 
@@ -728,20 +742,20 @@ index: "Appendix"
 
 ---
 
-## 問題: `take 10 [0..]`だとサンクが観察できない
+## 問題: `[0..9]`だとサンクが観察できない
 
 - デモ②で観察したかったのは「**要素がサンクのまま**の状態」
-- しかし`take 10 [0..] :: [Int]`だと、要素位置に**サンクが積まれない**
+- しかし`[0..9] :: [Int]`だと、要素位置に**サンクが積まれない**
 
 ```text
-ghci> let as = take 10 [0..] :: [Int]
+ghci> let as = [0..9] :: [Int]
 ghci> length as
 10
 ghci> :sprint as
 as = [0,1,2,3,4,5,6,7,8,9]  -- サンクがない!
 ```
 
-- `[0..]`は`enumFrom`の糖衣構文で、`Int`ではプリミティブ演算(`eftInt`)まで落ちる
+- `[0..9]`は`enumFromTo`の糖衣構文で、`Int`ではプリミティブ演算(`eftInt`)まで落ちる
 - そこで作られるコンスセルには、**評価済みの値**が直接入る
   - `length`しか呼んでいないのに中身まで見えてしまう
 
@@ -750,7 +764,7 @@ as = [0,1,2,3,4,5,6,7,8,9]  -- サンクがない!
 ## 解決: `map (+1)`を一枚挟む
 
 ```text
-ghci> let ys = (map (+1) . take 10) [0..] :: [Int]
+ghci> let ys = map (+1) $ [0..9] :: [Int]
 ghci> length ys
 10
 ghci> :sprint ys
@@ -763,6 +777,6 @@ ys = [_,_,_,_,_,_,_,_,_,_]
 
 <Callout type="warn">
 
-`take 10`のほうは、`length`を有限で止めるために必要(`[0..]`のままだと停止しない)。
+`[0..]`ではなく`[0..9]`と有限にしているのは、`length`を止めるため(`[0..]`のままだと停止しない)。
 
 </Callout>

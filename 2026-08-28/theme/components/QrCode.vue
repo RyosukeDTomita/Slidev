@@ -59,7 +59,7 @@ const imgSrc = computed(() =>
 }
 
 .tg-qr__caption {
-  font-size: 0.85rem;
+  font-size: 1.5rem;
   color: var(--tg-bright);
   text-shadow: 0 2px 10px rgba(0, 16, 25, 0.95);
 }

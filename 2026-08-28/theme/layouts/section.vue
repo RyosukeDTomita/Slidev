@@ -37,7 +37,7 @@ defineProps<{
 
 .tg-section__index {
   font-family: var(--slidev-font-mono, monospace);
-  font-size: 1.15rem;
+  font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: 0.3em;
   color: var(--tg-gold);

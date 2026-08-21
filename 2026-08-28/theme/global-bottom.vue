@@ -1,8 +1,9 @@
 <script setup lang="ts">
 /**
- * 全スライド共通のフッター。
+ * 全スライド共通のページ番号。
+ * 発表タイトルは表紙と global-top.vue の現在地表示で足りていて、帯にすると
+ * 本文の縦幅を丸ごと1行分食うので置かない。番号だけを右下に逃がす。
  * 表紙・章の主張・エンディングなど「見せ場」のレイアウトでは邪魔なので出さない。
- * 現在地の大項目は global-top.vue 側で見出しの上に出している。
  */
 const BARE_LAYOUTS = ['cover', 'end', 'statement']
 </script>
@@ -12,7 +13,6 @@ const BARE_LAYOUTS = ['cover', 'end', 'statement']
     v-if="!BARE_LAYOUTS.includes($slidev.nav.currentSlideRoute?.meta?.slide?.frontmatter?.layout)"
     class="tg-footer"
   >
-    <span class="tg-footer__title">{{ $slidev.configs.title }}</span>
     <span class="tg-footer__page">
       {{ $slidev.nav.currentPage }}<span class="tg-footer__slash"> / </span>{{ $slidev.nav.total }}
     </span>
@@ -29,31 +29,12 @@ const BARE_LAYOUTS = ['cover', 'end', 'statement']
   z-index: 20;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.45rem 1.6rem 0.55rem;
-  font-size: 0.72rem;
+  justify-content: flex-end;
+  padding: 0 1.6rem 0.35rem;
+  font-size: 1.5rem;
+  line-height: 1.2;
   color: var(--tg-muted);
-  border-top: 1px solid rgba(14, 74, 88, 0.9);
-  background: linear-gradient(to top, rgba(0, 16, 25, 0.85), transparent);
   pointer-events: none;
-}
-
-.tg-footer::before {
-  /* 水平線のきらめきをフッターにも1本 */
-  content: '';
-  position: absolute;
-  left: 0;
-  top: -1px;
-  width: 34%;
-  height: 1px;
-  background: linear-gradient(to right, var(--tg-gold), var(--tg-cyan), transparent);
-}
-
-.tg-footer__title {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
 }
 
 .tg-footer__page {

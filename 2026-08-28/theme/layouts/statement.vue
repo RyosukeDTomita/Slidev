@@ -40,7 +40,7 @@
 
 .tg-statement p {
   color: var(--tg-muted);
-  font-size: 1rem;
+  font-size: 1.5rem;
   margin-top: 1.2rem;
 }
 
@@ -52,6 +52,14 @@
 .tg-statement ul {
   display: inline-block;
   text-align: left;
-  font-size: 1.35rem;
+  font-size: 1.6rem;
+}
+
+/*
+ * 上のinline-blockは子孫セレクタなのでネストしたリストにも効いてしまい、
+ * 親項目のテキストの右に回り込む。ネスト側はブロックに戻す。
+ */
+.tg-statement ul ul {
+  display: block;
 }
 </style>

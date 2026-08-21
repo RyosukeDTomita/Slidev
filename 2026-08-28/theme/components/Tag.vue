@@ -21,7 +21,7 @@ withDefaults(defineProps<{
   border-radius: 999px;
   border: 1px solid currentColor;
   background: rgba(7, 54, 66, 0.75);
-  font-size: 0.82em;
+  font-size: 1em;
   font-weight: 600;
   line-height: 1.7;
   white-space: nowrap;
