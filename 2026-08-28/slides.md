@@ -1,7 +1,7 @@
 ---
 theme: ./theme
-title: Haskellのすゝめ
-info: "Haskellのすゝめ - Netadashi Meetup #17"
+title: Haskellの美しさの秘密
+info: "Haskellの美しさの秘密 - Netadashi Meetup #17"
 author: sigma (Ryosuke Tomita)
 layout: cover
 favicon: /favicon.png
@@ -15,7 +15,12 @@ transition: fade-out
 mdc: true
 ---
 
-# Haskellのすゝめ
+# Haskellの美しさの秘密にせまる
+
+<!--
+- Haskellの美しさの秘密にせまるというタイトルで発表
+- よろしく
+-->
 
 ---
 layout: statement
@@ -25,7 +30,11 @@ layout: statement
 
 <QrCode src="/資料QR.png" size="265px" />
 
-ソースコードもあるのでスキャン推奨!
+## ソースコードもあるのでスキャン推奨!
+
+<!--
+今回の資料には多数ソースコードが含まれているため、スキャンしておくことを推奨させてください。
+-->
 
 ---
 layout: statement
@@ -33,11 +42,18 @@ layout: statement
 
 ## 今日話したいこと
 
-- Haskellというプログラミング言語を布教したい
-  - 遅延評価という評価戦略
+- Haskellは美しいコードが書けておもしろい
+- 美しさの秘密
   - 関数型プログラミング
+  - 遅延評価
 
-**#netadashi** **#Haskellはいいぞ**(良ければツイートしてね🐦)
+**#netadashi** **#Haskellはいいぞ**(ツイートしてね🐦)
+
+<!--
+- Haskellの魅力は美しいコードがかけることにある
+- 美しいコードが書ける理由として関数型プログラミングと遅延評価の2つを紹介する
+- ツイートも待ってます(写真撮影やSNSへの投稿もOK)
+-->
 
 ---
 layout: section
@@ -71,13 +87,18 @@ HUNTER×HUNTERの念能力: 自らに**強い制約**を課すことで、**強�
 その結果、<strong>無限リスト</strong>を宣言できるなど、プログラムの表現力が拡張された。
 </Callout>
 
-制約によって遅延評価が安全に使用できる。
+<!--
+- Haskellのメンタルモデルを理解するのに、ハンターハンターの制約と誓約の概念をメタファーにするとわかりやすいと思っている。
+- 自らに強い誓約を課すことで強力なパワーを得る
+- Haskellの場合は純粋関数、束縛、強い型という3つの制約によって遅延評価というパワーを獲得している。
+- 遅延評価によって無限リストを宣言できるなどのプログラムの表現力が向上している。
+-->
 
 ---
 
 ## 誓約① 純粋関数
 
-- **参照透過性**: 同じ入力なら、いつ何度呼んでも同じ出力
+- **参照透過性**: 同じ入力に対して常に同じ結果を返す
 - **副作用を持たない**
 
 **純粋でない**ものの例:
@@ -87,12 +108,23 @@ HUNTER×HUNTERの念能力: 自らに**強い制約**を課すことで、**強�
 - ランダムな値を使う
 - グローバル変数やインスタンス変数の変更
 
+<!--
+- 純粋関数の特徴としてよく挙げられるのは参照透過性と副作用がないこと
+- 参照透過性は同じ入力に対して常に同じ結果を返す
+- 副作用がない
+
+
+
+
+ 置換可能性: 式をその値に置き換えてもプログラムの意味が変わらないという定義も流通しているぽい
+-->
+
 ---
 
 ## 誓約② 束縛(不変性)
 
 - Javaだと`final`をつけて変数を不変にできる。
-- Haskellでは変数への代入ではなく、値と名前を結びつける**束縛**(binding)という言葉を使う
+- Haskellでは変数への代入ではなく、値と名前を結びつける**束縛**(binding)
 - (再代入はコンパイルエラーになる)
 
 ```haskell
@@ -102,12 +134,17 @@ x = 2  -- error: Multiple declarations of 'x'
 
 (パフォーマンス上の理由で更新が必要な場合には範囲を絞って制約を緩め、安全に更新できる仕組みもあるが割愛)
 
+<!--
+- Javaだとfinalをつけて変数を不変にできる。
+- Haskellだと、変数という概念がないというのが近い。値と名前を結びつける束縛
+-->
+
 ---
 
 ## 誓約③ 強い型
 
 - システムは現実世界に影響を及ぼすために副作用が必要
-- 純粋関数のまま、副作用を扱うために副作用も型で管理する
+- Haskellは副作用を型のついた値として扱う
 
 ```haskell
 readFile :: FilePath -> IO String
@@ -121,12 +158,182 @@ find :: Foldable t => (a -> Bool) -> t a -> Maybe a
 型は<strong>関数の性質を表明するドキュメント</strong>にもなる。
 </Callout>
 
+<!--
+
+-->
+
 ---
 layout: section
 index: "02"
 ---
 
+# Haskellと関数型プログラミング
+
+---
+
+## 関数型プログラミングとは?
+
+以下は[Wikipedia](https://ja.wikipedia.org/wiki/%E9%96%A2%E6%95%B0%E5%9E%8B%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0)より引用
+
+> 関数型プログラミングとは、数学的な意味での関数を主に使うプログラミングのスタイルである
+
+> 関数型プログラミング言語とは、関数型プログラミングを推奨しているプログラミング言語である。略して関数型言語ともいう
+
+> 全ての関数が参照透過性を持つようなものを、特に純粋関数型プログラミング言語という
+
+Haskellは純粋関数型
+
+<!--
+Haskellは、乱立していた非正格・純粋関数型言語を統一する共通言語として設計が始まった。
+遅延評価を選んだ結果、副作用を持てなくなり、純粋関数型言語の代表として知られるようになった。
+-->
+
+---
+class: tg-middle
+---
+
+## 関数型の雰囲気を感じてみよう!
+
+リストの合計を求める関数の実装をPythonとHaskellで比較してみる。
+
+---
+
+### 再代入とループで書く(Python)
+
+```python
+# 関数型でない例: 箱を用意して、ループで書き換えていく
+def my_sum(xs):
+    total = 0       # 状態を持つ変数
+    for x in xs:    # ループ
+        total += x  # 再代入で状態を更新
+    return total
+```
+
+`total`の**書き換え**と**ループ**が、Haskellでは**パターンマッチ**と**再帰**に置き換わる。
+
+---
+
+### パターンマッチと再帰で書く(Haskell)
+
+<div class="grid grid-cols-[1.3fr_1fr] gap-6 items-start">
+<div>
+
+リストは`[]`(空) or `(x : xs)`(先頭と残り)の2つの形がある<br>
+
+<pre class="slidev-code tg-annotated"><code>mySum :: [Int] -> Int
+mySum <span class="tg-pat">[]</span><sup class="tg-pat-n">①</sup> = 0 -- 再帰の停止条件
+mySum <span class="tg-pat">(x : xs)</span><sup class="tg-pat-n">①</sup> = x + <span class="tg-rec">mySum xs</span><sup class="tg-rec-n">②</sup>
+</code></pre>
+
+<br>
+
+- 再帰1回ごとにリストが1つずつ小さくなり空になると再帰が止まる。
+- 宣言的なコードになった。
+
+</div>
+<div>
+
+<Callout title="① パターンマッチ">
+引数の<strong>構造</strong>で場合分けし、上から順に試して最初にマッチした行が使われる。
+</Callout>
+
+<Callout type="info" title="② 再帰">
+自分自身を呼び出す関数。
+</Callout>
+
+</div>
+</div>
+
+
+<!--
+リストの長さを直接調べて空判定をしない
+-->
+
+---
+
+### 再帰はどう進むのか: `mySum [1,2,3]`
+
+<pre class="slidev-code tg-annotated"><code>mySum [1,2,3]
+= 1 + <span class="tg-rec">mySum [2,3]</span>  -- (x : xs) にマッチ。x = 1, xs = [2,3]
+= 1 + (2 + <span class="tg-rec">mySum [3]</span>)  -- x = 2, xs = [3]
+= 1 + (2 + (3 + <span class="tg-rec">mySum []</span>)) -- x = 3, xs = []
+= 1 + (2 + (3 + <span class="tg-pat">0</span>))  -- [] にマッチ。ここで再帰が止まる
+= 1 + (2 + 3)
+= 1 + 5
+= 6
+</code></pre>
+
+---
+
+## 畳み込みを使うとより抽象度の高いコードに
+
+- 再帰とパターンマッチを使った実装は**畳み込み**を使って抽象化できる
+
+```haskell
+mySum :: [Int] -> Int
+mySum xs = foldr (+) 0 xs
+```
+
+- `[1,2,3]`は`1 : 2 : 3 : []`の糖衣構文
+- 畳み込みとは、リストの`:`を**演算子**に、`[]`を**初期値**に置き換える操作。
+- `:`を`+`に、`[]`を`0`にしたものがリストの合計
+
+<!-- ``` -->
+<!-- foldr (+) 0 [1,2,3] -->
+<!-- = 1 + foldr (+) 0 [2,3] -->
+<!-- = 1 + (2 + foldr (+) 0 [3]) -->
+<!-- = 1 + (2 + (3 + foldr (+) 0 [])) -->
+<!-- = 1 + (2 + (3 + 0)) -->
+<!-- ``` -->
+
+---
+
+### 畳み込みの汎用性
+
+```haskell
+mySum     xs  = foldr (+)  0  xs   -- 合計
+myProduct xs  = foldr (*)  1  xs   -- 総積
+myConcat  xss = foldr (++) [] xss  -- 連結
+```
+
+---
+
+## 関数型では、それが何であるかを記述できる
+
+リストの合計を求めるとは?
+
+- 再代入とループ: 箱を用意し、ループして、足し合わせる → 計算の手順
+- パターンマッチと再帰: 空リストの合計は0、`x : xs`の合計は`x + mySum xs` → 合計の定義
+- 畳み込み: 初期値`0`に対して`+`でリストを畳み込むこと → 合計の定義
+
+宣言的なコードが書ける。
+
+
+---
+layout: section
+index: "03"
+---
+
 # 遅延評価とは?
+
+---
+
+## 遅延評価は関数型の前提条件ではない
+
+<div class="tg-dense tg-langtable">
+
+| 名前 | 型付け | 純粋性 | 評価戦略 |
+| --- | --- | --- | --- |
+| **Haskell** | 静的型付け | 純粋 | 遅延評価 |
+| Clean | 静的型付け | 純粋 | 遅延評価 |
+| Elm | 静的型付け | 純粋 | 正格評価 |
+| Lean | 静的型付け | 純粋 | 正格評価 |
+| OCaml | 静的型付け | 非純粋 | 正格評価 |
+| Scala | 静的型付け | 非純粋 | 正格評価 |
+| F# | 静的型付け | 非純粋 | 正格評価 |
+| Lisp(Scheme / Common Lisp / Clojure) | 動的型付け | 非純粋 | 正格評価 |
+
+</div>
 
 ---
 
@@ -149,7 +356,7 @@ let x = expensive in if cond then x + x else 0
 
 ---
 
-### グラフ簡約
+### サンクの共有(グラフ簡約)
 
 - 複数の式が同じサンクを共有することができ、同じ**計算**が二度行われない
 
@@ -158,9 +365,13 @@ let xs = map f [1..100]
  in (sum xs, length xs)
 ```
 
+(後ほど紹介するフィボナッチ数列の例で共有の真価が感じられる)
+
+---
+class: tg-middle
 ---
 
-## → 対話型実行環境と`ghc-vis`(視覚化するツール)を使って遅延評価を観察してみる
+## 対話型実行環境(GHCi)の`:sprint`で遅延評価を観察してみる
 
 ---
 
@@ -178,9 +389,6 @@ ghci> :sprint xs -- 状態確認
 
 ### デモ① `head`で先頭だけ要求すると先頭だけ評価される
 
-<div class="grid grid-cols-[1.4fr_1fr] gap-6 items-center">
-<div>
-
 <pre class="slidev-code tg-annotated"><code>ghci> head xs
 1
 ghci> :sprint xs
@@ -188,32 +396,16 @@ ghci> :sprint xs
 </code></pre>
 
 - 先頭の`1`**だけ**が評価された
-- 残り(無限のしっぽ)は**サンクのまま**
-- 無限リストでも、必要な分しか計算しない
-
-</div>
-<div>
-
-<img src="/demo-xs-head.png" class="max-h-70 mx-auto object-contain" alt="先頭だけ評価されたリスト" />
-
-</div>
-</div>
+- 残りは**サンクのまま**
+- 必要な分しか計算しないことで無限リストを扱える
 
 ---
 
 ## デモ② `length`は「構造」だけを評価する
 
-<div class="grid grid-cols-[1.45fr_1fr] gap-6 items-center">
-<div>
+`length`は無限リストに使うと停止しないので、有限のリストを用意する
 
-<Callout>
-
-`length`はリストの長さを返す関数なので無限リストに対して使うと停止しない。そのため、有限のリストを用意する。
-
-</Callout>
-
-<pre class="slidev-code tg-annotated"><code>-- 1から10のリスト
--- map (+1)を挟む理由は巻末のおまけ参照
+<pre class="slidev-code tg-annotated"><code>-- 1から10のリスト(map (+1)の理由は巻末参照)
 ghci> let ys = map (+1) $ [0..9] :: [Int]
 ghci> length ys
 10
@@ -221,57 +413,30 @@ ghci> :sprint ys
 <span class="tg-focus">ys = [_,_,_,_,_,_,_,_,_,_]</span>
 </code></pre>
 
-長さを数えるのにリストの**構造**は必要だが、要素の中身を評価する必要はない<br>
-→ サンクが10個のリスト
-
-</div>
-<div>
-
-<img src="/demo-ys-length-marked.png" class="max-h-80 mx-auto object-contain" alt="構造だけ評価され要素はサンクのままのリスト" />
-
-</div>
-</div>
+長さを数えるのにリストの**構造**は必要だが、要素の中身は評価不要
 
 <!--
-[0..9]はenumFromToの糖衣構文。Int向けの実装(eftInt)がgo x = I# x : ...の形で構築済みの値を直接コンズセルに入れるので、この経路では要素がサンクにならない(Int自体はliftedなのでサンクにはなれる。unliftedなのはInt#のほう)。そこで要素位置にサンクを置く目的でmap (+1)を挟んでいる。
+[0..9]はenumFromToの糖衣構文。Int向けの実装(eftInt)がgo x = I# x : ...の形で構築済みの値を直接コンスセルに入れるので、この経路では要素がサンクにならない(Int自体はliftedなのでサンクにはなれる。unliftedなのはInt#のほう)。そこで要素位置にサンクを置く目的でmap (+1)を挟んでいる。
 -->
 
 ---
 
 ## デモ③ `find`は見つかるまでしか評価しない
 
-<div class="grid grid-cols-[1.1fr_1fr] gap-6 items-center">
-<div>
-
-<pre class="slidev-code tg-annotated"><code>-- 1から10のリスト
-ghci> import Data.List (find)
+<pre class="slidev-code tg-annotated"><code>ghci> import Data.List (find)
 ghci> let ys = map (+1) $ [0..9] :: [Int]
-
 ghci> find (==3) ys
 Just 3
 ghci> :sprint ys
 <span class="tg-focus">ys = 1 : 2 : 3 : _</span>
 </code></pre>
 
-- `3`を探すために先頭から評価する
-- → `1, 2, 3`まで評価して要素が見つかったので止まる
+- `3`を探すために先頭から評価し、`1, 2, 3`まで見て見つかったので止まる
 - 残りは手つかずのサンク
-- 図の<span class="tg-red">赤枠</span>が`1 : 2 : 3 : _`に対応する4つ
-
-</div>
-<div>
-
-<img src="/demo-ys-find-marked.png" class="max-h-70 mx-auto object-contain" alt="3が見つかるまで評価されたリスト" />
-
-</div>
-</div>
 
 ---
 
 ## デモ④ 表示すれば、すべて評価される
-
-<div class="grid grid-cols-[1.1fr_1fr] gap-6 items-center">
-<div>
 
 <pre class="slidev-code tg-annotated"><code>ghci> let ys = map (+1) $ [0..9] :: [Int]
 ghci> show ys
@@ -283,17 +448,9 @@ ghci> :sprint ys
 - `show`は全要素の値が必要 → 全サンクが評価される
 - ここでようやく、素直なリストの形になった
 
-</div>
-<div>
-
-<img src="/demo-ys-full.png" class="max-h-70 mx-auto object-contain" alt="全要素が評価されたリスト" />
-
-</div>
-</div>
-
 ---
 
-## 遅延評価のおもしろコード `head . sort`で最小値を求める?
+## 遅延評価おもしろコード例
 
 ```haskell
 import Data.List (sort)
@@ -309,7 +466,7 @@ minimum' xs = (head . sort) xs
 
 ---
 
-### (参考)$O(n)$と$O(n \log n)$はどれくらい違うのか
+### (参考)$O(n)$と$O(n \log n)$はどれくらい違うのか($\log_2 n$の場合)
 
 <div class="grid grid-cols-1 gap-2">
 <div>
@@ -418,121 +575,21 @@ minimum' xs = (head . sort) xs
 
 ---
 
-## 遅延評価のまとめ
+## 遅延評価のまとめと補足
 
 - 遅延評価を使うと面白いコードが書ける
-- 理論的には理にかなっており、良い例だけを見せてしまったが、実際はCとかRustのほうが速い
+- 補足: 理論的には理にかなっているが、CとかRustのほうが実行速度は速い
+  - (Haskellはパフォーマンスが良いタイプの言語ではない)
+  - 今回は時間の都合上、遅延評価が嬉しい例だけを紹介している
 
 ---
 layout: section
-index: "03"
+index: "04"
 ---
 
-# Haskellと関数型プログラミング
+# フィボナッチ数列
 
----
-
-## 関数型プログラミングとは?
-
-以下は[Wikipedia](https://ja.wikipedia.org/wiki/%E9%96%A2%E6%95%B0%E5%9E%8B%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0)より引用
-
-> 関数型プログラミング（かんすうがたプログラミング、英: functional programming）とは、数学的な意味での関数を主に使うプログラミングのスタイルである
-
-> 関数型プログラミング言語とは、関数型プログラミングを推奨しているプログラミング言語である。略して関数型言語ともいう
-
-> 全ての関数が参照透過性を持つようなものを、特に純粋関数型プログラミング言語という
-
-Haskellは、乱立していた非正格・純粋関数型言語を統一する共通言語として設計が始まった。<br>
-遅延評価を選んだ結果、副作用を持てなくなり、純粋関数型言語の代表として知られるようになった
-
----
-
-## 関数型の雰囲気を感じてみよう!
-
-リストの合計を求める関数の実装をPythonとHaskellで比較してみる。
-
----
-
-### 再代入とループで書く(Python)
-
-```python
-# 関数型でない例(Python 3): 箱を用意して、ループで書き換えていく
-def my_sum(xs):
-    total = 0       # 状態を持つ変数
-    for x in xs:    # ループ
-        total += x  # 再代入で状態を更新
-    return total
-```
-
-この`total`の**書き換え**と**ループ**が、Haskellでは**パターンマッチ**と**再帰**に置き換わる。
-
----
-
-### パターンマッチと再帰で書ける(Haskell)
-
-<div class="grid grid-cols-[1.3fr_1fr] gap-6 items-center">
-<div>
-
-リストは`[]`(空) or `(x : xs)`(先頭と残り)の2つの形がある
-
-その形ごとに定義を書く。
-
-<pre class="slidev-code tg-annotated"><code>mySum :: [Int] -> Int
-mySum <span class="tg-pat">[]</span><sup class="tg-pat-n">①</sup> = 0 -- 再帰の停止条件
-mySum <span class="tg-pat">(x : xs)</span><sup class="tg-pat-n">①</sup> = x + <span class="tg-rec">mySum xs</span><sup class="tg-rec-n">②</sup>
-</code></pre>
-
-コードが宣言的になり、読みやすくなるのがうれしい
-
-</div>
-<div>
-
-<Callout title="① パターンマッチ">
-引数の<strong>構造</strong>そのもので場合分けする。長さを<code>if</code>で調べるのではなく、<strong>値の形ごとに等式を並べる</strong>。上から順に試して、最初に形が合った行が使われる。
-</Callout>
-
-<Callout type="info" title="② 再帰">
-<code>(x : xs)</code>で取り出した<strong>残り</strong>に対して自分自身を呼ぶ。リストが1つずつ短くなり、いつか<code>[]</code>に到達して止まる。
-</Callout>
-
-</div>
-</div>
-
----
-
-### (参考)再帰はどう進むのか: `mySum [1,2,3]`
-
-<pre class="slidev-code tg-annotated"><code>mySum [1,2,3]
-= 1 + <span class="tg-rec">mySum [2,3]</span>              -- (x : xs) にマッチ。x = 1, xs = [2,3]
-= 1 + (2 + <span class="tg-rec">mySum [3]</span>)          -- x = 2, xs = [3]
-= 1 + (2 + (3 + <span class="tg-rec">mySum []</span>))     -- x = 3, xs = []
-= 1 + (2 + (3 + <span class="tg-pat">0</span>))            -- [] にマッチ。ここで再帰が止まる
-= 1 + (2 + 3)
-= 1 + 5
-= 6
-</code></pre>
-
----
-
-
-## (参考)遅延評価でない関数型言語もたくさんある [関数型プログラミング - Wikipedia](https://ja.wikipedia.org/wiki/%E9%96%A2%E6%95%B0%E5%9E%8B%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0)より抜粋
-
-<div class="tg-dense tg-langtable">
-
-| 名前 | 型付け | 純粋性 | 評価戦略 |
-| --- | --- | --- | --- |
-| **Haskell** | 静的型付け | 純粋 | 遅延評価 |
-| Clean | 静的型付け | 純粋 | 遅延評価 |
-| Elm | 静的型付け | 純粋 | 正格評価 |
-| Lean | 静的型付け | 純粋 | 正格評価 |
-| OCaml | 静的型付け | 非純粋 | 正格評価 |
-| Scala | 静的型付け | 非純粋 | 正格評価 |
-| F# | 静的型付け | 非純粋 | 正格評価 |
-| Lispの各種方言(Scheme / Common Lisp / Clojure) | 動的型付け | 非純粋 | 正格評価 |
-
-</div>
-
-遅延評価を採用して関数型言語のHaskellだからできる例を紹介!
+関数型と遅延評価を合わせて使ってみる
 
 ---
 
@@ -553,40 +610,33 @@ fib n
   | otherwise = fib (n - 1) + fib (n - 2)
 ```
 
-<Callout type="warn">
-同じ<code>fib</code>が何度も計算されてしまい、nが増えるごとに指数関数的に計算量が増えてしまう。
-</Callout>
+同じ`fib`が何度も計算されてしまい、指数関数的に計算量が増える
 
 ---
 
 ### Python 3: パフォーマンス改善のためにメモ化
 
-- メモ化: 同じ計算を実行しなくてすむように計算した結果をキャッシュしておく。
+- メモ化: 計算した結果をキャッシュ(非純粋関数になってしまう)
 
 ```python
 memo = {}
-
-# n番目のフィボナッチ数を返す
 def fib(n):
     if n in memo: # キャッシュを引く
         return memo[n]
     if n < 2:
         return n
     result = fib(n - 1) + fib(n - 2)
-    memo[n] = result # ← キャッシュに入れる
+    memo[n] = result # キャッシュに入れる
     return result
-
-fib(4)  # 3
 ```
-グローバルな`memo`を更新する必要があるので純粋関数でなくなってしまう。
 
 ---
 
-### Haskell: 遅延評価の力で関数型単体よりも宣言的なコードに
+### Haskell: 遅延評価の共有がメモ化代わりに
 
-- Haskellの遅延評価により、同じサンクを指す値は共有されるので、メモ化をしなくても同等の効果が得られる。
-- さらに、自分自身を1つずらして足し合わせる形で、漸化式ではなく**フィボナッチ数列本体**を定義できる
-  - 評価が遅延されるので、定義の中で自分自身を参照する**自己参照構造**が書ける
+- Haskellの遅延評価では、同じサンクを指す値は共有されるので、同じ計算をしない
+- 自分自身を1つずらして足し合わせる形で、**フィボナッチ数列本体**を定義可能
+  - (評価が遅延されるので、自己参照構造が書ける)
 
 ```haskell
 fibs :: [Integer]
@@ -594,6 +644,8 @@ fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
 
 fibs !! 4 -- 3
 ```
+
+---
 
 $$
 \begin{array}{r|ccccc}
@@ -606,79 +658,22 @@ $$
 \end{array}
 $$
 
-遅延評価と関数型の組み合わせでただの関数型言語よりも宣言的なコードが書けるのがうれしい
-
----
-layout: section
-index: "04"
----
-
-# Haskellをやって得たもの
-
-楽しいだけじゃない
-
-<!--
-初回はここまでしかいけなかった。20分
--->
-
----
-
-## 副作用を特別視する関数型の考え方が設計などの業務に生きるかも
-
-<div class="grid grid-cols-[1.35fr_1fr] gap-6 items-center">
-<div>
-
-- 純粋関数にできないか考えてみる
-  - 単体テストで検証できてうれしい
-- 設計とかアーキテクチャのベストプラクティスも副作用とか依存をどう扱うかの話をしているので、関数型の経験が役に立つかも?
-  - 割と設計の話が入ってきやすくなった気がする
-- DDDと相性が良い(関数型ドメインモデリング)という考え方があったり
-
-</div>
-<div class="flex gap-3 justify-center">
-
-<img src="/book-unit-testing.jpg" class="max-h-58 object-contain rounded shadow-lg" alt="単体テストの考え方/使い方" />
-<img src="/book-fp-domain-modeling.jpg" class="max-h-58 object-contain rounded shadow-lg" alt="関数型ドメインモデリング (Scott Wlaschin)" />
-
-</div>
-</div>
-
----
-
-## 今まで手が出なかった分野に手が届きそうな気がしてくる
-
-プログラミングしているだけで、勝手に別分野の知識がつくのが強い
-
-- 数学の未解決問題を**関数型言語Lean**で形式証明する話
-  - 関数型に対するメンタルモデルができているので、形式証明のイメージがつきやすかった
-- [計算機プログラムの構造と解釈(SICP)](https://www.vocrf.net/docs_ja/jsicp.pdf)を読む会
-  - Lisp (Scheme)についてHaskellをメタファーにして多少理解が進みやすい
-- [Googleが完全準同系暗号を利用したAIモデルのコンパイラを作った](https://www.publickey1.jp/blog/26/googleaiheirai.html)
-    - 圏論のFunctorって準同系の一部だったな
-    - Haskellには、Functor型クラスがあるので少しイメージが湧く
-<!--
-Functorを使うと型(文脈)を保ったまま関数適用ができる
-
-高校数学の実践例としての高校物理で相互理解が進むのに近い。
--->
-
-### Haskellを通じてプログラミングのメンタルモデルが変わったことが複利で効いてきた?
+### 遅延評価×関数型ではより宣言的なコードが書けるのが嬉しい
 
 ---
 
 ## まとめ
 
-- Haskellは遅延評価のために強い制約を課した純粋関数型言語である。
-  - 遅延評価があることでおもしろいコードがかける
-  - 関数型言語では、関数の組み合わせで処理を記述する一つのパラダイム
-- 遅延評価と関数型の組み合わせおもしろい
-- Haskellをやっていることで自分はお得になった気がしている
+- Haskellの美しさを支えるのは遅延評価と関数型
+  - 遅延評価があることでおもしろいコードが書ける
+  - 関数型は、関数の組み合わせで処理を記述する一つのパラダイム
+- 遅延評価と関数型の組み合わせると宣言的/抽象度の高いコードがかける
 
 ### **#Haskellはいいぞ**
 
 ---
 
-## おわりに: AI時代の技術との向き合い方(圧倒的個人の意見)
+## おわりに: 自分がHaskellをやる理由
 
 <Callout type="warn" title="Blub Paradox (ポール・グレアム『Beating the Averages』)">
 
@@ -687,10 +682,10 @@ Functorを使うと型(文脈)を保ったまま関数適用ができる
 - それは、**Blubで考えている**から。
 </Callout>
 
-- 結局手を動かした人にしか見えない世界があると思う。
+- 結局手を動かした人にしか見えない世界がある。
 - AIでコードを書ける時代だが、**理解を楽しめるのはプログラマーの特権**
   - Haskellに11ヶ月コミットしているが、AIと対話しながらでもすぐに理解するのは難しい
-- 見えなかった世界が見えるようになるのは楽しいので、技術を理解する時間を確保し続けたい
+- 見えなかった世界が見えるようになるのは楽しい!
 
 ---
 layout: end
@@ -711,6 +706,7 @@ qr2Caption: Haskellの記事たくさん書いてます
 敬称略
 
 - [Lazy evaluation - HaskellWiki](https://wiki.haskell.org/Lazy_evaluation)
+- [3. Pure Functions, Laziness, I/O, and Monads - School of Haskell(Bartosz Milewski、2014)](https://www.schoolofhaskell.com/school/starting-with-haskell/basics-of-haskell/3-pure-functions-laziness-io)
 - [関数型プログラミング - Wikipedia](https://ja.wikipedia.org/wiki/%E9%96%A2%E6%95%B0%E5%9E%8B%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0)
 - [A History of Haskell: Being Lazy With Class(Paul Hudak / John Hughes / Simon Peyton Jones / Philip Wadler、HOPL III, 2007)](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/07/history.pdf)
 - [Why Functional Programming Matters(John Hughes、1990)](https://www.cs.kent.ac.uk/people/staff/dat/miranda/whyfp90.pdf)
@@ -734,8 +730,6 @@ qr2Caption: Haskellの記事たくさん書いてます
 ---
 layout: section
 index: "Appendix"
----
-
 ---
 
 # デモ②の`ys`の作り方について
