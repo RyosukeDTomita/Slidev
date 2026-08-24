@@ -109,14 +109,15 @@ index: "01"
 
 HUNTER×HUNTERの念能力: 自らに**強い制約**を課すことで、**強力なパワー**を得る
 
+<Callout title="強力なパワー">
+<strong>遅延評価(lazy evaluation)</strong>: 値が必要になる瞬間まで評価を先送りできる。<br>
+その結果、<strong>無限リスト</strong>を宣言できるなど、プログラムの表現力が拡張された。
+</Callout>
+
 - 誓約① 純粋関数
 - 誓約② 束縛(不変性)
 - 誓約③ 強い型
 
-<Callout title="得たパワー">
-<strong>遅延評価(lazy evaluation)</strong>: 値が必要になる瞬間まで評価を先送りできる。<br>
-その結果、<strong>無限リスト</strong>を宣言できるなど、プログラムの表現力が拡張された。
-</Callout>
 
 <!--
 - Haskellのメンタルモデルを理解するのに、ハンターハンターの制約と誓約の概念をメタファーにするとわかりやすいと思っている。
@@ -132,7 +133,7 @@ HUNTER×HUNTERの念能力: 自らに**強い制約**を課すことで、**強�
 - **参照透過性**: 同じ入力に対して常に同じ結果を返す
 - **副作用を持たない**
 
-**純粋でない**ものの例:
+**純粋でない**ものの例(他言語の例として):
 
 - IO処理(ファイル、ネットワーク、画面出力)
 - 例外を投げる
@@ -339,6 +340,7 @@ mySum xs = foldr (+) 0 xs
 ```
 
 - 畳み込みとは、リストの`:`を**演算子**に、`[]`を**初期値**に置き換える操作。
+  - (実用上は`foldr`と`foldl'`の使い分けが要る。巻末参照)
   - `[1,2,3]`は`1 : 2 : 3 : []`の糖衣構文
 - `:`を`+`に、`[]`を`0`にしたものがリストの合計
   - e.g. `1 : 2 : 3 : []`を初期値0、`+`で畳み込むと`1 + 2 + 3 + 0`になる
@@ -358,6 +360,7 @@ mySum     xs = foldr (+) 0 xs      -- 合計
 myProduct xs = foldr (*) 1 xs      -- 総積
 insertSort xs = foldr insert [] xs -- 挿入ソート
   where
+    insert x [] = [x]
     insert x (y : ys)
       | x <= y = x : y : ys
       | otherwise = y : insert x ys
@@ -452,17 +455,19 @@ xs = [1..] :: [Int]
 ### サンクの共有(グラフ簡約)
 
 - 複数の式が同じサンクを共有することができ、同じ**評価**が二度行われない
+- 一度評価されたサンクは**結果そのもので置き換わる**ので、2回目以降は値を読むだけ
 
-```haskell
-let xs = map f [1..100]
- in (sum xs, length xs) -- xsの評価は1回だけ
-```
+<pre class="slidev-code tg-annotated"><code>let y = <span class="tg-focus">expensive</span> in y * y  -- expensiveの評価は1回だけ
+</code></pre>
+
+- 前ページの`x + x`も同じで、`expensive`は2回ではなく1回しか評価されない
 
 (後ほど紹介するフィボナッチ数列の例で共有の真価が感じられる)
 
 <!--
 - 後ほど、フィボナッチ数列でサンクの共有をやるので頭出し程度に説明
 - Haskellでは同じサンクを指す複数の式が使用でき、1度評価された結果は他の式でも使用できる。
+- yを2回書いているが、expensiveが走るのは1回だけ。前ページのx + xも同じ。
 -->
 
 ---
@@ -788,6 +793,7 @@ def fib(n):
 - Haskellの遅延評価では、同じサンクを指す複数の式で結果が共有されるので、二度評価されない
 - 自分自身を1つずらして足し合わせる形で、**フィボナッチ数列本体**を定義可能
   - (評価が遅延されるので、自己参照構造が書ける)
+  - (共有が効く条件は巻末参照)
 
 ```haskell
 fibs :: [Integer]
@@ -845,7 +851,7 @@ layout: section
 index: "05"
 ---
 
-# Monadの話をちょっとだけ
+# Monadぽい話もちょっとだけ
 
 <div class="tg-quote">
   <p class="tg-quote__body">まだだ! まだ終わらんよ!</p>
@@ -926,14 +932,14 @@ fmap ((*2) . (+1)) [1, 2, 3] -- [4, 6, 8] 合成してから1回写像
 ### Haskellは、失敗情報を安全に上層まで持ち上げ可能
 
 <pre class="slidev-code tg-annotated"><code>data Either e a = Left e | Right a  <span class="tg-muted">-- 失敗 or 成功</span>
-data UserError = NotFound UserId | DbDown Text
+data UserError = NotFound UserId | DbDown String
 <span class="tg-muted">-- リポジトリ層: 失敗が型に現れる(チェック例外の嬉しさ)</span>
 <span class="tg-either">findUser :: UserId -> Either UserError User</span>
-<span class="tg-fn">name     :: User -> Text</span>
-<span class="tg-fn">greet    :: Text -> Text</span>
+<span class="tg-fn">name     :: User -> String</span>
+<span class="tg-fn">greet    :: String -> String</span>
 
 <span class="tg-muted">-- ドメイン層 -> アプリケーション層: try-catchは1つもない</span>
-greeting :: UserId -> Either UserError Text
+greeting :: UserId -> Either UserError String
 <span class="tg-either">greeting uid = fmap greet (fmap name (findUser uid))</span>
 </code></pre>
 
@@ -1013,11 +1019,13 @@ layout: section
 index: "Appendix"
 ---
 
-# デモ②の`ys`の作り方について
+# 補足
+
+デモ②の`ys`の作り方 / `fibs`の共有条件 / `foldr`と`foldl'`
 
 ---
 
-## 問題: `[0..9]`だとサンクが観察できない
+## デモ②の`ys`の作り方: `[0..9]`だとサンクが観察できない
 
 - デモ②で観察したかったのは「**要素がサンクのまま**の状態」
 - しかし`[0..9] :: [Int]`だと、要素位置に**サンクが積まれない**
@@ -1051,3 +1059,40 @@ ys = [_,_,_,_,_,_,_,_,_,_]
 - → 狙いどおり`ys = [_,_,_,_,_,_,_,_,_,_]`が観察できる
 
 ---
+
+## `fibs`の共有は「トップレベル・単相」だから効く
+
+```haskell
+fibs :: [Integer]  -- 単相な束縛なので、サンクが共有されメモ化として効く
+fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
+
+fibsPoly :: Num a => [a]  -- 多相にすると共有されない
+fibsPoly = 0 : 1 : zipWith (+) fibsPoly (tail fibsPoly)
+```
+
+- 多相な定義は内部的に「型クラス辞書を受け取る**関数**」になるため、参照のたびに作り直される
+- 同様に、引数を取る関数の中で`fibs`を定義すると呼び出しごとに作り直される
+- メモ化として効かせたいなら、**トップレベルの単相な束縛**にすること
+
+<div class="tg-dense">
+
+| `!! 32`の実行時間 | GHC 9.12.2 / `runghc` |
+| --- | --- |
+| `fibs`(単相) | 0.23s |
+| `fibsPoly`(多相) | 9.14s |
+
+</div>
+
+---
+
+## `foldr (+) 0`は大きなリストで落ちる
+
+```haskell
+mySum xs = foldr  (+) 0 xs -- 発表で使った説明用の定義
+mySum xs = foldl' (+) 0 xs -- 実用ではこちら(Data.List)
+```
+
+- `foldr (+) 0`は`1 + (2 + (3 + ...))`というサンクの連鎖を先に作るため、要素数が多いとスタックオーバーフローする
+- 合計のような**最後まで走査する正格な演算**は`foldl'`で左から潰していくのが定石
+  - 逆に、無限リストや途中で打ち切れる処理では`foldr`が有利
+- 詳細: [Haskellのfoldl、foldl'、foldrを比較してみた(sigma)](https://qiita.com/sigma_devsecops/items/206874ce5130abe280da)
