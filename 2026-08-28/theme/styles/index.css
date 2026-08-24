@@ -252,6 +252,48 @@ body,
   margin: 0.2rem 0;
 }
 
+/*
+ * 名言の引用。blockquote の箱だと章扉の風景に対して重すぎるので、
+ * 引用符と話者だけの軽い飾りにしている。話者は `::before` で em ダッシュを足す。
+ * 章扉の `.tg-section p`(0-1-1)に負けないよう、セレクタを2段にして詰めている。
+ */
+.tg-quote {
+  margin-top: 1.1rem;
+}
+
+.tg-quote .tg-quote__body {
+  position: relative;
+  margin: 0;
+  padding-left: 2rem;
+  font-size: 1.4rem;
+  line-height: 1.4;
+  color: var(--tg-bright);
+  text-shadow: 0 2px 14px rgba(0, 16, 25, 0.9);
+}
+
+.tg-quote .tg-quote__body::before {
+  content: '\201C';
+  position: absolute;
+  left: 0;
+  top: -0.5em;
+  font-size: 3rem;
+  line-height: 1;
+  color: var(--tg-gold);
+  opacity: 0.75;
+}
+
+.tg-quote .tg-quote__cite {
+  margin: 0.4rem 0 0;
+  padding-left: 2rem;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  color: var(--tg-muted);
+}
+
+.tg-quote .tg-quote__cite::before {
+  content: '\2014\00A0';
+}
+
 .slidev-layout table {
   width: 100%;
   border-collapse: collapse;
@@ -368,21 +410,26 @@ body,
 /*
  * コード内で概念ごとに色を割り当てる枠。右に置く Callout のアクセント色と対応させる。
  * ① パターンマッチ = ゴールド (point) / ② 再帰 = シアン (info)
+ * Functorの回では 箱(Either)を返す関数 = ゴールド / 中身だけを見る関数 = シアン と読み替える。
  * 複数のスライドで使うので、スライド側の <style scoped> ではなくここに置く。
  */
 .tg-annotated .tg-pat,
-.tg-annotated .tg-rec {
+.tg-annotated .tg-rec,
+.tg-annotated .tg-either,
+.tg-annotated .tg-fn {
   outline: 2px solid;
   outline-offset: 3px;
   border-radius: 3px;
 }
 
-.tg-annotated .tg-pat {
+.tg-annotated .tg-pat,
+.tg-annotated .tg-either {
   outline-color: var(--tg-gold);
   background: rgba(245, 197, 66, 0.14);
 }
 
-.tg-annotated .tg-rec {
+.tg-annotated .tg-rec,
+.tg-annotated .tg-fn {
   outline-color: var(--tg-cyan);
   background: rgba(63, 208, 196, 0.14);
 }

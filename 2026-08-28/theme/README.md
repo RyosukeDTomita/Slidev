@@ -97,6 +97,10 @@ index: "01"
 誓約と制約
 ```
 
+各スライドの上部に出る大項目(章)表示は、そのページから手前に遡って最初に見つかった
+章扉の `index` と見出しを使う。ただし `end` レイアウトに当たった時点で打ち切るので、
+締めより後ろに置いたReferenceやAppendixは、直前の章を引きずらない。
+
 ---
 
 ## コンポーネント
@@ -149,6 +153,17 @@ QR コード。読み取れることが最優先なので、必ず白いカー�
 | `tg-gold` / `tg-cyan` / `tg-red` / `tg-green` / `tg-muted` | 文字色 |
 | `tg-dense` | 1枚に収まらないときに文字を少し詰める |
 | `tg-anim` | アニメーション対象の目印(`prefers-reduced-motion` で停止する) |
+| `tg-quote` | 名言の引用。`tg-quote__body` に台詞、`tg-quote__cite` に話者を入れる |
+| `tg-annotated` | コードの一部を枠で囲んで注釈する。中で `tg-focus`(金) / `tg-pat`・`tg-either`(金) / `tg-rec`・`tg-fn`(シアン) を使う |
+
+```html
+<div class="tg-quote">
+  <p class="tg-quote__body">まだだ! まだ終わらんよ!</p>
+  <p class="tg-quote__cite">クワトロ・バジーナ『機動戦士Ζガンダム』(宇宙世紀0087年)</p>
+</div>
+```
+
+引用符と em ダッシュは CSS が足すので、本文には書かない。
 
 ---
 

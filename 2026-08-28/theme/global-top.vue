@@ -13,12 +13,17 @@ const { slides, currentSlideNo, currentSlideRoute } = useNav()
 /**
  * 現在ページから手前に遡って最初に見つかった章扉(layout: section)を大項目とする。
  * 章扉側の `index` と見出しをそのまま使うので、各スライドへの追記は不要。
+ *
+ * ただし締め(layout: end)より後ろのReferenceなどは本編の章に属さないので、
+ * 遡る途中で締めに当たったらそこで打ち切り、直前の章を引きずらないようにする。
  */
 const currentSection = computed(() => {
   // slides は0始まり、currentSlideNo は1始まりなので -1 して現在ページ自身から探す
   for (let i = currentSlideNo.value - 1; i >= 0; i--) {
-    const slide = slides.value[i]?.meta?.slide
-    if (slide?.frontmatter?.layout === 'section') {
+    const layout = slides.value[i]?.meta?.slide?.frontmatter?.layout
+    if (layout === 'end') return null
+    if (layout === 'section') {
+      const slide = slides.value[i]!.meta!.slide!
       return { index: slide.frontmatter.index, title: slide.title }
     }
   }
