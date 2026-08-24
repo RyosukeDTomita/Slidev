@@ -12,6 +12,13 @@
 
 ---
 
+## INITIAL SETTINGS
+
+- GitHub リポジトリの **Settings -> Pages -> Build and deployment -> Source** を**GitHub Actions** に変更する。
+- 必要なら Settings --> Environments -> にブランチを追加する
+
+---
+
 ## HOW TO USE
 
 パッケージマネージャは pnpm。node と一緒に `nix develop` で入る。
@@ -30,14 +37,6 @@ pnpm build 2026-08-28    # 指定したスライドだけビルド
 
 `pnpm dev` は引数を省略すると最初のスライドを開く。
 
-### テーマ
-
-既定は `templates/slides.md` の `theme: seriph`。
-
-`2026-08-28` は専用のローカルテーマ [`2026-08-28/theme/`](./2026-08-28/theme/README.md) を使っている。
-夏の海と島(友ヶ島)がモチーフで、配色は Solarized Dark を投影向けに高コントラスト化したもの。
-使い方・レイアウト・コンポーネントはテーマ側の README を参照。
-
 ### 画像
 
 画像はスライドと同じディレクトリの `public/` に置き、`/icon.png` のようにスラッシュ始まりで参照する。
@@ -45,25 +44,6 @@ pnpm build 2026-08-28    # 指定したスライドだけビルド
 
 `.gitignore` は `*.png` を無視するが `public/` 配下だけは例外にしてある。
 ここに置いた画像をコミットし忘れると CI のビルドに含まれず、公開サイトだけ画像が出ない状態になる。
-
-### ページ単位のURL
-
-Slidev のビルド結果は SPA で、実体は `index.html` 1枚しかない。
-`/<ディレクトリ名>/9/` のようなURLを直接開くにはサーバ側の rewrite が必要だが、
-GitHub Pages にはその仕組みがない(Slidev が出力する `_redirects` は Netlify 用で、
-サブディレクトリの `404.html` も GitHub Pages は参照しない)。
-そのままだとブラウザのリロードや外部からの直リンクが404になる。
-
-そこで `pnpm build` はビルド後に、ページ番号のディレクトリへ `index.html` を複製する。
-
-```text
-dist/2026-08-28/index.html
-dist/2026-08-28/1/index.html
-dist/2026-08-28/9/index.html   # /Slidev/2026-08-28/9/ が実ファイルとして 200 で返る
-```
-
-ページ数は `@slidev/parser` で `slides.md` を解析して数える(`hide` / `disabled` のスライドはルートを持たないため除外される)。
-スライドを増減させてもビルドし直せば追従する。
 
 ### PDF 出力
 
@@ -85,7 +65,24 @@ ghalint run                 # workflowのポリシー違反をチェック
 
 ---
 
-## INITIAL SETTINGS
+## Doc
 
-- GitHub リポジトリの **Settings -> Pages -> Build and deployment -> Source** を**GitHub Actions** に変更する。
-- 必要なら Settings --> Environments -> にブランチを追加する
+### ページ単位のURL
+
+Slidev のビルド結果は SPA で、実体は `index.html` 1枚しかない。
+`/<ディレクトリ名>/9/` のようなURLを直接開くにはサーバ側の rewrite が必要だが、
+GitHub Pages にはその仕組みがない(Slidev が出力する `_redirects` は Netlify 用で、
+サブディレクトリの `404.html` も GitHub Pages は参照しない)。
+そのままだとブラウザのリロードや外部からの直リンクが404になる。
+
+そこで `pnpm build` はビルド後に、ページ番号のディレクトリへ `index.html` を複製する。
+
+```text
+dist/2026-08-28/index.html
+dist/2026-08-28/1/index.html
+dist/2026-08-28/9/index.html   # /Slidev/2026-08-28/9/ が実ファイルとして 200 で返る
+```
+
+ページ数は `@slidev/parser` で `slides.md` を解析して数える(`hide` / `disabled` のスライドはルートを持たないため除外される)。
+スライドを増減させてもビルドし直せば追従する。
+
