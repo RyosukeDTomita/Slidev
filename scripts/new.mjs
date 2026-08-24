@@ -21,6 +21,8 @@ if (fs.existsSync(entry)) {
 
 fs.mkdirSync(dir, { recursive: true })
 fs.copyFileSync(path.join(rootDir, 'templates', 'slides.md'), entry)
+// watcher が .direnv 経由で /nix/store を舐めないようにする vite 設定も配る。
+fs.copyFileSync(path.join(rootDir, 'templates', 'vite.config.ts'), path.join(dir, 'vite.config.ts'))
 
 console.log(`==> ${path.relative(rootDir, entry)} を作成しました`)
 console.log(`    pnpm dev ${slug}`)

@@ -45,6 +45,17 @@ pnpm build 2026-08-28    # 指定したスライドだけビルド
 `.gitignore` は `*.png` を無視するが `public/` 配下だけは例外にしてある。
 ここに置いた画像をコミットし忘れると CI のビルドに含まれず、公開サイトだけ画像が出ない状態になる。
 
+### ファイル監視 (ENOSPC 対策)
+
+各スライドディレクトリの `vite.config.ts` で `sample/`, `.direnv/`, `result*` を watcher の対象外にしている。
+`sample/` はライブコーディング用の置き場でスライドからは参照しないため、監視もホストもしない。
+特にサンプルコードを `nix develop` / `direnv` で動かすと `.direnv/` に `/nix/store` への symlink ができ、
+これを watcher が辿ると nixpkgs 全体を監視しようとして
+`Error: ENOSPC: System limit for number of file watchers reached` で `pnpm dev` が落ちる。
+
+この `vite.config.ts` は `pnpm new` が `templates/vite.config.ts` からコピーするので、
+新しいスライドでは自動で有効になる。
+
 ### PDF 出力
 
 PDF 出力には Chromium が必要なので、専用のシェルを使う。
