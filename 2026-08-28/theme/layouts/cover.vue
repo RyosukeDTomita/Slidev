@@ -75,8 +75,13 @@ const iconSrc = computed(() => {
   max-width: 80%;
 }
 
+/*
+ * タイトルは1行に収める。折り返さない上限は、inner の max-width 80%
+ * (canvasWidth 980px なら 784px) に対して2.74rem。描画差で折り返さないよう
+ * 少しだけ余裕を取って2.7remにしている。
+ */
 .tg-cover h1 {
-  font-size: 3.1rem;
+  font-size: 2.7rem;
   line-height: 1.22;
   margin-bottom: 0.5rem;
   color: var(--tg-bright);

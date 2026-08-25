@@ -226,15 +226,66 @@ body,
 }
 
 /*
- * solarized-dark のコメント色 base01 (#586e75) / base00 (#657b83) は
- * プロジェクタだと背景に沈むので、インラインスタイルを狙って一段明るくする。
+ * Shiki のトークン色の上書き。
+ *
+ * Slidev はダーク/ライトのデュアルテーマなので、Shiki は色を `color` ではなく
+ * `--shiki-dark` / `--shiki-light` のインライン変数として吐き、Slidev 側の
+ * `html.dark .shiki span { color: var(--shiki-dark) }` だけが当たる。
+ * font-style / font-weight を当てる CSS はないので、ここで拾い直している。
+ *
+ * 属性セレクタは必ず `--shiki-dark: ` まで含めて書くこと。色だけで一致させると
+ * `--shiki-light` 側に同じ色を持つ無関係なトークンまで巻き込む
+ * (例: `#586e75` はダークのコメント色であると同時にライトの型の色でもある)。
+ *
+ * 色は solarized をベースに、投影で沈むものをテーマのアクセント色へ寄せている。
  */
-.slidev-layout .shiki span[style*='#586e75' i] {
-  color: #8ba6a8 !important;
+
+/* Slidev が当ててくれない斜体/太字を拾い直す。コメントの斜体はここで効く */
+html.dark .slidev-layout .shiki span[style*='--shiki-dark-font-style: italic' i] {
+  font-style: italic;
 }
 
-.slidev-layout .shiki span[style*='#657b83' i] {
-  color: #9ab3b5 !important;
+html.dark .slidev-layout .shiki span[style*='--shiki-dark-font-weight: bold' i] {
+  font-weight: 700;
+}
+
+/* コード本文 (base0)。コメントとの明度差を作るために一段明るくする */
+html.dark .slidev-layout .shiki span[style*='--shiki-dark: #839496' i] {
+  color: #b5cac9 !important;
+}
+
+/*
+ * コメント (base01)。素の #586e75 は投影で沈むので持ち上げつつ、
+ * 本文より暗く保って斜体と併せて「コメントらしさ」を出す。
+ */
+html.dark .slidev-layout .shiki span[style*='--shiki-dark: #586e75' i] {
+  color: #769298 !important;
+  font-style: italic;
+}
+
+/* 型 (storage.type)。Haskellでは型が主役なのでアクセント色を割り当てる */
+html.dark .slidev-layout .shiki span[style*='--shiki-dark: #93a1a1' i] {
+  color: var(--tg-cyan) !important;
+}
+
+/* 関数名・型変数 */
+html.dark .slidev-layout .shiki span[style*='--shiki-dark: #268bd2' i] {
+  color: var(--tg-blue) !important;
+}
+
+/* キーワード・演算子 */
+html.dark .slidev-layout .shiki span[style*='--shiki-dark: #859900' i] {
+  color: var(--tg-green) !important;
+}
+
+/* データ構築子 (Left / Right / Just など) */
+html.dark .slidev-layout .shiki span[style*='--shiki-dark: #cb4b16' i] {
+  color: var(--tg-orange) !important;
+}
+
+/* 数値リテラル */
+html.dark .slidev-layout .shiki span[style*='--shiki-dark: #d33682' i] {
+  color: var(--tg-magenta) !important;
 }
 
 /* --------------------------------------------------------- quote/table */

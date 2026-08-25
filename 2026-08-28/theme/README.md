@@ -32,8 +32,24 @@ CSS 変数として `styles/index.css` の `:root` に定義してある。
 | `--tg-cyan` | `#3fd0c4` | リンク・箇条書き | cyan |
 | `--tg-red` / `--tg-green` / `--tg-blue` ほか | - | 補助 | 各アクセント |
 
-コードハイライトは `setup/shiki.ts` で `solarized-dark` / `solarized-light` を指定している。
-`solarized-dark` のコメント色 (`#586e75`) だけは投影で沈むため、`styles/index.css` で一段明るく上書きしている。
+コードハイライトは`setup/shiki.ts`で`solarized-dark` / `solarized-light`を指定している。
+ただし`solarized-dark`はプロジェクタだと沈む色が多いので、`styles/index.css`でトークンごとに上書きしている。
+
+Slidevはダーク/ライトのデュアルテーマなので、Shikiは色を`color`ではなく`--shiki-dark` / `--shiki-light`の
+インライン変数として吐く。上書きは`html.dark .slidev-layout .shiki span[style*='--shiki-dark: <色>' i]`という
+属性セレクタで拾う(`--shiki-dark: `まで含めること。色だけで一致させると`--shiki-light`側に同じ色を持つ
+無関係なトークンを巻き込む)。Slidev側にはfont-style / font-weightを当てるCSSがないので、斜体・太字も
+ここで拾い直している。
+
+| トークン | Solarized | 上書き後 |
+| --- | --- | --- |
+| コード本文 | base0 `#839496` | `#b5cac9` |
+| コメント | base01 `#586e75` | `#769298`(斜体) |
+| 型 | base1 `#93a1a1` | `--tg-cyan`(太字) |
+| 関数名・型変数 | `#268bd2` | `--tg-blue` |
+| キーワード・演算子 | `#859900` | `--tg-green` |
+| データ構築子 | `#cb4b16` | `--tg-orange` |
+| 数値リテラル | `#d33682` | `--tg-magenta` |
 
 ---
 
