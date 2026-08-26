@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -Wunused-imports #-}
 
---   実行: runghc monad-slide-demo.hs
+--   実行: runghc functor-demo.hs
 module Main (main) where
 
 import Data.List (find)
@@ -41,9 +41,6 @@ findUser uid
 -- ドメイン層
 --------------------------------------------------------------------------------
 
-name :: User -> String
-name u = userName u
-
 greet :: String -> String
 greet n = "Hello, " ++ n ++ "!"
 
@@ -51,9 +48,9 @@ greet n = "Hello, " ++ n ++ "!"
 -- ドメイン層 -> アプリケーション層: try-catchは1つもない
 --------------------------------------------------------------------------------
 
--- | Functor版。失敗しない関数(name / greet)だけならfmapで足りる。
-greetingF :: UserId -> Either UserError String
-greetingF uid = fmap greet (fmap name (findUser uid))
+-- | Functor版。失敗しない関数(userName / greet)だけならfmapで足りる。
+greeting :: UserId -> Either UserError String
+greeting uid = fmap greet (fmap userName (findUser uid))
 
 --------------------------------------------------------------------------------
 -- アプリケーション層: ここで初めてLeft/Rightを開く
@@ -73,7 +70,7 @@ err code msg = Response code msg
 
 -- | Eitherを開いてレスポンスを決定
 handle :: UserId -> Response
-handle uid = case greetingF uid of
+handle uid = case greeting uid of
   Right msg -> ok 200 msg
   Left (NotFound _) -> err 404 "user not found"
   Left (DbDown detail) -> err 500 detail

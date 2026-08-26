@@ -102,7 +102,7 @@ index: "01"
 
 遅延評価を前提とした関数型言語
 
-<img src="/haskell-logo-purple.png" class="mt-6 w-40 object-contain" alt="Haskellのロゴ (Thompson-Wheeler logo)" />
+<img src="/haskell-logo-purple.png" class="mt-6 w-40 object-contain" alt="Haskellのロゴ(Thompson-Wheeler logo)" />
 
 ---
 
@@ -118,7 +118,6 @@ HUNTER×HUNTERの念能力: 自らに**強い制約**を課すことで、**強�
 - 誓約① 純粋関数
 - 誓約② 束縛(不変性)
 - 誓約③ 強い型
-
 
 <!--
 - Haskellのメンタルモデルを理解するのに、ハンターハンターの制約と誓約の概念をメタファーにするとわかりやすいと思っている。
@@ -156,7 +155,7 @@ MEMO 置換可能性: 式をその値に置き換えてもプログラムの意�
 
 ## 誓約② 束縛(不変性)
 
-- Javaだと`final`をつけて変数を不変にできる。
+- Javaだと`final`をつけて変数を不変にできる
 - Haskellでは変数への代入ではなく、値と名前を結びつける**束縛**(binding)
 - 再代入はコンパイルエラーになり、更新する場合新しい箱が必要
 
@@ -264,7 +263,7 @@ def my_sum(xs):
 
 <!--
 - 馴染みのある書き方をするとこんな感じになる
-- totalという状態をもつ変数を容易してforループを回し、一つずつ要素を足してtotalを更新する
+- totalという状態をもつ変数を用意してforループを回し、一つずつ要素を足してtotalを更新する
 -->
 
 ---
@@ -283,7 +282,7 @@ mySum <span class="tg-pat">(x : xs)</span><sup class="tg-pat-n">①</sup> = x + 
 
 <br>
 
-- 再帰1回ごとにリストの要素が一つずつ消費され、空になると再帰が止まる。
+- 再帰1回ごとにリストの要素が一つずつ消費され、空になると再帰が止まる
 - 宣言的なコードに
 
 </div>
@@ -313,7 +312,7 @@ mySum <span class="tg-pat">(x : xs)</span><sup class="tg-pat-n">①</sup> = x + 
 
 <pre class="slidev-code tg-annotated"><code>mySum [1,2,3]
 → 1 + <span class="tg-rec">mySum [2,3]</span>  -- (x : xs) にマッチ。x = 1, xs = [2,3]
-→ 1 + (2 + <span class="tg-rec">mySum [3]</span>) 
+→ 1 + (2 + <span class="tg-rec">mySum [3]</span>)
 → 1 + (2 + (3 + <span class="tg-rec">mySum []</span>))
 → 1 + (2 + (3 + <span class="tg-pat">0</span>))  -- [] にマッチ。ここで再帰が止まる
 → 1 + (2 + 3)
@@ -340,7 +339,7 @@ mySum :: [Int] -> Int
 mySum xs = foldr (+) 0 xs
 ```
 
-- 畳み込みとは、リストの`:`を**演算子**に、`[]`を**初期値**に置き換える操作。
+- 畳み込みとは、リストの`:`を**演算子**に、`[]`を**初期値**に置き換える操作
   - `[1,2,3]`は`1 : 2 : 3 : []`の糖衣構文
 - `:`を`+`に、`[]`を`0`にしたものがリストの合計
   - e.g. `1 : 2 : 3 : []`を初期値0、`+`で畳み込むと`1 + 2 + 3 + 0`になる
@@ -356,9 +355,9 @@ mySum xs = foldr (+) 0 xs
 #### 畳み込みは演算子と初期値を変えるだけでいろいろできる
 
 ```haskell
-mySum     xs = foldr (+) 0 xs      -- 合計
-myProduct xs = foldr (*) 1 xs      -- 総積
-insertSort xs = foldr insert [] xs -- 挿入ソート
+mySum      xs = foldr (+) 0 xs      -- 合計
+myProduct  xs = foldr (*) 1 xs      -- 総積
+insertSort xs = foldr insert [] xs  -- 挿入ソート
   where
     insert x [] = [x]
     insert x (y : ys)
@@ -368,7 +367,7 @@ insertSort xs = foldr insert [] xs -- 挿入ソート
 
 <!--
 - 抽象化すると何がうれしい?
--畳み込みという同じ構造を使っていろいろな処理をかける
+- 畳み込みという同じ構造を使っていろいろな処理をかける
 - 認知負荷が減って個人的にうれしい
 -->
 
@@ -405,7 +404,7 @@ index: "03"
 
 ## 遅延評価は関数型の前提条件ではない
 
-<div class="tg-dense tg-langtable">
+<div class="tg-dense">
 
 | 名前 | 型付け | 純粋性 | 評価戦略 |
 | --- | --- | --- | --- |
@@ -431,7 +430,7 @@ index: "03"
 
 - 式はすぐに評価されず、**サンク**(thunk)という「評価の予約」が積まれる
 - 値が**本当に必要になった瞬間**に、式が評価されて値になる
-- だから「無限リスト」などの普通の言語では書けないコードが書ける
+- だから「無限リスト」などを素直にかける
 
 ```haskell
 xs = [1..] :: [Int]
@@ -445,8 +444,8 @@ xs = [1..] :: [Int]
 <!--
 - 遅延評価を使うと式はすぐに評価されず、サンクという評価の予約を積む
 - サンクは本当に必要になったタイミングで評価される
-- そのため、どこかで止まる関数を適用することが前提にはなるが無限リストも使える
-- 必要のない式が評価されないので理論上はリソースの無駄が少ない※
+- そのため、どこかでとまることを前提にすれば無限リストが使える(JavaやLispのストリームとかでも同じことはできるはず)
+- 必要のない式が評価されないので理論上はリソースの無駄が少ない
 - expensiveをなんらかの重たい計算の末に得られる結果とした場合、expensiveが必要ない場合に評価されない
 -->
 
@@ -591,15 +590,12 @@ minimum' xs = (head . sort) xs
 <!--
 - 遅延評価を使ったおもしろコードをコラム的に紹介する。
 - これはリストの最小値を求めるコードをおもしろ実装したもの
--  ソートして先頭を取るのは非効率に見えるが、遅延評価により最初に要素だけソートされたらソートが止まるので無駄な計算をしない
+- ソートして先頭を取るのは非効率に見えるが、遅延評価により最初の要素だけソートされたらソートが止まるので無駄な計算をしない
 -->
 
 ---
 
 ### (参考)$O(n)$と$O(n \log n)$はどれくらい違うのか($\log_2 n$の場合)
-
-<div class="grid grid-cols-1 gap-2">
-<div>
 
 <svg class="tg-chart" viewBox="0 0 720 348" role="img" aria-label="要素数nに対する演算回数の増え方。O(n)は直線的、O(n log n)はより急に増える">
   <g class="tg-chart__grid">
@@ -621,40 +617,34 @@ minimum' xs = (head . sort) xs
     <text x="499.5" y="320">75</text>
     <text x="640" y="320">100</text>
   </g>
-
   <polyline class="tg-chart__line tg-chart__line--nlogn" points="78.0,300.0 89.2,299.3 100.5,297.1 111.7,294.3 123.0,291.2 134.2,287.9 145.4,284.3 156.7,280.5 167.9,276.6 179.2,272.5 190.4,268.4 201.6,264.1 212.9,259.8 224.1,255.3 235.4,250.8 246.6,246.2 257.8,241.5 269.1,236.7 280.3,231.9 291.6,227.1 302.8,222.1 314.0,217.2 325.3,212.1 336.5,207.1 347.8,202.0 359.0,196.8 370.2,191.6 381.5,186.3 392.7,181.1 404.0,175.7 415.2,170.4 426.4,165.0 437.7,159.6 448.9,154.1 460.2,148.6 471.4,143.1 482.6,137.5 493.9,132.0 505.1,126.3 516.4,120.7 527.6,115.0 538.8,109.3 550.1,103.6 561.3,97.9 572.6,92.1 583.8,86.3 595.0,80.5 606.3,74.7 617.5,68.8 628.8,62.9 640.0,57.0" />
   <polyline class="tg-chart__line tg-chart__line--n" points="78.0,300.0 89.2,299.3 100.5,298.5 111.7,297.8 123.0,297.1 134.2,296.3 145.4,295.6 156.7,294.9 167.9,294.1 179.2,293.4 190.4,292.7 201.6,292.0 212.9,291.2 224.1,290.5 235.4,289.8 246.6,289.0 257.8,288.3 269.1,287.6 280.3,286.8 291.6,286.1 302.8,285.4 314.0,284.6 325.3,283.9 336.5,283.2 347.8,282.4 359.0,281.7 370.2,281.0 381.5,280.3 392.7,279.5 404.0,278.8 415.2,278.1 426.4,277.3 437.7,276.6 448.9,275.9 460.2,275.1 471.4,274.4 482.6,273.7 493.9,272.9 505.1,272.2 516.4,271.5 527.6,270.7 538.8,270.0 550.1,269.3 561.3,268.5 572.6,267.8 583.8,267.1 595.0,266.4 606.3,265.6 617.5,264.9 628.8,264.2 640.0,263.4" />
-
   <g>
     <line class="tg-chart__gap" x1="640" y1="57" x2="640" y2="263.4" />
     <text class="tg-chart__label" x="632" y="165" text-anchor="end">約6.6倍</text>
   </g>
-
   <g class="tg-chart__legend">
     <line x1="92" y1="64" x2="124" y2="64" class="tg-chart__line--nlogn" />
     <text x="132" y="71">n log n</text>
     <line x1="92" y1="104" x2="124" y2="104" class="tg-chart__line--n" />
     <text x="132" y="111">n</text>
   </g>
-
   <text class="tg-chart__axis" x="78" y="26">演算回数(相対)</text>
   <text class="tg-chart__axis" x="640" y="344" text-anchor="end">n(要素数)</text>
 </svg>
 
-</div>
-<div>
-
-- `n = 100`で**約6.6倍**、`n = 10000`なら**約13倍**
-- `head . sort`は、遅延評価のおかげで<span class="tg-cyan">下側の線</span>で済んでいる
-- ⚠ (Haskellの公式ライブラリはこんなネタ実装をしていない)
-
-</div>
-</div>
-
 <style scoped>
+/*
+ * 幅いっぱい(884px)に描くと高さが427pxになり、右下のページ番号に
+ * `n(要素数)`が重なる。高さを先に決めて、幅はアスペクト比から従わせる。
+ */
 .tg-chart {
-  width: 100%;
+  display: block;
+  width: auto;
   height: auto;
+  max-width: 100%;
+  max-height: 380px;
+  margin: 0 auto;
   font-family: var(--slidev-font-sans, sans-serif);
 }
 
@@ -666,8 +656,8 @@ minimum' xs = (head . sort) xs
 .tg-chart__tick,
 .tg-chart__axis {
   fill: var(--tg-muted);
-  /* viewBox 720 が 884px で描画される(1.228倍)ので、20単位で約24.6px */
-  font-size: 20px;
+  /* max-height 380px なので viewBox 348 は1.092倍。22単位で約24px */
+  font-size: 22px;
 }
 
 .tg-chart__line {
@@ -760,7 +750,7 @@ fib n
 <!--
 - 高校数学でやったね。anは一つ前と2つ前の足し算で決まる
 - 漸化式がそのまま再帰でかけそう?
-- だが、このコードには同じfibが評価されてしまう問題。fib (n - 1)を求めるためにはfib(n - 2)を再度計算してしまう。
+- だが、このコードには同じfibが何度も評価されてしまう問題。fib (n - 1)を求めるためにはfib(n - 2)を再度計算してしまう。
 -->
 
 ---
@@ -836,14 +826,14 @@ $$
 
 ---
 
-## まとめ
+## まとめ #Haskellはいいぞ
 
 - Haskellの美しさを支えるのは関数型と遅延評価
   - 関数型を使うと宣言的で抽象度の高いコードが書ける
   - 遅延評価があることで無限リストなど表現力が拡張される
-- 遅延評価と関数型を組み合わせるとより面白い表現ができるようになる
+- 遅延評価と関数型を組み合わせると相乗効果で美しいコードに
 
-### **#Haskellはいいぞ**
+### <span class="tg-script">Elegant!</span>
 
 <!--
 スライドを読む
@@ -870,7 +860,7 @@ index: "05"
 
 ## Functor: 構造を保ったまま中身だけを写す
 
-- `Functor`は「文脈(箱)の**中身**に関数を適用する」ための型クラス。圏論でいう関手の概念をHaskellに取り込んだもの。
+- `Functor`は「文脈(箱)の**中身**に関数を適用する」ための型クラス。圏論でいう関手の概念をHaskellに取り込んだもの
 
 ```haskell
 class Functor f where
@@ -883,6 +873,7 @@ fmap (+1) (Left "error")  -- Left "error"
 
 <!--
 - Functorとは、文脈の中身に関数を適用するための仕組み。
+- 箱を開けずに中身を入れ替えたりするのはマジシャンみたい。
 - 圏論でいう関手の概念をHaskellに取り込んだもの(数学の概念を入れられるのは純粋関数だから)
 -->
 
@@ -890,9 +881,10 @@ fmap (+1) (Left "error")  -- Left "error"
 
 ## Functorを使うと安全に関数合成できる
 
-関手則を満たすように`fmap`を実装することで安全な関数合成を提供
+- Haskellは純粋(数学的)関数による関数合成で処理を記述 -> 数学の理論が使える
+- 関手則を満たすように`fmap`を実装することで文脈を壊さない安全な関数合成が可能
 
-<pre class="slidev-code tg-annotated"><code><span class="tg-muted">-- 何もしない関数の写像はなにもしない(恒等元の保存)</span>
+<pre class="slidev-code tg-annotated"><code><span class="tg-muted">-- 何もしない関数の写像はなにもしない(恒等射の保存)</span>
 fmap id [1, 2, 3]  <span class="tg-muted">-- [1, 2, 3]</span>
 
 <span class="tg-muted">-- 関数合成してから写像と写像してから関数合成は同じ結果(射の合成の保存)</span>
@@ -900,24 +892,20 @@ fmap id [1, 2, 3]  <span class="tg-muted">-- [1, 2, 3]</span>
 <span class="tg-focus">(fmap (*2) . fmap (+1))</span> [1, 2, 3] <span class="tg-muted">-- [4, 6, 8]</span>
 </code></pre>
 
-<Callout>
-<code>fmap</code>は<strong>中身を写像するだけ</strong>で、文脈(失敗・長さ・順序等)を壊さない。
-</Callout>
-
 <!--
-- なぜこんなことができるかというと、圏論の関手則という数学の理論に基づいた実装をするから。
+- Haskellは純粋関数、いわゆる数学的な関数を扱うので数学分野の抽象化概念を使える
+- 圏論の関手則をみたすようにfmap実装をするから。
 - 何もしない関数の写像はなにもしない
-- 関す合成してから写像と写像してから関数合成
+- 関数合成してから写像と写像してから関数合成
   - +1してから2倍する関数を使ってfmap
   - +1するfmapの後に*2をするfmap
-- つまり、箱から中身を取り出さずに、中身を入れ替えられる。マジシャンみたい
 -->
 
 ---
 
-## チェック例外と非チェック例外(Javaの例)
+## 失敗情報を上層に送りたい(Java)
 
-<div class="tg-dense">
+<div class="tg-dense tg-labelcol">
 
 | | 型に例外 | 課題 |
 | --- | --- | --- |
@@ -926,8 +914,8 @@ fmap id [1, 2, 3]  <span class="tg-muted">-- [1, 2, 3]</span>
 
 </div>
 
-- APIとして必要な例外情報は型で表現したい
-- 例外情報を上層に伝えるためだけの`try-catch`や値チェックを書きたくない!
+- 例外が発生することが型で見えるとうれしい
+- 例外情報を上層に伝えるためだけの`try-catch`を書きたくない!
 
 <!--
 - Functorが役に立つ例を紹介します。
@@ -939,27 +927,50 @@ fmap id [1, 2, 3]  <span class="tg-muted">-- [1, 2, 3]</span>
 
 ---
 
+### Haskellのサンプルコード概要
+
+```mermaid {scale: 1.04}
+flowchart LR
+  db[("DB<br/>users")]
+  subgraph repo["リポジトリ層"]
+    direction TB
+    findUser --> userName
+  end
+  subgraph dom["ドメイン層"]
+    greet
+  end
+  subgraph app["アプリケーション層"]
+    handle
+  end
+  db --> findUser
+  userName --> greet --> handle
+```
+
+- 失敗の可能性があるのはDBアクセスをする`findUser`だけ
+- リポジトリ層の失敗情報が必要なのは`handle`のみを想定
+
+---
+
 ### Functorで、失敗情報を安全に上層まで持ち上げ可能
 
 <pre class="slidev-code tg-annotated"><code>data Either e a = Left e | Right a  <span class="tg-muted">-- 失敗 or 成功</span>
 data UserError = NotFound UserId | DbDown String
 <span class="tg-muted">-- リポジトリ層: DBアクセスの結果は失敗情報 or 成功した結果</span>
 <span class="tg-either">findUser :: UserId -> Either UserError User</span>
-<span class="tg-fn">name     :: User -> String</span>
+<span class="tg-fn">userName :: User -> String</span>
 <span class="tg-fn">greet    :: String -> String</span>
-
 <span class="tg-muted">-- ドメイン層 -> アプリケーション層: 失敗したかを気にせずにすむ</span>
 greeting :: UserId -> Either UserError String
-<span class="tg-either">greeting uid = fmap greet (fmap name (findUser uid))</span>
+<span class="tg-either">greeting uid = fmap greet (fmap userName (findUser uid))</span>
 </code></pre>
 
 <!--
 - Haskellはこの問題をFunctorを使って解決している
 - やりたいことはUserIdをもとにユーザ名を取得して挨拶文を返すこと。
-- findUserを使ってDBからUser情報を取得するが、失敗する可能性がある。
-- 戻り値の型はEither UserError Userになっていて、これは失敗情報 or User情報のどっちかが入る型という意味
-- nameとgreetはUser情報を使う関数
-- 普通の言語なら取り出した時点でうまくUser情報をとれたかをチェックする処理が必要
+- 前提としてHaskellでは、例外ではなく、失敗情報 or 成功した結果をもつEitherを使って失敗情報を扱う。
+- findUserを使ってDBからUser情報を取得するが、戻り値の型はEither UserError Userになっていて、これは失敗情報 or User情報のどっちかが入る型(直和型)
+- userNameとgreetはUser情報を使う関数
+- これらを組み合わせてhello sigmaみたいな
 - この際に失敗しているかもしれないことを気にせずに関数合成して処理が書ける
 -->
 
@@ -976,7 +987,8 @@ handle uid = case greeting uid of
   Left (DbDown detail) -> err 500 detail
 ```
 
-ユーザにエラーメッセージを返すまで失敗の取り出しを遅延できる。
+- `fmap`は`Right`(成功)のときだけ中身に関数適用し、`Left`(失敗)は素通り
+- ユーザにエラーメッセージを返すまで失敗の取り出しを遅延できる
 
 <!--
 アプリケーション層で結果をユーザに返す際に、成功 or 失敗条件で分岐して結果を返せる。
@@ -985,22 +997,20 @@ handle uid = case greeting uid of
 
 ---
 
-## 失敗時の処理(`try-catch`や値の空チェックなど)がまとまる
+## Functor まとめ
 
-- `fmap`は`Right`(成功)のときだけ中身に関数適用し、`Left`(失敗)は素通りする
-- `fmap`でつなぐことで、失敗情報を持つ可能性があるという文脈を壊さずにアプリケーション層まで届けられる。
-- 失敗時の処理がまとまることで、テストケースを減らす、全体として見通しが良いコードがかける。
+- Haskellは純粋関数型なので数学の理論(圏論)を応用した機能が使える
+- `fmap`でつなぐことで、文脈を壊さずに関数合成ができる
+- これを利用することで**処理が失敗したかどうかを中間層で確認せずに**上層まで処理結果を持ち上げることができる
+
+### <span class="tg-script">Very Elegant!!</span>
 
 (今回は失敗するかもしれない処理は1つだったが、複数扱う場合にはMonadやApplicativeを使う)
 
-
 <!--
-- なぜ、こんなことができるのかというと、fmapがRightの時だけ関数適用して、失敗情報の場合には素通りする形で関数合成する。
-- 失敗時確認処理(`try-catch`や値の空チェックなど)をまとめることでテストコードを減らせるかも
-
-
-
-バンザイ!
+- Haskellは純粋関数型なので、数学の理論を使える
+- Functor型クラスのfmapを使うことで文脈を壊さずに関数合成して処理がかける
+- これを利用する例として、処理が失敗したかを途中で確認せずに上層まで失敗情報 or 結果を届けることができる例を紹介した
 -->
 
 ---
@@ -1061,7 +1071,7 @@ index: "Appendix"
 ## デモ②の`ys`の作り方: `[0..9]`だとサンクが観察できない
 
 - デモ②で観察したかったのは「**要素がサンクのまま**の状態」
-- しかし`[0..9] :: [Int]`だと、要素位置に**サンクが積まれない**
+- しかし`[0..9] :: [Int]`だと、Int型の場合、サンクではなく評価済みの値がそのまま配置される最適化が行われてしまう
 
 ```text
 ghci> let as = [0..9] :: [Int]
@@ -1070,10 +1080,6 @@ ghci> length as
 ghci> :sprint as
 as = [0,1,2,3,4,5,6,7,8,9]  -- サンクがない!
 ```
-
-- `[0..9]`は`enumFromTo`の糖衣構文で、`Int`ではプリミティブ演算(`eftInt`)まで落ちる
-- そこで作られるコンスセルには、**評価済みの値**が直接入る
-  - `length`しか呼んでいないのに中身まで見えてしまう
 
 ---
 
@@ -1093,30 +1099,20 @@ ys = [_,_,_,_,_,_,_,_,_,_]
 
 ---
 
-## `fibs`の共有は「トップレベル・単相」だから効く
+## `fibs`の共有は「トップレベル・単相」で効く
 
 <span class="tg-muted">発表スライド「Haskell: 遅延評価の共有がメモ化代わりに」の補足</span>
 
 ```haskell
-fibs :: [Integer]  -- 単相な束縛なので、サンクが共有されメモ化として効く
+fibs :: [Integer]  -- 単相な束縛なので、サンクが共有される
 fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
 
 fibsPoly :: Num a => [a]  -- 多相にすると共有されない
 fibsPoly = 0 : 1 : zipWith (+) fibsPoly (tail fibsPoly)
 ```
 
-- 多相な定義は内部的に「型クラス辞書を受け取る**関数**」になるため、参照のたびに作り直される
-- 同様に、引数を取る関数の中で`fibs`を定義すると呼び出しごとに作り直される
-- メモ化として効かせたいなら、**トップレベルの単相な束縛**にすること
-
-<div class="tg-dense">
-
-| `!! 32`の実行時間 | GHC 9.12.2 / `runghc` |
-| --- | --- |
-| `fibs`(単相) | 0.23s |
-| `fibsPoly`(多相) | 9.14s |
-
-</div>
+- 多相にすると`Num a`の**辞書を受け取る関数**になり、束縛ではなく呼び出しごとの計算になる
+- 結果としてサンクが共有されず、メモ化の効果が消える
 
 ---
 
@@ -1128,8 +1124,4 @@ fibsPoly = 0 : 1 : zipWith (+) fibsPoly (tail fibsPoly)
 mySum xs = foldr  (+) 0 xs -- 発表で使った説明用の定義
 mySum xs = foldl' (+) 0 xs -- 実用ではこちら(Data.List)
 ```
-
-- `foldr (+) 0`は`1 + (2 + (3 + ...))`というサンクの連鎖を先に作るため、要素数が多いとスタックオーバーフローする
-- 合計のような**最後まで走査する正格な演算**は`foldl'`で左から潰していくのが定石
-  - 逆に、無限リストや途中で打ち切れる処理では`foldr`が有利
-- 詳細: [Haskellのfoldl、foldl'、foldrを比較してみた(sigma)](https://qiita.com/sigma_devsecops/items/206874ce5130abe280da)
+[Haskellのfoldl、foldl'、foldrを比較してみた(sigma)](https://qiita.com/sigma_devsecops/items/206874ce5130abe280da)

@@ -162,12 +162,45 @@ QR コード。読み取れることが最優先なので、必ず白いカー�
 
 ---
 
+## Mermaid
+
+`setup/mermaid.ts`で`base`テーマに配色を流し込み、スライドの配色と揃えている。
+
+````md
+```mermaid {scale: 1.04}
+flowchart LR
+  db[("DB<br/>users")]
+  db --> findUser --> greet --> handle
+```
+````
+
+注意点が3つある。
+
+- **`htmlLabels`は`false`にしてある。** `true`だとJetBrains Monoの読み込みが終わる前に確定した
+  幅で`foreignObject`が作られ、あとから実フォントで描かれた文字がその幅で切られる
+  (`findUser`が`findUs`になる)。SVGの`text`描画なら実際に描いたものを測るのでズレない。
+- **ラベル幅の計測に使われるのはトップレベルの`fontSize` / `fontFamily`で、`themeVariables`側ではない。**
+  両方に同じ値を書いておくこと。
+- **`useMaxWidth`は`false`にしてある。** 既定の`true`はSVGを容器幅に収めるので、幅の広い図だと
+  `fontSize`に書いた24pxが勝手に縮む。拡大縮小はスライド側の`{scale: N}`で行う。
+
+投影を考えると文字は24px以上を保ちたい。`scale`が1.0のとき`fontSize`の24pxがそのまま出るので、
+1.0を下回らせないこと。上げすぎるとスライドからはみ出すため、横長になりがちな図は
+subgraph内を`direction TB`にしてノードを縦積みにし、幅を空けてから拡大するとよい。
+
+はみ出すかどうかは実際に描かせないと分からない。`slidev`を起動して
+`google-chrome --headless --screenshot --window-size=1600,900 http://localhost:<port>/<n>`
+で当該ページを撮ると確認できる。左右の余白が本文と揃っていれば概ね適正。
+
+---
+
 ## ユーティリティクラス
 
 | クラス | 用途 |
 | --- | --- |
 | `tg-gold` / `tg-cyan` / `tg-red` / `tg-green` / `tg-muted` | 文字色 |
 | `tg-dense` | 1枚に収まらないときに文字を少し詰める |
+| `tg-labelcol` | 表の1〜2列目を折り返さず最小幅にし、余白を最終列に回す |
 | `tg-anim` | アニメーション対象の目印(`prefers-reduced-motion` で停止する) |
 | `tg-quote` | 名言の引用。`tg-quote__body` に台詞、`tg-quote__cite` に話者を入れる |
 | `tg-annotated` | コードの一部を枠で囲んで注釈する。中で `tg-focus`(金) / `tg-pat`・`tg-either`(金) / `tg-rec`・`tg-fn`(シアン) を使う |
