@@ -325,7 +325,8 @@ html.dark .slidev-layout .shiki span[style*='--shiki-dark: #d33682' i] {
   padding-left: 2rem;
   font-size: 1.4rem;
   line-height: 1.4;
-  color: var(--tg-bright);
+  /* 章扉の主役は見出しなので、引用は話者と同じ落ち着いた色に留める */
+  color: var(--tg-muted);
   text-shadow: 0 2px 14px rgba(0, 16, 25, 0.9);
 }
 
