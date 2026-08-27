@@ -8,6 +8,7 @@
 - ページ単位: `https://ryosukedtomita.github.io/Slidev/<ディレクトリ名>/<ページ番号>/`
     - 例: 9ページ目 → <https://ryosukedtomita.github.io/Slidev/2026-08-28/9/>
     - リロードしても404にならないので、SNSなどにはこのURLを貼ればよい。仕組みは[ページ単位のURL](#ページ単位のurl)を参照。
+- Xなどに貼ると表紙画像付きのカードになる。設定は[SNSカード(OGP)](#snsカードogp)を参照。
 
 
 ---
@@ -36,6 +37,7 @@ pnpm build 2026-08-28    # 指定したスライドだけビルド
 ```
 
 `pnpm dev` は引数を省略すると最初のスライドを開く。
+`pnpm og` (OGP画像の生成) だけは Chromium が要るので[SNSカード(OGP)](#snsカードogp)を参照。
 
 ### 画像
 
@@ -56,14 +58,46 @@ pnpm build 2026-08-28    # 指定したスライドだけビルド
 この `vite.config.ts` は `pnpm new` が `templates/vite.config.ts` からコピーするので、
 新しいスライドでは自動で有効になる。
 
+### SNSカード(OGP)
+
+X などにURLを貼ったときに大きい画像付きカードで表示されるようにしてある。
+
+- 画像は各デッキの `og-image.png` (1ページ目のスクリーンショット)。デッキごとに1枚で、
+  ページ単位URLを貼っても表紙が出る。
+- `twitterCard: summary_large_image` は `slides.md` の frontmatter の `seoMeta` で指定している。
+  `pnpm new` が作る雛形にも入っている。
+- `og:image` / `og:url` は絶対URLでないとクローラが解決してくれないので、`pnpm build` が
+  ビルド後のHTMLを書き換えて `SITE_URL` (CI では `actions/configure-pages` の `origin`)を前置する。
+  `og:url` はページごとの公開URLになる。
+
+`og-image.png` の生成には Chromium が要るので、専用のシェルで実行してコミットする。
+CI では再生成しないので、**コミットし忘れるとカードに画像が出ない**。
+
+```bash
+nix develop .#export
+pnpm og 2026-08-28       # 2026-08-28/og-image.png が出力される
+git add 2026-08-28/og-image.png
+```
+
+`.gitignore` は `*.png` を無視するが `og-image.png` は例外にしてある。
+表紙を変えたら `pnpm og` をやり直すこと。
+ファイルが無いデッキはビルドを止めず、`og:image なし` と警告を出して画像なしのカードになる。
+
+---
+
 ### PDF 出力
 
-PDF 出力には Chromium が必要なので、専用のシェルを使う。
+PDF 出力にも Chromium が必要なので、同じシェルを使う。
 
 ```bash
 nix develop .#export
 pnpm export 2026-08-28   # 2026-08-28/2026-08-28.pdf が出力される
 ```
+
+Chromium 本体は nixpkgs の `playwright-driver.browsers` から供給し、npm 側は
+`playwright-chromium` (nixpkgs と同じ 1.61.1) をバージョン固定で入れている。
+postinstall でのブラウザダウンロードは `pnpm-workspace.yaml` の `allowBuilds` で止めてあるので、
+通常の `pnpm install` は軽いままになる。
 
 ### GitHub Actions
 

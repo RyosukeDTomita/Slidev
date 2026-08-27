@@ -5,6 +5,8 @@ dist/
 *.pdf
 *.png
 !templates/**/*.png
+# OGP のカバー画像は `pnpm og` で生成してコミットする (CI では再生成しない)
+!**/og-image.png
 # 各デッキの public/ 配下はビルド成果物にコピーされる素材なので必ず追跡する
 !**/public/**
 

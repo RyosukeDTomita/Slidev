@@ -1,0 +1,4 @@
+# playwright-chromium のブラウザ本体は nixpkgs (playwright-driver.browsers) から供給するので、
+# postinstall でのダウンロードは要らない。実行を明示的に禁止して警告も止める。
+allowBuilds:
+  playwright-chromium: false

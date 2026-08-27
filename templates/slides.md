@@ -4,6 +4,9 @@ title: 発表タイトル
 info: 勉強会の概要を1行で
 class: text-center
 transition: slide-left
+seoMeta:
+  # X などで大きい画像付きカードにする。og:image はビルド時に og-image.png から入る。
+  twitterCard: summary_large_image
 mdc: true
 ---
 

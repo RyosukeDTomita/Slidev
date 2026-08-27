@@ -47,15 +47,20 @@ jobs:
       - name: Install dependencies
         run: nix develop --command pnpm install --frozen-lockfile
 
+      # OGP の og:image / og:url は絶対URLでないと X などのクローラが解決できないため、
+      # 公開サイトのオリジンを Pages 側から取得して build に渡す。
+      # PR ビルドではこのステップを飛ばすので SITE_URL は空になる(デプロイしないので問題ない)。
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+        id: pages
+        if: github.event_name != 'pull_request'
+
       # 公開 URL が https://<user>.github.io/<repo>/<スライド名>/ になるため
       # リポジトリ名をベースパスに渡す
       - name: Build all decks
         run: nix develop --command pnpm build
         env:
           BASE_PATH: /${{ github.event.repository.name }}/
-
-      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
-        if: github.event_name != 'pull_request'
+          SITE_URL: ${{ steps.pages.outputs.origin }}
 
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         if: github.event_name != 'pull_request'

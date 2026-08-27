@@ -12,6 +12,9 @@ link: https://peatix.com/event/5095532
 qr: /資料QR.png
 qrCaption: 発表資料
 transition: fade-out
+seoMeta:
+  # X などで大きい画像付きカードにする。og:image はビルド時に og-image.png から入る。
+  twitterCard: summary_large_image
 mdc: true
 ---
 
@@ -133,7 +136,7 @@ class: tg-middle
 <span class="tg-muted">発表内容は個人の見解であり、所属する組織の公式見解ではありません。</span>
 
 <!--
-まず、Haskllの自己紹介をしてその後関数型プログラミングと遅延評価の話をして応用例を紹介します。
+まず、Haskellの自己紹介をしてその後関数型プログラミングと遅延評価の話をして応用例を紹介します。
 -->
 
 ---
@@ -172,7 +175,7 @@ HUNTER×HUNTERの念能力: 自らに**強い制約**を課すことで、**強�
 <!--
 - Haskellのメンタルモデルを理解するのに、ハンターハンターの制約と誓約の概念をメタファーにするとわかりやすいと思っている。
 - 自らに強い制約を課すことで強力なパワーを得る
-- Haskellの場合は純粋関数、束縛、強い型という3つの制約によって遅延評価というパワーを獲得している。
+- Haskellの場合は純粋関数、束縛、副作用も型に出すという3つの制約によって遅延評価というパワーを獲得している。
 - 遅延評価によって無限リストを宣言できるなどのプログラムの表現力が向上している。
 -->
 
@@ -232,19 +235,19 @@ x' = x + 1
 ## 制約③ 副作用も型に出す
 
 - システムは現実世界に影響を及ぼすために副作用が必要
-- 副作用そのものを**型付きの値**にすることで、関数を純粋に保ったまま副作用を扱える
+- 副作用を起こす手続きを**型付きの値**にすることで、関数を純粋に保ったまま副作用を扱える
 
 ```haskell
 readFile :: FilePath -> IO String
 find :: Foldable t => (a -> Bool) -> t a -> Maybe a
 ```
+- `IO`は副作用を起こす手続き
+- `Maybe` -> 例外を投げずに「失敗」を**値として**返す
 
 <Callout>
 型は<strong>関数の性質を表明するドキュメント</strong>にもなる。
 </Callout>
 
-- `IO`が型に現れる -> **シグネチャを見るだけ**で副作用の有無がわかる
-- `Maybe`/`Either` -> 例外を投げずに「失敗」を**値として**返す
 
 <!--
 - システムは現実世界に影響を及ぼさないと役に立たない。そのためには副作用が必要
@@ -306,7 +309,7 @@ class: tg-middle
 
 ---
 
-### 再代入とループで書く(Python)
+### Not関数型: 再代入とループで書く(Python)
 
 ```python
 # 関数型でない例: 箱を用意して、ループで書き換えていく
@@ -322,11 +325,12 @@ def my_sum(xs):
 <!--
 - 馴染みのある書き方をするとこんな感じになる
 - totalという状態をもつ変数を用意してforループを回し、一つずつ要素を足してtotalを更新する
+- Haskellは制約により、更新とループが使えない
 -->
 
 ---
 
-### パターンマッチと再帰で書く(Haskell)
+### Haskell パターンマッチと再帰で書く
 
 <div class="grid grid-cols-[1.3fr_1fr] gap-6 items-start">
 <div>
@@ -361,7 +365,7 @@ mySum <span class="tg-pat">(x : xs)</span><sup class="tg-pat-n">①</sup> = x + 
 - Haskellのリストには空と先頭と残りの2種類のパターンしか存在しない。
 - このように引数の構造で関数の定義を場合分けすることをパターンマッチという。
 - 再帰は自分自身を呼び出す関数のこと
-- 再帰することにリストが一つずつ消費される構造になっている
+- 再帰するごとにリストが一つずつ消費される構造になっている
 -->
 
 ---
@@ -439,7 +443,9 @@ insertSort xs = foldr insert [] xs  -- 挿入ソート
 - パターンマッチと再帰: 空リストの合計は0、`x : xs`の合計は`x + mySum xs` -> 合計の定義
 - 畳み込み: 初期値`0`、`+`で畳み込む -> 合計の定義
 
-### 遅延評価のための制約が最初のモチベーションだったが、遅延評価に関係なく宣言的かつ、抽象度の高いコードになり読みやすくなった
+### 遅延評価のための制約がHaskellにおける関数型の最初の目的だったが、関数型によって宣言的かつ、抽象度の高いコードが書けて嬉しい
+
+(関数型は遅延評価の前提条件ではない)
 
 <!--
 関数型についてまとめる。
@@ -447,7 +453,7 @@ insertSort xs = foldr insert [] xs  -- 挿入ソート
 - リストの合計は手続き型では計算の手順
 - 関数型ではリストの合計とはなにかを記述する
 - パターンマッチと再帰ではリストの合計について空なら0それ以外なら先頭を取り出して足して再帰する。
-- 畳み込みに付いてはこれ畳み込みねと書いているだけ。
+- 畳み込みについてはこれ畳み込みねと書いているだけ。
 - 宣言的かつ、抽象度の高いコードが書けるのがうれしい
 -->
 
@@ -467,7 +473,7 @@ index: "03"
 
 ## 遅延評価: 必要になるまで評価しない
 
-- 一般的な言語は正格評価のため、式は即座に評価される
+- 一般的な言語は正格評価のため、式は即座に評価される e.g. `1+1=2`
 - 遅延評価では式はすぐに評価されず、**サンク**という「評価の予約」が積まれる
 - 値が**本当に必要になった瞬間**に、式が評価されて値になる
 
@@ -614,7 +620,7 @@ ghci> :sprint ys
 
 ---
 
-## 遅延評価おもしろコード例
+## 遅延評価ネタコード(リストの最小値)
 
 ```haskell
 import Data.List (sort)
@@ -736,7 +742,7 @@ minimum' xs = (head . sort) xs
 
 <!--
 計算量について詳しくない人向けに
-O(n)と(O n logn)の違いのグラフを載せておく。
+O(n)とO(n log n)の違いのグラフを載せておく。
 底を2にした場合要素数100で6.6倍
 -->
 
@@ -766,6 +772,7 @@ index: "04"
 </div>
 
 <!--
+理想は12:30くらい
 - 遅延評価のHaskellだからできる関数型の実装例としてフィボナッチ数列を実装してみる
 -->
 
@@ -887,7 +894,7 @@ layout: section
 index: "05"
 ---
 
-# おまけ: 制約③ 型の恩恵
+# おまけ: 型の恩恵
 
 <div class="tg-quote">
   <p class="tg-quote__body">まだだ! まだ終わらんよ!</p>
@@ -895,7 +902,7 @@ index: "05"
 </div>
 
 <!--
-このへんで15分切りたい
+このへんで15分くらいなら関手則について説明する。
 あじゃはぶのときは16分ちょいでオーバーした
 せっかくモナドTシャツをきてきたので、モナドの話もしちゃいます。
 -->
@@ -938,7 +945,7 @@ fmap id [1, 2, 3]  <span class="tg-muted">-- [1, 2, 3]</span>
 
 <!--
 - Haskellは純粋関数、いわゆる数学的な関数を扱うので数学分野の抽象化概念を使える
-- 圏論の関手則をみたすようにfmap実装をするから。
+- 圏論の関手則をみたすようにfmapを実装するから。
 - 何もしない関数の写像はなにもしない
 - 関数合成してから写像と写像してから関数合成
   - +1してから2倍する関数を使ってfmap
@@ -954,7 +961,7 @@ fmap id [1, 2, 3]  <span class="tg-muted">-- [1, 2, 3]</span>
 | | 型に例外 | 課題 |
 | --- | --- | --- |
 | **チェック例外** | 現れる(`throws`) | 層をまたぐたびに`try-catch`/`throws`を強制 |
-| **非チェック例外** | 現れない | 失敗の存在も、失敗の中身も型から分からない |
+| **非チェック例外** | 現れない | 失敗の存在も、失敗の中身も型からわからない |
 
 </div>
 
@@ -1083,7 +1090,7 @@ qr2Caption: Haskellの記事
 - [Lazy evaluation - HaskellWiki](https://wiki.haskell.org/Lazy_evaluation)
 - [3. Pure Functions, Laziness, I/O, and Monads - School of Haskell(Bartosz Milewski、2014)](https://www.schoolofhaskell.com/school/starting-with-haskell/basics-of-haskell/3-pure-functions-laziness-io)
 - [関数型プログラミング - Wikipedia](https://ja.wikipedia.org/wiki/%E9%96%A2%E6%95%B0%E5%9E%8B%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0)
-- [A History of Haskell: Being Lazy With Class(Paul Hudak / John Hughes / Simon Peyton Jones / Philip Wadler、HOPL III, 2007)](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/07/history.pdf)
+- [A History of Haskell: Being Lazy with Class(Paul Hudak / John Hughes / Simon Peyton Jones / Philip Wadler、HOPL III, 2007)](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/07/history.pdf)
 - [Why Functional Programming Matters(John Hughes、1990)](https://www.cs.kent.ac.uk/people/staff/dat/miranda/whyfp90.pdf)
 - [Beating the Averages(Paul Graham)](https://www.paulgraham.com/avg.html)
 - [単体テストの考え方/使い方(Vladimir Khorikov、須田智之 訳、マイナビ出版)](https://book.mynavi.jp/ec/products/detail/id=134252)

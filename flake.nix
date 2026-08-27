@@ -26,6 +26,10 @@
             pkgs.git
           ];
 
+          # playwright-chromium はブラウザ本体を nixpkgs 側から貰うので、
+          # npm install 時のダウンロード(数百MB)は不要。CI の install もこれで軽くなる。
+          env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
+
           # `nix develop --command ...` の出力を汚さないよう、案内は stderr に出す。
           shellHook = ''
             {
@@ -51,12 +55,14 @@
           env = {
             PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
             PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
+            PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
           };
 
           shellHook = ''
             {
               echo "Slidev export shell (node $(node --version))"
               echo "  pnpm export 2026-08-28   PDF を出力"
+              echo "  pnpm og 2026-08-28       OGP 画像 (og-image.png) を出力"
             } >&2
           '';
         };

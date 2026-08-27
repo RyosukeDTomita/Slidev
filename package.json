@@ -10,6 +10,7 @@
     "dev": "node scripts/dev.mjs",
     "build": "node scripts/build.mjs",
     "export": "node scripts/export.mjs",
+    "og": "node scripts/og.mjs",
     "new": "node scripts/new.mjs"
   },
   "dependencies": {
@@ -18,5 +19,8 @@
     "@slidev/theme-default": "^0.25.0",
     "@slidev/theme-seriph": "^0.25.0",
     "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "playwright-chromium": "1.61.1"
   }
 }
