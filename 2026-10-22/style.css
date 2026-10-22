@@ -67,7 +67,9 @@
 .gk.slide.title-slide .kicker { color: #9db5ff; }
 .gk.slide.title-slide h1 span { color: #9db5ff; }
 .gk.slide.title-slide .sub { font-size: 26px; margin-top: 20px; color: #c9ced6; }
-.gk.slide.title-slide .meta { margin-top: 56px; font-size: 22px; color: #c9ced6; }
+
+/* 資料についての注記スライド */
+.gk.slide.about-deck { justify-content: center; }
 
 /* 一言スライド */
 .gk.slide.oneliner { justify-content: center; }
@@ -101,8 +103,14 @@
 .gk.slide .virtues .box small { display: block; font-size: 15px; font-weight: 500; color: var(--muted); }
 
 /* 表紙の発表者アイコン */
-.gk.slide .cover-icon { position: absolute; right: 120px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 16px; }
-.gk.slide .cover-icon img { width: 240px; height: 240px; border-radius: 50%; border: 6px solid #9db5ff; object-fit: cover; }
-.gk.slide .cover-icon span { font-size: 22px; font-weight: 700; color: #c9ced6; }
-.gk.slide.title-slide .disclaimer { margin-top: 12px; font-size: 18px; color: #9aa1ab; }
-.gk.slide a.cover-icon { text-decoration: none; }
+.gk.slide a.cover-author { margin-top: 48px; display: flex; align-items: center; gap: 14px; text-decoration: none; }
+.gk.slide .cover-author img { width: 56px; height: 56px; border-radius: 50%; border: 3px solid #9db5ff; object-fit: cover; }
+.gk.slide .cover-author span { font-size: 20px; font-weight: 700; color: #c9ced6; }
+
+/* 表紙右側の本の書影・QR・リンク */
+.gk.slide .book-panel { position: absolute; right: 88px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.gk.slide .book-panel .book-cover { height: 400px; width: auto; display: block; border-radius: 4px; box-shadow: 0 12px 32px rgba(0,0,0,.45); }
+.gk.slide .book-link { display: flex; align-items: center; gap: 14px; }
+.gk.slide .book-link .book-qr { width: 110px; height: 110px; border-radius: 6px; background: #fff; }
+.gk.slide .book-link a { font-size: 16px; line-height: 1.5; color: #9db5ff; }
+.gk.slide.title-slide h1, .gk.slide.title-slide .sub { max-width: 720px; }

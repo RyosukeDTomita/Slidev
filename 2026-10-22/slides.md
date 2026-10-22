@@ -19,12 +19,17 @@ mdc: true
 ---
 
 <div class="gk slide title-slide">
-<div class="kicker">BOOK REVIEW</div>
+<div class="kicker">本の紹介</div>
 <h1>システム開発と<br><span>「具体と抽象」</span></h1>
-<p class="sub">問題発見と問題解決を往復する「思考のメタ化」を身につける<br>細谷功 著 / 技術評論社 2026</p>
-<p class="meta">本の紹介 ・ 15分</p>
-<p class="disclaimer">この資料は社内勉強会向けに自分の読書メモをもとにAIと壁打ちしながら作成しました。</p>
-<a class="cover-icon" href="https://github.com/RyosukeDTomita" target="_blank" rel="noopener"><PublicImg src="/icon.png" alt="sigma" /><span>sigma (Ryosuke Tomita)</span></a>
+<p class="sub">問題発見と問題解決を往復する<br>「思考のメタ化」を身につける<br>細谷功 著 / 技術評論社 2026</p>
+<a class="cover-author" href="https://github.com/RyosukeDTomita" target="_blank" rel="noopener"><PublicImg src="/icon.png" alt="sigma" /><span>sigma (Ryosuke Tomita)</span></a>
+<div class="book-panel">
+  <a href="https://www.amazon.co.jp/dp/B0H7FLMYNY" target="_blank" rel="noopener"><PublicImg class="book-cover" src="/book-cover.jpg" alt="システム開発と「具体と抽象」の表紙" /></a>
+  <div class="book-link">
+    <PublicImg class="book-qr" src="/book-qr.png" alt="Amazonの商品ページのQRコード" />
+    <a href="https://www.amazon.co.jp/dp/B0H7FLMYNY" target="_blank" rel="noopener">amazon.co.jp/dp/<br>B0H7FLMYNY</a>
+  </div>
+</div>
 <div class="footer"><span>システム開発と「具体と抽象」</span><span class="page-no">{{ $page }} <small>/ {{ $nav.total }}</small></span></div>
 </div>
 
@@ -36,10 +41,20 @@ mdc: true
 layout: none
 ---
 
+<div class="gk slide about-deck">
+<div class="kicker">この資料について</div>
+<h2>この資料は社内勉強会向けに、自分の読書メモをもとにAIと壁打ちしながら作成しました。</h2>
+<div class="footer"><span>システム開発と「具体と抽象」</span><span class="page-no">{{ $page }} <small>/ {{ $nav.total }}</small></span></div>
+</div>
+
+---
+layout: none
+---
+
 <div class="gk slide oneliner">
 <div class="kicker">この本を一言で</div>
 <p class="big">SI業界は<br><span class="con">具体</span>と<span class="abs">抽象</span>の<mark>往復</mark>が足りていない</p>
-<p class="muted" style="margin-top:36px">今日持ち帰ってほしいこと: ① 人は具体を見ないと判断できない　② 川上と川下は「OS」が違う　③ AI時代に人間に残るのは抽象側</p>
+<p class="muted" style="margin-top:36px">今日持ち帰ってほしいこと:<br>① 人は具体を見ないと判断できない<br>② 川上と川下は「OS」が違う<br>③ AI時代に人間に残るのは抽象側</p>
 <div class="footer"><span>システム開発と「具体と抽象」</span><span class="page-no">{{ $page }} <small>/ {{ $nav.total }}</small></span></div>
 </div>
 
@@ -59,7 +74,7 @@ layout: none
     <h3>準委任契約</h3>
     <ul class="dots">
       <li>かかった分だけ払ってもらえる</li>
-      <li>無駄な作業でも言われた通りにやれば売上になる</li>
+      <li>無駄な作業でも<br>言われた通りにやれば売上になる</li>
       <li>→ <b>仕様を提案するインセンティブが薄い</b></li>
     </ul>
   </div>
@@ -162,7 +177,7 @@ layout: none
 <div class="stairs">
   <div class="step" style="height:22%">OS<small>ハード依存から</small></div>
   <div class="step" style="height:30%">高級言語<small>低レイヤーから</small></div>
-  <div class="step" style="height:38%">OOP<small>構造化・モデル化</small></div>
+  <div class="step" style="height:38%">OOP<small>構造化・<br>モデル化</small></div>
   <div class="step" style="height:46%">仮想化<small>物理→論理</small></div>
   <div class="step" style="height:54%">コンテナ<small>OS→アプリ</small></div>
   <div class="step" style="height:62%">クラウド<small>インフラ不要</small></div>
@@ -280,7 +295,7 @@ layout: none
     <h3 class="con">川下</h3>
     <ul class="dots">
       <li>90点以上が当たり前</li>
-      <li>一番弱い部分がボトルネック → 全方位で底上げ</li>
+      <li>一番弱い部分がボトルネック<br>→ 全方位で底上げ</li>
     </ul>
   </div>
 </div>
@@ -302,7 +317,7 @@ layout: none
 <h2>具体の要望に、具体で返してしまう</h2>
 <div class="grid2">
   <div class="card">
-    <h3>「投資対効果をデータで」に意味があるのか？</h3>
+    <h3>「投資対効果をデータで」に<br>意味があるのか？</h3>
     <ul class="dots">
       <li>既存システムの更改なら出せる</li>
       <li>新規なのだから過去のデータはない</li>
@@ -313,8 +328,8 @@ layout: none
     <h3>「事例を見せて」</h3>
     <ul class="dots">
       <li><b>実例</b>: 実際に導入された実績</li>
-      <li><b>具体例</b>: 導入されていなくてもイメージが湧けばよい</li>
-      <li>求められているのは実は<b>具体例</b>かもしれない</li>
+      <li><b>具体例</b>: 導入されていなくても<br>イメージが湧けばよい</li>
+      <li>求められているのは<br>実は<b>具体例</b>かもしれない</li>
     </ul>
   </div>
 </div>
@@ -417,7 +432,7 @@ layout: none
     </ul>
   </div>
 </div>
-<p style="margin-top:22px">不可逆で、生きていくための必然。悪いことではないが、<mark>自分たちがストック型になっていると自覚する</mark>ことが大切。</p>
+<p style="margin-top:22px">不可逆で、生きていくための必然。悪いことではないが、<br><mark>自分たちがストック型になっていると自覚する</mark>ことが大切。</p>
 <div class="footer"><span>システム開発と「具体と抽象」</span><span class="page-no">{{ $page }} <small>/ {{ $nav.total }}</small></span></div>
 </div>
 
@@ -481,12 +496,12 @@ layout: none
   <div class="label abs">進め方</div>
   <div class="flow"><div class="box box-abs">仮説を立てる</div><div class="arrow">→</div><div class="box box-con">雑に具体に落とす</div><div class="arrow">→</div><div class="box">レビューしてもらう</div><div class="arrow">↺</div></div>
 </div>
-<p style="margin-top:10px">抽象のまま相談しても、相手は判断できない(スライド5)。<br><mark>叩き台という具体があって初めて、調整が前に進む</mark>。</p>
+<p style="margin-top:10px">抽象のまま相談しても、相手は判断できない(スライド6)。<br><mark>叩き台という具体があって初めて、調整が前に進む</mark>。</p>
 <div class="footer"><span>システム開発と「具体と抽象」</span><span class="page-no">{{ $page }} <small>/ {{ $nav.total }}</small></span></div>
 </div>
 
 <!--
-【13:45〜14:00】スライド16のストック型の話とつなげる。調整を減らそうとするより、調整の場に雑な具体を持ち込むほうが速い。
+【13:45〜14:00】スライド17のストック型の話とつなげる。調整を減らそうとするより、調整の場に雑な具体を持ち込むほうが速い。
 -->
 
 ---
@@ -508,7 +523,7 @@ layout: none
   <div class="card abs-c">
     <h3>対策</h3>
     <ul class="dots">
-      <li><b>Claudeの /grill-me</b><br><span class="small">ふわっとやりたいことを言う → AIが質問してくる → ひたすらレスバすると具体が詰まる</span></li>
+      <li><b>Claudeの /grill-me</b><br><span class="small">ふわっとやりたいことを言う<br>→ AIが質問してくる<br>→ ひたすらレスバすると具体が詰まる</span></li>
       <li><b>「そこ考えてませんでした！」</b><br><span class="small">素直に言うことで嘘つきにならないようにする</span></li>
     </ul>
   </div>
@@ -579,10 +594,10 @@ layout: none
   <li>全体を俯瞰して<b>「俺が一旦決める」</b>という傲慢さがないと、抽象側に立てない</li>
   <li>多少無理してでも傲慢になり、<mark>自分で一旦決める</mark></li>
 </ul>
-<p class="small muted" style="margin-top:8px">スライド14「抽象度の高い思考は一人で」の実践</p>
+<p class="small muted" style="margin-top:8px">スライド15「抽象度の高い思考は一人で」の実践</p>
 <div class="footer"><span>システム開発と「具体と抽象」</span><span class="page-no">{{ $page }} <small>/ {{ $nav.total }}</small></span></div>
 </div>
 
 <!--
-【14:50〜15:00】スライド14の「一人が全体設計をしていない」の回収。決めたあとに具体で叩いてもらえばいい(TODO 1)。最後に会場へ「皆さんはどちら側が得意？」と投げて質疑へ。
+【14:50〜15:00】スライド15の「一人が全体設計をしていない」の回収。決めたあとに具体で叩いてもらえばいい(TODO 1)。最後に会場へ「皆さんはどちら側が得意？」と投げて質疑へ。
 -->
