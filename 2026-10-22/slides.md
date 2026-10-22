@@ -1,7 +1,7 @@
 ---
 theme: default
 title: システム開発と「具体と抽象」
-info: 細谷功『システム開発と「具体と抽象」』の本の紹介
+info: 細谷功『システム開発と「具体と抽象」』の紹介
 author: sigma (Ryosuke Tomita)
 favicon: /favicon.png
 layout: none
@@ -21,7 +21,7 @@ mdc: true
 <div class="gk slide title-slide">
 <div class="kicker">本の紹介</div>
 <h1>システム開発と<br><span>「具体と抽象」</span></h1>
-<p class="sub">問題発見と問題解決を往復する<br>「思考のメタ化」を身につける<br>細谷功 著 / 技術評論社 2026</p>
+<p class="sub">問題発見と問題解決を往復する思考のメタ化を身につける<br>細谷功 著 / 技術評論社 2026</p>
 <a class="cover-author" href="https://github.com/RyosukeDTomita" target="_blank" rel="noopener"><PublicImg src="/icon.png" alt="sigma" /><span>sigma (Ryosuke Tomita)</span></a>
 <div class="book-panel">
   <a href="https://www.amazon.co.jp/dp/B0H7FLMYNY" target="_blank" rel="noopener"><PublicImg class="book-cover" src="/book-cover.jpg" alt="システム開発と「具体と抽象」の表紙" /></a>
@@ -44,6 +44,7 @@ layout: none
 <div class="gk slide about-deck">
 <div class="kicker">この資料について</div>
 <h2>この資料は社内勉強会向けに、自分の読書メモをもとにAIと壁打ちしながら作成しました。</h2>
+<h3>内容は私が気にいったところをチェリーピックしており、解釈は原作者が想定するものと異なる可能性があります。<br>興味をもったら書籍を是非購入を検討されたし。</h3>
 <div class="footer"><span>システム開発と「具体と抽象」</span><span class="page-no">{{ $page }} <small>/ {{ $nav.total }}</small></span></div>
 </div>
 
@@ -101,8 +102,16 @@ layout: none
 
 <div class="gk slide">
 <div class="kicker">そもそも具体と抽象とは</div>
-<h2>どちらが偉いわけではない</h2>
-<div class="grid2">
+<h2 style="margin-bottom:20px">どちらが偉いわけではない</h2>
+<div class="doll d1"><span>経営<small>売上を伸ばしたい</small></span>
+  <div class="doll d2"><span>企画<small>予約をWeb化する</small></span>
+    <div class="doll d3"><span>要件定義<small>予約画面を作る</small></span>
+      <div class="doll d4"><span>実装<small>ボタンを置く</small></span></div>
+    </div>
+  </div>
+</div>
+<p class="small" style="margin:10px 0 18px">仕事の具体と抽象はマトリョーシカ。上から見れば<span class="con">具体</span>、下から見れば<span class="abs">抽象</span>で、<mark>誰の仕事にも両方ある</mark>。</p>
+<div class="grid2 compact">
   <div class="card con-c">
     <h3 class="con">具体</h3>
     <ul class="dots">
@@ -120,12 +129,12 @@ layout: none
     </ul>
   </div>
 </div>
-<p style="margin-top:24px">仕事では「<span class="con">具体的にわかりやすく</span>」が正義になりがち。<br><span class="small muted">顧客のぼんやりした要望を具体に詰めるのはトラブル防止として正しい。でもそれだけだと…</span></p>
+<p style="margin-top:16px">仕事では「<span class="con">具体的にわかりやすく</span>」が正義になりがち。<br><span class="small muted">顧客のぼんやりした要望を具体に詰めるのはトラブル防止として正しい。でもそれだけだと…</span></p>
 <div class="footer"><span>システム開発と「具体と抽象」</span><span class="page-no">{{ $page }} <small>/ {{ $nav.total }}</small></span></div>
 </div>
 
 <!--
-【2:00〜2:45】具体=悪ではない。川下の仕事では具体化が正しい、と押さえておくと後半の川上/川下が伝わりやすい。
+【2:00〜2:45】まずマトリョーシカ図。経営の「売上を伸ばしたい」を企画が具体にし、その企画を要件定義がさらに具体にする。自分の仕事は、上の層から見れば具体、下の層から見れば抽象。具体の担当と抽象の担当がいるのではなく、誰の仕事にも両方ある、と話してから左右のカードに進む。具体=悪ではない。川下の仕事では具体化が正しい、と押さえておくと後半の川上/川下が伝わりやすい。
 -->
 
 ---

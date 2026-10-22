@@ -114,3 +114,17 @@
 .gk.slide .book-link .book-qr { width: 110px; height: 110px; border-radius: 6px; background: #fff; }
 .gk.slide .book-link a { font-size: 16px; line-height: 1.5; color: #9db5ff; }
 .gk.slide.title-slide h1, .gk.slide.title-slide .sub { max-width: 720px; }
+
+/* マトリョーシカ: 外側ほど抽象、内側ほど具体 */
+.gk.slide .doll { display: flex; align-items: center; gap: 16px; border-radius: 14px; padding: 6px 14px; border: 2px solid; }
+.gk.slide .doll > span { flex: none; font-size: 20px; font-weight: 900; line-height: 1.3; }
+.gk.slide .doll > span small { display: block; font-size: 14px; font-weight: 500; color: var(--muted); }
+.gk.slide .doll > .doll { flex: 1; }
+.gk.slide .doll.d1 { border-color: var(--abs); background: var(--abs-soft); }
+.gk.slide .doll.d2 { border-color: #6c79b8; background: #eeeaf3; }
+.gk.slide .doll.d3 { border-color: #a9716d; background: #f6e9e6; }
+.gk.slide .doll.d4 { border-color: var(--con); background: var(--con-soft); }
+.gk.slide .grid2.compact .card { padding: 12px 28px 14px; }
+.gk.slide .grid2.compact .card h3 { margin-bottom: 6px; }
+.gk.slide .grid2.compact .card li { margin-bottom: 0; line-height: 1.5; }
+.gk.slide .grid2.compact { flex: none; }
